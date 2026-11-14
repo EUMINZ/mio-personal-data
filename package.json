@@ -1,6 +1,6 @@
 {
   "name": "mio-personal-data",
-  "version": "0.1.0",
+  "version": "0.2.0-alpha",
   "private": true,
   "type": "module",
   "description": "A user-controlled personal data layer for AI.",
@@ -9,12 +9,37 @@
     "node": ">=24"
   },
   "scripts": {
-    "test": "node --test mio-core/tests/*.test.js",
+    "test": "node --test mio-core/tests/*.test.js tests/*.test.js",
     "demo": "node examples/two-assistants.js",
-    "check": "node scripts/check.mjs"
+    "check": "node scripts/check.mjs",
+    "benchmark": "node benchmarks/run.mjs",
+    "mcp:demo": "node adapters/mcp/server.js --demo"
   },
   "devDependencies": {
+    "@modelcontextprotocol/client": "2.4.0",
     "ajv": "8.17.1",
     "ajv-formats": "3.0.1"
-  }
+  },
+  "dependencies": {
+    "@modelcontextprotocol/server": "2.4.0",
+    "zod": "4.6.7"
+  },
+  "bin": {
+    "mio-mcp": "./adapters/mcp/server.js",
+    "mio-admin": "./adapters/mcp/admin.js"
+  },
+  "files": [
+    "adapters/mcp/",
+    "mio-core/src/",
+    "mio-core/migrations/",
+    "mio-core/package.json",
+    "contracts/",
+    "integrations/",
+    "docs/",
+    "LICENSE",
+    "NOTICE",
+    "SECURITY.md",
+    "README.md",
+    "README.zh-CN.md"
+  ]
 }

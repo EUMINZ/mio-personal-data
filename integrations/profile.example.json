@@ -1,0 +1,12 @@
+{
+  "displayName": "Alex Rowan (fictional example)",
+  "requesterName": "My chosen assistant",
+  "claims": {
+    "person.name.first": "Alex",
+    "person.name.last": "Rowan",
+    "person.contact.email": "alex@example.invalid"
+  },
+  "allowedFields": ["person.name.first", "person.contact.email"],
+  "expiresInHours": 1,
+  "allowProposals": false
+}

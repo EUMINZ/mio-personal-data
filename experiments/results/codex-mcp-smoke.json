@@ -1,0 +1,154 @@
+{
+  "schemaVersion": "mio.codex-mcp-smoke.v1",
+  "generatedAt": "2026-11-14T11:14:17.995Z",
+  "kind": "single real-client integration probe; not comparative quality evidence",
+  "clientVersion": "codex-cli 0.160.1",
+  "requestedModel": "gpt-6-astra",
+  "reasoningEffort": "low",
+  "dataset": "fictional --demo",
+  "isolatedUserConfig": true,
+  "ephemeral": true,
+  "elapsedMs": 33515,
+  "exitCode": 0,
+  "answer": {
+    "firstName": "Alex",
+    "beforeEmail": "alex.old@example.invalid",
+    "proposalStatus": "pending",
+    "afterEmail": "alex.old@example.invalid",
+    "unauthorizedReadDenied": true
+  },
+  "expected": {
+    "firstName": "Alex",
+    "beforeEmail": "alex.old@example.invalid",
+    "proposalStatus": "pending",
+    "afterEmail": "alex.old@example.invalid",
+    "unauthorizedReadDenied": true
+  },
+  "answerMatches": true,
+  "traceMatches": true,
+  "success": true,
+  "usage": {
+    "input_tokens": 86337,
+    "cached_input_tokens": 72832,
+    "cache_write_input_tokens": 0,
+    "output_tokens": 273,
+    "reasoning_output_tokens": 0
+  },
+  "tools": [
+    {
+      "server": "mio",
+      "tool": "mio_list_fields",
+      "arguments": {},
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"fields\":[\"person.contact.email\",\"person.name.first\"]}"
+          }
+        ],
+        "structured_content": {
+          "fields": [
+            "person.contact.email",
+            "person.name.first"
+          ]
+        }
+      },
+      "error": null
+    },
+    {
+      "server": "mio",
+      "tool": "mio_read",
+      "arguments": {
+        "fields": [
+          "person.name.first",
+          "person.contact.email"
+        ]
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.contact.email\":\"alex.old@example.invalid\"}}"
+          }
+        ],
+        "structured_content": {
+          "fields": {
+            "person.name.first": "Alex",
+            "person.contact.email": "alex.old@example.invalid"
+          }
+        }
+      },
+      "error": null
+    },
+    {
+      "server": "mio",
+      "tool": "mio_read",
+      "arguments": {
+        "fields": [
+          "passport.number"
+        ]
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "Mio operation denied or unavailable. Ask the local operator to review the configuration or permission."
+          }
+        ],
+        "structured_content": null
+      },
+      "error": null
+    },
+    {
+      "server": "mio",
+      "tool": "mio_propose_update",
+      "arguments": {
+        "field": "person.contact.email",
+        "value": "alex.new@example.invalid",
+        "rationale": "Fictional integration probe"
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"reviewItemId\":\"review_item_bd47a58a-cc7a-42fc-95cc-51a5cdecbb37\",\"status\":\"pending\",\"message\":\"Recorded for human review. The confirmed value is unchanged.\"}"
+          }
+        ],
+        "structured_content": {
+          "reviewItemId": "review_item_bd47a58a-cc7a-42fc-95cc-51a5cdecbb37",
+          "status": "pending",
+          "message": "Recorded for human review. The confirmed value is unchanged."
+        }
+      },
+      "error": null
+    },
+    {
+      "server": "mio",
+      "tool": "mio_read",
+      "arguments": {
+        "fields": [
+          "person.contact.email"
+        ]
+      },
+      "result": {
+        "content": [
+          {
+            "type": "text",
+            "text": "{\"fields\":{\"person.contact.email\":\"alex.old@example.invalid\"}}"
+          }
+        ],
+        "structured_content": {
+          "fields": {
+            "person.contact.email": "alex.old@example.invalid"
+          }
+        }
+      },
+      "error": null
+    }
+  ],
+  "limitations": [
+    "One prompt and one model; no accuracy or token-saving comparison.",
+    "Read-only sandbox is not an OS-level isolation proof for data held by the MCP process.",
+    "Existing local CLI login is reused; this script does not provision or export credentials."
+  ]
+}

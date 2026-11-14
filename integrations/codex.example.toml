@@ -1,0 +1,6 @@
+# Merge this section into a Codex config after replacing the absolute path.
+# Do not replace an existing config file with this example.
+[mcp_servers.mio]
+command = "node"
+args = ["/absolute/path/to/mio-personal-data/adapters/mcp/server.js", "--demo"]
+startup_timeout_sec = 20

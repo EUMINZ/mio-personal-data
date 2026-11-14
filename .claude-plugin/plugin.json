@@ -1,0 +1,25 @@
+{
+  "name": "mio-personal-data",
+  "version": "0.2.0-alpha",
+  "description": "A local personal data MCP layer. Starts with fictional data; reads scoped fields and queues proposed updates for human review.",
+  "author": {
+    "name": "EUMINZ"
+  },
+  "homepage": "https://github.com/EUMINZ/mio-personal-data",
+  "repository": "https://github.com/EUMINZ/mio-personal-data",
+  "license": "Apache-2.0",
+  "keywords": [
+    "mcp",
+    "personal-data",
+    "local-first",
+    "review"
+  ],
+  "mcpServers": {
+    "mio": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/integrations/claude/start.mjs"
+      ]
+    }
+  }
+}

@@ -1,0 +1,674 @@
+{
+  "reportDate": "2026-11-14",
+  "executedAtUtc": "2026-11-14T11:04:18.283Z",
+  "command": "node benchmarks/run.mjs",
+  "environment": {
+    "node": "v24.12.0",
+    "sqlite": "3.50.4",
+    "platform": "darwin",
+    "architecture": "arm64"
+  },
+  "sourceFileHashes": {
+    "benchmarks/architecture.mjs": "8dffc4faeb0f716b56f29463dd1b0f6bcb6e8c424906b2d2da4cac3f94ba3cac",
+    "benchmarks/fixture.json": "9c6f13d7cf18117e0fc881b80912b87a981d18ff2309f94dad4a065bbb21fe5c",
+    "benchmarks/json-host.mjs": "1023d343d48e27c4cd2b374f26684d56b0fc448f3a6c611b14725eca6dbdef24",
+    "benchmarks/mio-host.mjs": "3de19f26ec711fc53c7142d288470ab2862f3a9cf658588821880c0fee4be757",
+    "benchmarks/run.mjs": "a1753d1bc8434a7d09a2565b9e03c34854b12f18c279a060ccae73ec2e015e2a",
+    "examples/fictional-host.js": "019fb3efe37e37bf9e3a0ef1d205bc56fba7c51ec59019b1bcb73d1b3cfa75b2",
+    "examples/scoped-reader.js": "5eaa79db879b0d8cbcb08719e3f6cc9351ec257a30c6ca20703b99d7cae1328a",
+    "mio-core/migrations/0001_initial.sql": "7843478db4889b98b39ca2927c3d850d45b898cd6acee770a0f5b2e36eed6032",
+    "mio-core/migrations/0002_review_lifecycle.sql": "e02cfd45879c201a74cf5d97f768981dc880bec138a8fce77aa962fd3998c467",
+    "mio-core/migrations/0003_memory_sidecar.sql": "3b631527190d4502a6cedaa1a4156225c05379ba968e3a3555b72e9d01252070",
+    "mio-core/migrations/0004_identity_wiki.sql": "eea229e7092d0ca0d7e7de390e0487e18d913ced0be87422c8976af3eca5c2a2",
+    "mio-core/migrations/0005_memory_note_taxonomy.sql": "a4bd2a42d2b176a9bae5fe79be8d2cbed2f529e3e6b0775c5949623116509e41",
+    "mio-core/src/claim-types.js": "45cb4f97716d9a4643037ed489bba478aadb902c3d014be4c690ac60ef263229",
+    "mio-core/src/cli.js": "fa4f68401d4155d6390adadf8764750a5f5e549e5562aee48d5713b2c877ed05",
+    "mio-core/src/contracts.js": "b902c4a71c25e9bc42b329f2cdf81bd1299679d7533cd20c9e7bbd29faa6294b",
+    "mio-core/src/db.js": "d3d97abf7fd4932b15c15312b358ab3c595a96532e4a8b599cc9dadbfbf36ce1",
+    "mio-core/src/gemma-context.js": "7ee15d4a2e5834a107c8ccabd0d62ea931badee386f466604c3f2512d837db2f",
+    "mio-core/src/identity-compiler.js": "ed7e93c5749d7b94500b0eb54e36b03990dc3abae7d32350d2f8246846cbb895",
+    "mio-core/src/identity-context-shared.js": "770c03829aa93adddc858e2eb2b79cc33695f0a16dfa25674fe5a503cc0558c5",
+    "mio-core/src/identity-context.js": "7ff184e17f0efdf3bdf5bfe421b59a7a197e14786e9549e4d9f6826eadf98590",
+    "mio-core/src/identity-search.js": "5df474a6aca433e15526afe8bf357c712c7416b76ec0accd9f1ffe42a9017c54",
+    "mio-core/src/importers.js": "53faed7b29c9db5987c176fda356b0561cfe24ae5cca522c0ef85eb1ff39e197",
+    "mio-core/src/index.js": "703f459bbcc926e980634315b94915368da11d0f752480a198903e8bbb8e01e7",
+    "mio-core/src/memory-sidecar.js": "fd15701343a1871aba43a533dc5d1aa00ec2c64dfeb19e3d537a74b7e4ec13ad",
+    "mio-core/src/renderers.js": "b2b18e023aa6ebb444f531abd1e3943076552b32332bd69bbcc6fd347ab41103",
+    "mio-core/src/repository.js": "7d75aa2515e0c72cadf271898f153baad87eabb2fa1e011b8b628f7f9194db99",
+    "mio-core/src/review-queue.js": "8deaf8ce63b4598dabf89509768df04e7edfcb0c09718d196d6b30efc1a11cdf"
+  },
+  "schemaVersion": "mio.architecture.benchmark.v1",
+  "fixtureSha256": "140d21f6e83eb9106b10dc55d010f9053f4de30981e40e97b38806d74d115c43",
+  "payloadGrid": [
+    {
+      "profileSize": 3,
+      "taskId": "document-name",
+      "requestedFields": [
+        "person.name.first",
+        "person.name.last"
+      ],
+      "measurements": {
+        "fullProfileReference": {
+          "utf8Bytes": 116,
+          "deliveredFields": 3,
+          "extraFields": [
+            "person.contact.email"
+          ],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.name.last\":\"Rowan\",\"person.contact.email\":\"alex.old@example.invalid\"}}"
+        },
+        "scopedJson": {
+          "utf8Bytes": 66,
+          "deliveredFields": 2,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.name.last\":\"Rowan\"}}"
+        },
+        "mio": {
+          "utf8Bytes": 66,
+          "deliveredFields": 2,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.name.last\":\"Rowan\"}}"
+        }
+      }
+    },
+    {
+      "profileSize": 3,
+      "taskId": "contact-card",
+      "requestedFields": [
+        "person.name.first",
+        "person.contact.email"
+      ],
+      "measurements": {
+        "fullProfileReference": {
+          "utf8Bytes": 116,
+          "deliveredFields": 3,
+          "extraFields": [
+            "person.name.last"
+          ],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.name.last\":\"Rowan\",\"person.contact.email\":\"alex.old@example.invalid\"}}"
+        },
+        "scopedJson": {
+          "utf8Bytes": 89,
+          "deliveredFields": 2,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.contact.email\":\"alex.old@example.invalid\"}}"
+        },
+        "mio": {
+          "utf8Bytes": 89,
+          "deliveredFields": 2,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.contact.email\":\"alex.old@example.invalid\"}}"
+        }
+      }
+    },
+    {
+      "profileSize": 3,
+      "taskId": "email-only",
+      "requestedFields": [
+        "person.contact.email"
+      ],
+      "measurements": {
+        "fullProfileReference": {
+          "utf8Bytes": 116,
+          "deliveredFields": 3,
+          "extraFields": [
+            "person.name.first",
+            "person.name.last"
+          ],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.name.last\":\"Rowan\",\"person.contact.email\":\"alex.old@example.invalid\"}}"
+        },
+        "scopedJson": {
+          "utf8Bytes": 62,
+          "deliveredFields": 1,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.contact.email\":\"alex.old@example.invalid\"}}"
+        },
+        "mio": {
+          "utf8Bytes": 62,
+          "deliveredFields": 1,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.contact.email\":\"alex.old@example.invalid\"}}"
+        }
+      }
+    },
+    {
+      "profileSize": 12,
+      "taskId": "document-name",
+      "requestedFields": [
+        "person.name.first",
+        "person.name.last"
+      ],
+      "measurements": {
+        "fullProfileReference": {
+          "utf8Bytes": 580,
+          "deliveredFields": 12,
+          "extraFields": [
+            "person.contact.email",
+            "person.name.middle",
+            "person.contact.phone",
+            "person.contact.home_address",
+            "person.contact.home_country",
+            "person.employment.employer",
+            "person.employment.job_title",
+            "person.employment.email",
+            "person.employment.phone",
+            "person.employment.address"
+          ],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.name.last\":\"Rowan\",\"person.contact.email\":\"alex.old@example.invalid\",\"person.name.middle\":\"Example\",\"person.contact.phone\":\"FICTIONAL-PHONE-0001\",\"person.contact.home_address\":\"17 Imaginary Lane, Example City\",\"person.contact.home_country\":\"Fictional Republic\",\"person.employment.employer\":\"Example Workshop (fictional)\",\"person.employment.job_title\":\"Prototype Designer\",\"person.employment.email\":\"alex.work@example.invalid\",\"person.employment.phone\":\"FICTIONAL-PHONE-0002\",\"person.employment.address\":\"8 Mock Street, Example City\"}}"
+        },
+        "scopedJson": {
+          "utf8Bytes": 66,
+          "deliveredFields": 2,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.name.last\":\"Rowan\"}}"
+        },
+        "mio": {
+          "utf8Bytes": 66,
+          "deliveredFields": 2,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.name.last\":\"Rowan\"}}"
+        }
+      }
+    },
+    {
+      "profileSize": 12,
+      "taskId": "contact-card",
+      "requestedFields": [
+        "person.name.first",
+        "person.contact.email"
+      ],
+      "measurements": {
+        "fullProfileReference": {
+          "utf8Bytes": 580,
+          "deliveredFields": 12,
+          "extraFields": [
+            "person.name.last",
+            "person.name.middle",
+            "person.contact.phone",
+            "person.contact.home_address",
+            "person.contact.home_country",
+            "person.employment.employer",
+            "person.employment.job_title",
+            "person.employment.email",
+            "person.employment.phone",
+            "person.employment.address"
+          ],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.name.last\":\"Rowan\",\"person.contact.email\":\"alex.old@example.invalid\",\"person.name.middle\":\"Example\",\"person.contact.phone\":\"FICTIONAL-PHONE-0001\",\"person.contact.home_address\":\"17 Imaginary Lane, Example City\",\"person.contact.home_country\":\"Fictional Republic\",\"person.employment.employer\":\"Example Workshop (fictional)\",\"person.employment.job_title\":\"Prototype Designer\",\"person.employment.email\":\"alex.work@example.invalid\",\"person.employment.phone\":\"FICTIONAL-PHONE-0002\",\"person.employment.address\":\"8 Mock Street, Example City\"}}"
+        },
+        "scopedJson": {
+          "utf8Bytes": 89,
+          "deliveredFields": 2,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.contact.email\":\"alex.old@example.invalid\"}}"
+        },
+        "mio": {
+          "utf8Bytes": 89,
+          "deliveredFields": 2,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.contact.email\":\"alex.old@example.invalid\"}}"
+        }
+      }
+    },
+    {
+      "profileSize": 12,
+      "taskId": "email-only",
+      "requestedFields": [
+        "person.contact.email"
+      ],
+      "measurements": {
+        "fullProfileReference": {
+          "utf8Bytes": 580,
+          "deliveredFields": 12,
+          "extraFields": [
+            "person.name.first",
+            "person.name.last",
+            "person.name.middle",
+            "person.contact.phone",
+            "person.contact.home_address",
+            "person.contact.home_country",
+            "person.employment.employer",
+            "person.employment.job_title",
+            "person.employment.email",
+            "person.employment.phone",
+            "person.employment.address"
+          ],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.name.last\":\"Rowan\",\"person.contact.email\":\"alex.old@example.invalid\",\"person.name.middle\":\"Example\",\"person.contact.phone\":\"FICTIONAL-PHONE-0001\",\"person.contact.home_address\":\"17 Imaginary Lane, Example City\",\"person.contact.home_country\":\"Fictional Republic\",\"person.employment.employer\":\"Example Workshop (fictional)\",\"person.employment.job_title\":\"Prototype Designer\",\"person.employment.email\":\"alex.work@example.invalid\",\"person.employment.phone\":\"FICTIONAL-PHONE-0002\",\"person.employment.address\":\"8 Mock Street, Example City\"}}"
+        },
+        "scopedJson": {
+          "utf8Bytes": 62,
+          "deliveredFields": 1,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.contact.email\":\"alex.old@example.invalid\"}}"
+        },
+        "mio": {
+          "utf8Bytes": 62,
+          "deliveredFields": 1,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.contact.email\":\"alex.old@example.invalid\"}}"
+        }
+      }
+    },
+    {
+      "profileSize": 24,
+      "taskId": "document-name",
+      "requestedFields": [
+        "person.name.first",
+        "person.name.last"
+      ],
+      "measurements": {
+        "fullProfileReference": {
+          "utf8Bytes": 1124,
+          "deliveredFields": 24,
+          "extraFields": [
+            "person.contact.email",
+            "person.name.middle",
+            "person.contact.phone",
+            "person.contact.home_address",
+            "person.contact.home_country",
+            "person.employment.employer",
+            "person.employment.job_title",
+            "person.employment.email",
+            "person.employment.phone",
+            "person.employment.address",
+            "person.birth.date",
+            "person.birth.city",
+            "person.birth.state_province",
+            "person.birth.country",
+            "person.nationality",
+            "person.nationalities.other",
+            "person.civil.marital_status",
+            "person.contact.emergency_contact",
+            "passport.number",
+            "passport.type",
+            "passport.issue_date",
+            "passport.expiry_date"
+          ],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.name.last\":\"Rowan\",\"person.contact.email\":\"alex.old@example.invalid\",\"person.name.middle\":\"Example\",\"person.contact.phone\":\"FICTIONAL-PHONE-0001\",\"person.contact.home_address\":\"17 Imaginary Lane, Example City\",\"person.contact.home_country\":\"Fictional Republic\",\"person.employment.employer\":\"Example Workshop (fictional)\",\"person.employment.job_title\":\"Prototype Designer\",\"person.employment.email\":\"alex.work@example.invalid\",\"person.employment.phone\":\"FICTIONAL-PHONE-0002\",\"person.employment.address\":\"8 Mock Street, Example City\",\"person.birth.date\":\"1990-04-12\",\"person.birth.city\":\"Example City\",\"person.birth.state_province\":\"Example Province\",\"person.birth.country\":\"Fictional Republic\",\"person.nationality\":\"Fictional Republic\",\"person.nationalities.other\":\"None (fictional fixture)\",\"person.civil.marital_status\":\"Single (fictional fixture)\",\"person.contact.emergency_contact\":\"Taylor Example; FICTIONAL-PHONE-0003\",\"passport.number\":\"FICTIONAL-PASSPORT-0001\",\"passport.type\":\"Fictional specimen\",\"passport.issue_date\":\"2025-01-01\",\"passport.expiry_date\":\"2035-01-01\"}}"
+        },
+        "scopedJson": {
+          "utf8Bytes": 66,
+          "deliveredFields": 2,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.name.last\":\"Rowan\"}}"
+        },
+        "mio": {
+          "utf8Bytes": 66,
+          "deliveredFields": 2,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.name.last\":\"Rowan\"}}"
+        }
+      }
+    },
+    {
+      "profileSize": 24,
+      "taskId": "contact-card",
+      "requestedFields": [
+        "person.name.first",
+        "person.contact.email"
+      ],
+      "measurements": {
+        "fullProfileReference": {
+          "utf8Bytes": 1124,
+          "deliveredFields": 24,
+          "extraFields": [
+            "person.name.last",
+            "person.name.middle",
+            "person.contact.phone",
+            "person.contact.home_address",
+            "person.contact.home_country",
+            "person.employment.employer",
+            "person.employment.job_title",
+            "person.employment.email",
+            "person.employment.phone",
+            "person.employment.address",
+            "person.birth.date",
+            "person.birth.city",
+            "person.birth.state_province",
+            "person.birth.country",
+            "person.nationality",
+            "person.nationalities.other",
+            "person.civil.marital_status",
+            "person.contact.emergency_contact",
+            "passport.number",
+            "passport.type",
+            "passport.issue_date",
+            "passport.expiry_date"
+          ],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.name.last\":\"Rowan\",\"person.contact.email\":\"alex.old@example.invalid\",\"person.name.middle\":\"Example\",\"person.contact.phone\":\"FICTIONAL-PHONE-0001\",\"person.contact.home_address\":\"17 Imaginary Lane, Example City\",\"person.contact.home_country\":\"Fictional Republic\",\"person.employment.employer\":\"Example Workshop (fictional)\",\"person.employment.job_title\":\"Prototype Designer\",\"person.employment.email\":\"alex.work@example.invalid\",\"person.employment.phone\":\"FICTIONAL-PHONE-0002\",\"person.employment.address\":\"8 Mock Street, Example City\",\"person.birth.date\":\"1990-04-12\",\"person.birth.city\":\"Example City\",\"person.birth.state_province\":\"Example Province\",\"person.birth.country\":\"Fictional Republic\",\"person.nationality\":\"Fictional Republic\",\"person.nationalities.other\":\"None (fictional fixture)\",\"person.civil.marital_status\":\"Single (fictional fixture)\",\"person.contact.emergency_contact\":\"Taylor Example; FICTIONAL-PHONE-0003\",\"passport.number\":\"FICTIONAL-PASSPORT-0001\",\"passport.type\":\"Fictional specimen\",\"passport.issue_date\":\"2025-01-01\",\"passport.expiry_date\":\"2035-01-01\"}}"
+        },
+        "scopedJson": {
+          "utf8Bytes": 89,
+          "deliveredFields": 2,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.contact.email\":\"alex.old@example.invalid\"}}"
+        },
+        "mio": {
+          "utf8Bytes": 89,
+          "deliveredFields": 2,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.contact.email\":\"alex.old@example.invalid\"}}"
+        }
+      }
+    },
+    {
+      "profileSize": 24,
+      "taskId": "email-only",
+      "requestedFields": [
+        "person.contact.email"
+      ],
+      "measurements": {
+        "fullProfileReference": {
+          "utf8Bytes": 1124,
+          "deliveredFields": 24,
+          "extraFields": [
+            "person.name.first",
+            "person.name.last",
+            "person.name.middle",
+            "person.contact.phone",
+            "person.contact.home_address",
+            "person.contact.home_country",
+            "person.employment.employer",
+            "person.employment.job_title",
+            "person.employment.email",
+            "person.employment.phone",
+            "person.employment.address",
+            "person.birth.date",
+            "person.birth.city",
+            "person.birth.state_province",
+            "person.birth.country",
+            "person.nationality",
+            "person.nationalities.other",
+            "person.civil.marital_status",
+            "person.contact.emergency_contact",
+            "passport.number",
+            "passport.type",
+            "passport.issue_date",
+            "passport.expiry_date"
+          ],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.name.last\":\"Rowan\",\"person.contact.email\":\"alex.old@example.invalid\",\"person.name.middle\":\"Example\",\"person.contact.phone\":\"FICTIONAL-PHONE-0001\",\"person.contact.home_address\":\"17 Imaginary Lane, Example City\",\"person.contact.home_country\":\"Fictional Republic\",\"person.employment.employer\":\"Example Workshop (fictional)\",\"person.employment.job_title\":\"Prototype Designer\",\"person.employment.email\":\"alex.work@example.invalid\",\"person.employment.phone\":\"FICTIONAL-PHONE-0002\",\"person.employment.address\":\"8 Mock Street, Example City\",\"person.birth.date\":\"1990-04-12\",\"person.birth.city\":\"Example City\",\"person.birth.state_province\":\"Example Province\",\"person.birth.country\":\"Fictional Republic\",\"person.nationality\":\"Fictional Republic\",\"person.nationalities.other\":\"None (fictional fixture)\",\"person.civil.marital_status\":\"Single (fictional fixture)\",\"person.contact.emergency_contact\":\"Taylor Example; FICTIONAL-PHONE-0003\",\"passport.number\":\"FICTIONAL-PASSPORT-0001\",\"passport.type\":\"Fictional specimen\",\"passport.issue_date\":\"2025-01-01\",\"passport.expiry_date\":\"2035-01-01\"}}"
+        },
+        "scopedJson": {
+          "utf8Bytes": 62,
+          "deliveredFields": 1,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.contact.email\":\"alex.old@example.invalid\"}}"
+        },
+        "mio": {
+          "utf8Bytes": 62,
+          "deliveredFields": 1,
+          "extraFields": [],
+          "missingFields": [],
+          "serializedResponse": "{\"fields\":{\"person.contact.email\":\"alex.old@example.invalid\"}}"
+        }
+      }
+    }
+  ],
+  "totals": {
+    "fullProfileReference": {
+      "responses": 9,
+      "utf8Bytes": 5460,
+      "extraFields": 102,
+      "missingFields": 0
+    },
+    "scopedJson": {
+      "responses": 9,
+      "utf8Bytes": 651,
+      "extraFields": 0,
+      "missingFields": 0
+    },
+    "mio": {
+      "responses": 9,
+      "utf8Bytes": 651,
+      "extraFields": 0,
+      "missingFields": 0
+    }
+  },
+  "scopedPayloadReductionAgainstFullReferencePercent": 88.08,
+  "lifecycleCases": [
+    {
+      "implementation": "scopedJson",
+      "scenarioId": "authorized-subset",
+      "expected": "requested authorized fields only",
+      "expectsReadDenial": false,
+      "passed": true
+    },
+    {
+      "implementation": "scopedJson",
+      "scenarioId": "field-outside-grant",
+      "expected": "deny",
+      "expectsReadDenial": true,
+      "passed": true
+    },
+    {
+      "implementation": "scopedJson",
+      "scenarioId": "requester-mismatch",
+      "expected": "deny",
+      "expectsReadDenial": true,
+      "passed": true
+    },
+    {
+      "implementation": "scopedJson",
+      "scenarioId": "person-mismatch",
+      "expected": "deny",
+      "expectsReadDenial": true,
+      "passed": true
+    },
+    {
+      "implementation": "scopedJson",
+      "scenarioId": "unknown-grant",
+      "expected": "deny",
+      "expectsReadDenial": true,
+      "passed": true
+    },
+    {
+      "implementation": "scopedJson",
+      "scenarioId": "grant-expiry-boundary",
+      "expected": "deny at exact expiry",
+      "expectsReadDenial": true,
+      "passed": true
+    },
+    {
+      "implementation": "scopedJson",
+      "scenarioId": "revoked-grant",
+      "expected": "deny",
+      "expectsReadDenial": true,
+      "passed": true
+    },
+    {
+      "implementation": "scopedJson",
+      "scenarioId": "tentative-update",
+      "expected": "pending proposal leaves confirmed value unchanged",
+      "expectsReadDenial": false,
+      "passed": true
+    },
+    {
+      "implementation": "scopedJson",
+      "scenarioId": "confirmed-update-with-old-grant",
+      "expected": "deny; do not return outdated or unshared value",
+      "expectsReadDenial": true,
+      "passed": true
+    },
+    {
+      "implementation": "scopedJson",
+      "scenarioId": "confirmed-update-with-fresh-consent",
+      "expected": "return new confirmed value",
+      "expectsReadDenial": false,
+      "passed": true
+    },
+    {
+      "implementation": "scopedJson",
+      "scenarioId": "approval-failure-atomicity",
+      "expected": "failed audit rolls back claim, review and decision; old value usable",
+      "expectsReadDenial": false,
+      "passed": true
+    },
+    {
+      "implementation": "scopedJson",
+      "scenarioId": "sharing-failure-atomicity",
+      "expected": "failed audit rolls back grant, links, audit and handle; new value still withheld",
+      "expectsReadDenial": true,
+      "passed": true
+    },
+    {
+      "implementation": "scopedJson",
+      "scenarioId": "other-assistant-after-update",
+      "expected": "unaffected name grant remains usable",
+      "expectsReadDenial": false,
+      "passed": true
+    },
+    {
+      "implementation": "mio",
+      "scenarioId": "authorized-subset",
+      "expected": "requested authorized fields only",
+      "expectsReadDenial": false,
+      "passed": true
+    },
+    {
+      "implementation": "mio",
+      "scenarioId": "field-outside-grant",
+      "expected": "deny",
+      "expectsReadDenial": true,
+      "passed": true
+    },
+    {
+      "implementation": "mio",
+      "scenarioId": "requester-mismatch",
+      "expected": "deny",
+      "expectsReadDenial": true,
+      "passed": true
+    },
+    {
+      "implementation": "mio",
+      "scenarioId": "person-mismatch",
+      "expected": "deny",
+      "expectsReadDenial": true,
+      "passed": true
+    },
+    {
+      "implementation": "mio",
+      "scenarioId": "unknown-grant",
+      "expected": "deny",
+      "expectsReadDenial": true,
+      "passed": true
+    },
+    {
+      "implementation": "mio",
+      "scenarioId": "grant-expiry-boundary",
+      "expected": "deny at exact expiry",
+      "expectsReadDenial": true,
+      "passed": true
+    },
+    {
+      "implementation": "mio",
+      "scenarioId": "revoked-grant",
+      "expected": "deny",
+      "expectsReadDenial": true,
+      "passed": true
+    },
+    {
+      "implementation": "mio",
+      "scenarioId": "tentative-update",
+      "expected": "pending proposal leaves confirmed value unchanged",
+      "expectsReadDenial": false,
+      "passed": true
+    },
+    {
+      "implementation": "mio",
+      "scenarioId": "confirmed-update-with-old-grant",
+      "expected": "deny; do not return outdated or unshared value",
+      "expectsReadDenial": true,
+      "passed": true
+    },
+    {
+      "implementation": "mio",
+      "scenarioId": "confirmed-update-with-fresh-consent",
+      "expected": "return new confirmed value",
+      "expectsReadDenial": false,
+      "passed": true
+    },
+    {
+      "implementation": "mio",
+      "scenarioId": "approval-failure-atomicity",
+      "expected": "failed audit rolls back claim, review and decision; old value usable",
+      "expectsReadDenial": false,
+      "passed": true
+    },
+    {
+      "implementation": "mio",
+      "scenarioId": "sharing-failure-atomicity",
+      "expected": "failed audit rolls back grant, links, audit and handle; new value still withheld",
+      "expectsReadDenial": true,
+      "passed": true
+    },
+    {
+      "implementation": "mio",
+      "scenarioId": "other-assistant-after-update",
+      "expected": "unaffected name grant remains usable",
+      "expectsReadDenial": false,
+      "passed": true
+    }
+  ],
+  "lifecycleSummary": {
+    "scopedJson": {
+      "passed": 13,
+      "total": 13,
+      "expectedReadDenialsPassed": 8
+    },
+    "mio": {
+      "passed": 13,
+      "total": 13,
+      "expectedReadDenialsPassed": 8
+    }
+  },
+  "limits": {
+    "previouslyDisclosedContent": [
+      {
+        "implementation": "scopedJson",
+        "laterReadDenied": true,
+        "previousResponseStillContainsValue": true
+      },
+      {
+        "implementation": "mio",
+        "laterReadDenied": true,
+        "previousResponseStillContainsValue": true
+      }
+    ],
+    "fullProfileReferencePolicyChecks": "Not applicable: intentionally unscoped delivery reference, not an equal-policy competitor.",
+    "scopeEffect": "Payload reduction and fewer extra fields are effects of field selection. The scoped JSON baseline achieves the same result.",
+    "syntheticOnly": true,
+    "realModelCalls": 0,
+    "modelTokensMeasured": false,
+    "answerAccuracyMeasured": false,
+    "userTimeSavedMeasured": false,
+    "latencyMeasured": false,
+    "transportEnvelopesIncluded": false,
+    "persistentCrashRecoveryTested": false,
+    "concurrentProcessesTested": false,
+    "authenticationTested": false
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "mio": {
+      "command": "node",
+      "args": [
+        "/absolute/path/to/mio-personal-data/adapters/mcp/server.js",
+        "--demo"
+      ]
+    }
+  }
+}

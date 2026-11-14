@@ -1,0 +1,16 @@
+{
+  "name": "mio-plugins",
+  "owner": {
+    "name": "EUMINZ"
+  },
+  "plugins": [
+    {
+      "name": "mio-personal-data",
+      "source": "./",
+      "description": "A local personal data layer for AI with a fictional demo and explicit field grants."
+    }
+  ],
+  "metadata": {
+    "description": "Mio local personal-data tools for AI assistants."
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "schemaVersion": "mio.benchmark.fixture.v1",
+  "description": "Entirely fictional, fixed personal-profile fixture. Subsets are a size-sensitivity grid, not independent users or a representative population.",
+  "now": "2030-01-02T12:00:00.000Z",
+  "newEmail": "alex.new@example.invalid",
+  "fields": {
+    "person.name.first": "Alex",
+    "person.name.last": "Rowan",
+    "person.contact.email": "alex.old@example.invalid",
+    "person.name.middle": "Example",
+    "person.contact.phone": "FICTIONAL-PHONE-0001",
+    "person.contact.home_address": "17 Imaginary Lane, Example City",
+    "person.contact.home_country": "Fictional Republic",
+    "person.employment.employer": "Example Workshop (fictional)",
+    "person.employment.job_title": "Prototype Designer",
+    "person.employment.email": "alex.work@example.invalid",
+    "person.employment.phone": "FICTIONAL-PHONE-0002",
+    "person.employment.address": "8 Mock Street, Example City",
+    "person.birth.date": "1990-04-12",
+    "person.birth.city": "Example City",
+    "person.birth.state_province": "Example Province",
+    "person.birth.country": "Fictional Republic",
+    "person.nationality": "Fictional Republic",
+    "person.nationalities.other": "None (fictional fixture)",
+    "person.civil.marital_status": "Single (fictional fixture)",
+    "person.contact.emergency_contact": "Taylor Example; FICTIONAL-PHONE-0003",
+    "passport.number": "FICTIONAL-PASSPORT-0001",
+    "passport.type": "Fictional specimen",
+    "passport.issue_date": "2025-01-01",
+    "passport.expiry_date": "2035-01-01"
+  },
+  "profileSizes": [3, 12, 24],
+  "tasks": [
+    { "id": "document-name", "assistant": "document", "requestedFields": ["person.name.first", "person.name.last"] },
+    { "id": "contact-card", "assistant": "contact", "requestedFields": ["person.name.first", "person.contact.email"] },
+    { "id": "email-only", "assistant": "contact", "requestedFields": ["person.contact.email"] }
+  ]
+}
