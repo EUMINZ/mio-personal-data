@@ -93,6 +93,35 @@ The package does not bundle npm dependencies. Source revision pinning through a
 GitHub package spec does not promise frozen transitive npm dependencies; the
 checkout route with `npm ci` is the lockfile-based installation path.
 
+## Published GitHub installation
+
+After publication, npm downloaded `github:EUMINZ/mio-personal-data#v0.2.0-alpha`
+into a new temporary cache. `mio-admin --help` exited 0. An official SDK client
+then started `mio-mcp --demo` through the same npm package spec and verified all
+three tools, the fictional first name and email, refusal of `passport.number`,
+a `pending` email proposal, and the unchanged confirmed email.
+
+The tag route passed but a cached startup still waited for GitHub version
+resolution. A separate archive-URL installation passed online, while repeating
+that URL with `npm --offline` failed with `ENOTCACHED`. We do not recommend
+depending on either download/cache behavior during MCP startup.
+
+The recommended package route was then tested with a fresh dedicated install
+directory:
+
+```sh
+npm install --ignore-scripts --no-audit --no-fund --prefix "$MIO_TEST_INSTALL" \
+  github:EUMINZ/mio-personal-data#b908859434f153f5eef0b1f8f709e8dc0a82c4a1
+```
+
+The generated lockfile resolved to that exact source commit. The SDK client
+started `node "$MIO_TEST_INSTALL/node_modules/mio-personal-data/adapters/mcp/server.js" --demo`
+directly and repeated the same successful tool assertions. The observed
+183 ms covers one local functional check; it is not a performance benchmark.
+See the [sanitized results](../experiments/results/github-package-smoke.json).
+Neither check installed a GitHub-native Claude marketplace plugin or modified
+the operator's normal Codex/Claude configuration.
+
 ## Scope of evidence
 
 These checks establish packaging, local process startup, protocol connectivity,

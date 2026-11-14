@@ -1,0 +1,75 @@
+{
+  "checks": [
+    {
+      "generatedAt": "2026-11-14T11:20:14.032Z",
+      "source": "github:EUMINZ/mio-personal-data#v0.2.0-alpha",
+      "expectedSourceCommit": "b908859434f153f5eef0b1f8f709e8dc0a82c4a1",
+      "node": "v24.12.0",
+      "server": {
+        "name": "mio-personal-data",
+        "version": "0.2.0-alpha"
+      },
+      "prewarmedWith": "npm exec --yes --ignore-scripts --package=github:EUMINZ/mio-personal-data#v0.2.0-alpha -- mio-admin --help",
+      "tools": [
+        "mio_list_fields",
+        "mio_propose_update",
+        "mio_read"
+      ],
+      "read": {
+        "fields": {
+          "person.name.first": "Alex",
+          "person.contact.email": "alex.old@example.invalid"
+        }
+      },
+      "unauthorizedDenied": true,
+      "proposalStatus": "pending",
+      "after": {
+        "fields": {
+          "person.contact.email": "alex.old@example.invalid"
+        }
+      },
+      "success": true,
+      "scope": "Published GitHub tag downloaded by npm in a new temporary cache, then official SDK stdio client; not a native Claude marketplace download or model-quality test."
+    },
+    {
+      "generatedAt": "2026-11-14T11:23:06.822Z",
+      "source": "github:EUMINZ/mio-personal-data#b908859434f153f5eef0b1f8f709e8dc0a82c4a1",
+      "resolved": "git+ssh://git@github.com/EUMINZ/mio-personal-data.git#b908859434f153f5eef0b1f8f709e8dc0a82c4a1",
+      "launchMode": "Direct node entrypoint after npm install --ignore-scripts --prefix into a fresh dedicated directory",
+      "elapsedMs": 183,
+      "expectedSourceCommit": "b908859434f153f5eef0b1f8f709e8dc0a82c4a1",
+      "node": "v24.12.0",
+      "server": {
+        "name": "mio-personal-data",
+        "version": "0.2.0-alpha"
+      },
+      "installation": "npm install --ignore-scripts --prefix MIO_INSTALL github:EUMINZ/mio-personal-data#b908859434f153f5eef0b1f8f709e8dc0a82c4a1",
+      "tools": [
+        "mio_list_fields",
+        "mio_propose_update",
+        "mio_read"
+      ],
+      "read": {
+        "fields": {
+          "person.name.first": "Alex",
+          "person.contact.email": "alex.old@example.invalid"
+        }
+      },
+      "unauthorizedDenied": true,
+      "proposalStatus": "pending",
+      "after": {
+        "fields": {
+          "person.contact.email": "alex.old@example.invalid"
+        }
+      },
+      "success": true,
+      "scope": "Published GitHub commit installed by npm into a fresh dedicated directory, lockfile resolved source verified, then official SDK stdio client started node directly; not a native Claude marketplace download or model-quality test."
+    }
+  ],
+  "startupObservations": {
+    "cachedTagLauncher": "Succeeded, but still waited for GitHub version resolution. It is not the recommended client startup path.",
+    "archiveOfflineAttempt": "An online GitHub archive install succeeded; repeating that URL with npm --offline failed with ENOTCACHED. No offline-cache reliability claim is made.",
+    "recommended": "Install the pinned GitHub source into a dedicated directory, then start its local node entrypoint directly.",
+    "timingLimit": "The recorded elapsedMs is one functional check, not a latency benchmark."
+  }
+}

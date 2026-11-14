@@ -19,6 +19,7 @@ results to its model provider under that client's settings.
 | Route | What was checked for this release | Limit |
 | --- | --- | --- |
 | MCP server | Automated official-SDK stdio handshake and tool calls | Protocol checks do not measure model answer quality |
+| Published GitHub package | Downloaded `v0.2.0-alpha`; official SDK verified reads, denied access, a pending proposal, and unchanged confirmed data | npm launch can wait on GitHub; prefer the installed local entrypoint below |
 | Claude Code plugin | Manifest/marketplace validation and local marketplace install; `claude mcp list` reported Connected on Claude Code 2.0.76 | Local copy had dependencies installed; a clean GitHub marketplace install was not checked |
 | Codex MCP session | Codex CLI 0.160.1 with `gpt-6-astra` / low: 5 real MCP calls verified permitted reads, a denied field, and an update remaining pending | One fictional smoke session, not a comparative model benchmark; [trace summary](../experiments/results/codex-mcp-smoke.json) |
 | Other stdio MCP clients | Generic JSON configuration provided | Client-specific compatibility not checked |
@@ -82,28 +83,44 @@ offer an HTTP/SSE endpoint, OAuth service, or cloud database synchronization.
 
 ## GitHub package route
 
-After the `v0.2.0-alpha` tag is available, npm can fetch the pinned GitHub package
-without a separate clone. The first launch downloads the package and its
-dependencies into npm's cache; later launches normally reuse that cache.
-`--ignore-scripts` disables npm lifecycle scripts. Node.js and npm still need to
-be installed on the machine that runs the client.
+The published `v0.2.0-alpha` source can be installed without a separate clone.
+Download it once into a dedicated directory, then register the installed local
+entrypoint. This avoids GitHub version resolution or package downloads during
+MCP startup. The following source SHA is the commit behind `v0.2.0-alpha`.
+`--ignore-scripts` disables npm lifecycle scripts. Node.js and npm still need
+to be installed on the machine that runs the client.
 
 ```sh
-codex mcp add mio -- npm exec --yes --ignore-scripts --package=github:EUMINZ/mio-personal-data#v0.2.0-alpha -- mio-mcp --demo
+MIO_INSTALL="$HOME/.local/share/mio-personal-data-v0.2.0-alpha"
+MIO_SOURCE="github:EUMINZ/mio-personal-data#b908859434f153f5eef0b1f8f709e8dc0a82c4a1"
+npm install --ignore-scripts --prefix "$MIO_INSTALL" "$MIO_SOURCE"
+node "$MIO_INSTALL/node_modules/mio-personal-data/adapters/mcp/admin.js" --help
 ```
+
+For Codex:
 
 ```sh
-claude mcp add --scope user --transport stdio mio -- npm exec --yes --ignore-scripts --package=github:EUMINZ/mio-personal-data#v0.2.0-alpha -- mio-mcp --demo
+codex mcp add mio -- node "$MIO_INSTALL/node_modules/mio-personal-data/adapters/mcp/server.js" --demo
 ```
 
-Choose this **or** the checkout route for a server named `mio`. To use an exact
-revision, replace `v0.2.0-alpha` after `#` with the full reviewed commit SHA.
-This pins the source; npm may still resolve transitive dependencies at install
-time. Use the checkout plus `npm ci` route for the project's full lockfile.
-The commands register a launcher; successful registration alone does not prove
-the server connected. Verify `/mcp` and a read call after the first download.
-The local package/bin path is tested separately from downloading the published
-GitHub tag; consult [validation](VALIDATION.md) for the completed checks.
+For Claude Code:
+
+```sh
+claude mcp add --scope user --transport stdio mio -- node "$MIO_INSTALL/node_modules/mio-personal-data/adapters/mcp/server.js" --demo
+```
+
+Choose this **or** the checkout route for a server named `mio`. Source pinning
+does not freeze transitive dependencies during installation. The installed tree
+and its generated lockfile retain that installation's resolution; use checkout
+plus `npm ci` to use the project's full lockfile instead.
+Successful registration alone does not prove the server connected. Verify
+`/mcp` and a read call. Uninstall by removing the client's MCP registration first;
+the dedicated installation directory can then be removed separately.
+
+An `npm exec --package=github:...#v0.2.0-alpha` launcher also passed the published
+package check, but a cached launch still waited for GitHub version resolution.
+Adding `--offline` is not a reliable remedy for every Git/npm source form.
+The installed local command above avoids that startup dependency.
 The [integration test record](../integrations/VALIDATION.md) separates local
 packaging, client health checks, and actual model-session evidence.
 

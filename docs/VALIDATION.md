@@ -21,6 +21,8 @@ A separate [real Codex smoke record](../experiments/results/codex-mcp-smoke.json
 
 See [packaging validation](../integrations/VALIDATION.md) for npm-bin and local Claude Code plugin checks. Remote GitHub installation and native client checks are reported separately from protocol tests.
 
+The published GitHub tag also passed a fresh-cache package download and actual stdio tool assertions. A separate pinned-commit installation into a dedicated directory passed the same assertions through its local Node entrypoint, which is now the recommended package launch route. See [published-package evidence](../experiments/results/github-package-smoke.json) for both results and the failed offline archive-cache attempt that informed the installation guidance.
+
 The [GitHub Actions check](https://github.com/EUMINZ/mio-personal-data/actions/workflows/check.yml) runs the same command on Ubuntu with Node.js 24. Consult the run for the commit you use; local success does not establish a remote run's result.
 
 ## Earlier core-only release
