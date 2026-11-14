@@ -13,6 +13,16 @@ The new 40-session paired Codex evaluation is documented in its
 [protocol](../experiments/accuracy-cost/README.md) and
 [research report](../docs/research/accuracy-cost-optimization.zh-CN.md).
 
+After publishing `v0.3.0-alpha`, npm installed its exact commit
+`f67ac98446696ea6341dbcb25e8bc23363ce13cd` into a fresh dedicated directory with
+`--ignore-scripts`. The lockfile resolved to that commit. An official SDK client
+started the installed `.bin/mio-mcp` symlink directly with Node and verified the
+two-tool list, key discovery, a mixed allowed/unavailable batch, a pending
+proposal, and the original confirmed value after that proposal. The
+[sanitized package record](../experiments/results/github-package-0.3-smoke.json)
+contains the results. No normal client configuration was changed, and this is
+not a native Claude marketplace-download check.
+
 ## Historical 0.2.0-alpha record
 
 Recorded on 2026-11-14. This records observed integration behavior, not model

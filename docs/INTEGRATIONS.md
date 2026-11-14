@@ -23,7 +23,7 @@ server command to retain the three-tool interface from `0.2.0-alpha`.
 | Route | Evidence and version | Limit |
 | --- | --- | --- |
 | MCP server | `0.3.0-alpha`: 110 automated tests passed, including official-SDK stdio calls and compact/legacy behavior | Automated checks do not measure model answer quality |
-| Published GitHub package | Historical `v0.2.0-alpha` download: official SDK verified reads, denial, pending proposals, and unchanged confirmed data | This does not verify the new release's remote installation; npm startup can wait on GitHub |
+| Published GitHub package | `v0.3.0-alpha` source installed into a new directory; installed bin passed SDK discovery, partial reads, pending proposals and unchanged confirmed data | Tested the exact release commit; native Claude marketplace download is separate. [Record](../experiments/results/github-package-0.3-smoke.json) |
 | Claude Code plugin | Historical `0.2.0-alpha`: manifest/marketplace validation and local install; `claude mcp list` reported Connected on Claude Code 2.0.76 | Dependencies were installed locally; a clean GitHub marketplace install was not checked |
 | Codex MCP session | Historical `0.2.0-alpha`: Codex CLI 0.160.1 with `gpt-6-astra` / low made 5 real MCP calls | One fictional integration smoke session; [trace summary](../experiments/results/codex-mcp-smoke.json) |
 | Accuracy/cost comparison | 40 completed sessions: legacy 12/20 correct tasks, compact 20/20; identical model, prompts and host policy | Total input fell 7.34% but uncached input rose 3.50%; no general accuracy or per-request money-saving claim. [Study](research/accuracy-cost-optimization.zh-CN.md) |

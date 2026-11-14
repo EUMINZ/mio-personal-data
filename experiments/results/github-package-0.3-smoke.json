@@ -1,0 +1,42 @@
+{
+  "generatedAt": "2026-11-14T11:47:25.570Z",
+  "sourceCommit": "f67ac98446696ea6341dbcb25e8bc23363ce13cd",
+  "source": "github:EUMINZ/mio-personal-data#f67ac98446696ea6341dbcb25e8bc23363ce13cd",
+  "resolved": "git+ssh://git@github.com/EUMINZ/mio-personal-data.git#f67ac98446696ea6341dbcb25e8bc23363ce13cd",
+  "node": "v24.12.0",
+  "server": {
+    "name": "mio-personal-data",
+    "version": "0.3.0-alpha"
+  },
+  "method": "npm install --ignore-scripts into a new dedicated directory; direct node launch of the installed .bin/mio-mcp symlink with --demo",
+  "tools": [
+    "mio_context",
+    "mio_propose_update"
+  ],
+  "context": {
+    "fields": {
+      "person.name.first": "Alex",
+      "person.contact.email": "alex.old@example.invalid"
+    },
+    "unavailable": [
+      "passport.number"
+    ],
+    "checkedAt": "2026-11-14T11:47:25.563Z"
+  },
+  "discovery": {
+    "fields": [
+      "person.contact.email",
+      "person.name.first"
+    ]
+  },
+  "proposalStatus": "pending",
+  "after": {
+    "fields": {
+      "person.contact.email": "alex.old@example.invalid"
+    },
+    "unavailable": [],
+    "checkedAt": "2026-11-14T11:47:25.569Z"
+  },
+  "success": true,
+  "limitation": "Official SDK packaging/protocol check with fictional values; not a native Claude marketplace download or additional model evaluation."
+}
