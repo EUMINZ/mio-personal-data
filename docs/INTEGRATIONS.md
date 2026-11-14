@@ -11,17 +11,22 @@ results to its model provider under that client's settings.
 
 ## Requirements and verification status
 
+Version `0.3.0-alpha` defaults to two tools: `mio_context` for discovery or batched
+reads, and `mio_propose_update` for pending proposals. Add `--legacy-tools` to the
+server command to retain the three-tool interface from `0.2.0-alpha`.
+
 - Node.js 24 or later, npm, and Git for a GitHub install.
 - A client that can start a local stdio MCP process.
 - Network access for the initial GitHub/npm installation. Mio's server itself
   does not download software or call a model when a tool is invoked.
 
-| Route | What was checked for this release | Limit |
+| Route | Evidence and version | Limit |
 | --- | --- | --- |
-| MCP server | Automated official-SDK stdio handshake and tool calls | Protocol checks do not measure model answer quality |
-| Published GitHub package | Downloaded `v0.2.0-alpha`; official SDK verified reads, denied access, a pending proposal, and unchanged confirmed data | npm launch can wait on GitHub; prefer the installed local entrypoint below |
-| Claude Code plugin | Manifest/marketplace validation and local marketplace install; `claude mcp list` reported Connected on Claude Code 2.0.76 | Local copy had dependencies installed; a clean GitHub marketplace install was not checked |
-| Codex MCP session | Codex CLI 0.160.1 with `gpt-6-astra` / low: 5 real MCP calls verified permitted reads, a denied field, and an update remaining pending | One fictional smoke session, not a comparative model benchmark; [trace summary](../experiments/results/codex-mcp-smoke.json) |
+| MCP server | `0.3.0-alpha`: 110 automated tests passed, including official-SDK stdio calls and compact/legacy behavior | Automated checks do not measure model answer quality |
+| Published GitHub package | Historical `v0.2.0-alpha` download: official SDK verified reads, denial, pending proposals, and unchanged confirmed data | This does not verify the new release's remote installation; npm startup can wait on GitHub |
+| Claude Code plugin | Historical `0.2.0-alpha`: manifest/marketplace validation and local install; `claude mcp list` reported Connected on Claude Code 2.0.76 | Dependencies were installed locally; a clean GitHub marketplace install was not checked |
+| Codex MCP session | Historical `0.2.0-alpha`: Codex CLI 0.160.1 with `gpt-6-astra` / low made 5 real MCP calls | One fictional integration smoke session; [trace summary](../experiments/results/codex-mcp-smoke.json) |
+| Accuracy/cost comparison | 40 completed sessions: legacy 12/20 correct tasks, compact 20/20; identical model, prompts and host policy | Total input fell 7.34% but uncached input rose 3.50%; no general accuracy or per-request money-saving claim. [Study](research/accuracy-cost-optimization.zh-CN.md) |
 | Other stdio MCP clients | Generic JSON configuration provided | Client-specific compatibility not checked |
 | Browser-only/cloud assistants | No hosted endpoint provided | A GitHub URL cannot reach a database on your laptop by itself |
 
@@ -33,7 +38,7 @@ and a Node.js 24 installation available to the client process.
 ```sh
 git clone https://github.com/EUMINZ/mio-personal-data.git
 cd mio-personal-data
-git checkout --detach v0.2.0-alpha
+git checkout --detach v0.3.0-alpha
 npm ci --ignore-scripts
 npm run check
 MIO_REPO="$(pwd -P)"
@@ -52,8 +57,8 @@ codex mcp list
 
 Start a new Codex chat, inspect `/mcp`, then ask:
 
-> Use Mio to list the fields available to this session, then read my first name
-> and email. State that these are fictional demo values.
+> Use Mio to read `person.name.first` and `person.contact.email`. If either is
+> unavailable, say so without guessing. State that these are fictional demo values.
 
 `codex mcp add` saves a user-level connection. If you prefer manual configuration,
 merge [the TOML example](../integrations/codex.example.toml) into the appropriate
@@ -83,16 +88,16 @@ offer an HTTP/SSE endpoint, OAuth service, or cloud database synchronization.
 
 ## GitHub package route
 
-The published `v0.2.0-alpha` source can be installed without a separate clone.
+The `v0.3.0-alpha` source can be installed without a separate clone.
 Download it once into a dedicated directory, then register the installed local
 entrypoint. This avoids GitHub version resolution or package downloads during
-MCP startup. The following source SHA is the commit behind `v0.2.0-alpha`.
-`--ignore-scripts` disables npm lifecycle scripts. Node.js and npm still need
+MCP startup. Replace the tag with a reviewed full commit SHA for an immutable
+source pin. `--ignore-scripts` disables npm lifecycle scripts. Node.js and npm still need
 to be installed on the machine that runs the client.
 
 ```sh
-MIO_INSTALL="$HOME/.local/share/mio-personal-data-v0.2.0-alpha"
-MIO_SOURCE="github:EUMINZ/mio-personal-data#b908859434f153f5eef0b1f8f709e8dc0a82c4a1"
+MIO_INSTALL="$HOME/.local/share/mio-personal-data-v0.3.0-alpha"
+MIO_SOURCE="github:EUMINZ/mio-personal-data#v0.3.0-alpha"
 npm install --ignore-scripts --prefix "$MIO_INSTALL" "$MIO_SOURCE"
 node "$MIO_INSTALL/node_modules/mio-personal-data/adapters/mcp/admin.js" --help
 ```
@@ -117,8 +122,8 @@ Successful registration alone does not prove the server connected. Verify
 `/mcp` and a read call. Uninstall by removing the client's MCP registration first;
 the dedicated installation directory can then be removed separately.
 
-An `npm exec --package=github:...#v0.2.0-alpha` launcher also passed the published
-package check, but a cached launch still waited for GitHub version resolution.
+In the historical `0.2.0-alpha` check, an `npm exec --package=github:...#v0.2.0-alpha`
+launcher worked, but a cached launch still waited for GitHub version resolution.
 Adding `--offline` is not a reliable remedy for every Git/npm source form.
 The installed local command above avoids that startup dependency.
 The [integration test record](../integrations/VALIDATION.md) separates local
@@ -147,7 +152,9 @@ Anthropic directory listing. Do not enable both this plugin and the standalone
 `mio` MCP connection in the same session.
 
 The plugin starts the fictional in-memory demo unless the launching environment
-sets `MIO_CONFIG` to an absolute configuration-file path. The current Claude Code
+sets `MIO_CONFIG` to an absolute configuration-file path. Its launcher uses the
+server's default compact toolset. Use standalone MCP registration with
+`--legacy-tools` if you need the old tool names. The current Claude Code
 documentation describes automatic dependency installation for copied plugins
 with a supported lockfile. Older clients may leave dependencies missing. In that
 case the Mio launcher exits with an explicit `npm ci --ignore-scripts --prefix
@@ -193,16 +200,41 @@ Connecting two clients using the same config grants both the same capability.
 It does not create distinct client identities. Different trust scopes require
 separate requester/grant bindings provisioned by a trusted host.
 
-The MCP tools are intentionally small:
+The default MCP interface has two tools:
 
 | Tool | Input | Effect |
 | --- | --- | --- |
-| `mio_list_fields` | `{}` | Lists currently readable field keys |
-| `mio_read` | `{"fields":["person.name.first","person.contact.email"]}` | Returns only requested, currently granted fields |
+| `mio_context` | `{}` | Discovers readable keys as `{"fields":[...]}`; no values |
+| `mio_context` | `{"fields":["person.name.first","person.contact.email"]}` | Batches 1–50 requested keys; returns available values, an `unavailable` key list, and `checkedAt` |
 | `mio_propose_update` | `{"field":"person.contact.email","value":"alex.new@example.invalid","rationale":"The user proposed a new contact address."}` | Creates a pending review; does not replace the confirmed value |
 
 The demo permits first name and email. A stored passport number is deliberately
-outside its grant. A request for `passport.number` must not return it.
+outside its grant. For example, requesting first name and `passport.number`
+returns this shape (the timestamp is illustrative):
+
+```json
+{"fields":{"person.name.first":"Alex"},"unavailable":["passport.number"],"checkedAt":"2026-11-14T12:00:00.000Z"}
+```
+
+Missing, ungranted, expired, ambiguous, and unshared updated fields all use the
+same `unavailable` representation. It does not reveal the reason or prove that a
+stored value exists. Ask the user or use `null` for unavailable answers; do not
+fill gaps from stale hints. An invalid overall grant or a database/audit failure
+fails the whole call with a generic error and no partial values.
+
+Reads are not cached: every call checks the current database and grant.
+`checkedAt` records the server's permission/read-check time, not when the fact
+was verified in the real world. Neither this timestamp nor a confirmed claim
+guarantees current external truth.
+
+For existing clients that rely on the old names, append `--legacy-tools` to
+`server.js --demo` or `server.js --config ...`. This exposes `mio_list_fields`,
+`mio_read`, and `mio_propose_update`; legacy `mio_read` rejects the entire request
+when any requested field is unavailable. The compact interface changes batch
+failure handling and tool discovery, not the underlying grant policy. See the
+[experiment protocol](../experiments/accuracy-cost/README.md) and
+[accuracy/cost study](research/accuracy-cost-optimization.zh-CN.md) for the
+comparison and its evidence status.
 
 For a pending update, the operator uses a separate terminal:
 
@@ -232,7 +264,7 @@ node "$MIO_REPO/adapters/mcp/admin.js" init-profile /absolute/new-mio-profile /a
 
 This creates a new database and bound config; it does not merge with or overwrite
 an existing one. Register the resulting absolute `config.json` using `--config`.
-This initial release accepts the core's predefined identity/contact/employment
+This Alpha accepts the core's predefined identity/contact/employment
 field keys and string values. It is not an automatic importer for arbitrary
 preferences, memories, or relationships. The source JSON and database both
 contain plaintext. Remove or secure the source copy according to your own data

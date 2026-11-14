@@ -1,0 +1,4104 @@
+{
+  "schemaVersion": "mio.accuracy-cost-result.v1",
+  "generatedAt": "2026-11-14T11:43:24.270Z",
+  "planSha256": "f58dcb0228ee20ca50d043a207d82b91af9ba9269405e28033476a7e32f76a79",
+  "model": "gpt-6-astra",
+  "clientVersion": "codex-cli 0.160.1",
+  "reasoningEffort": "low",
+  "cancelled": false,
+  "plannedAttempts": 40,
+  "sourceHashesUnchanged": true,
+  "summary": {
+    "arms": {
+      "legacy": {
+        "attempts": 20,
+        "successful": 12,
+        "taskAccuracy": 0.6,
+        "readableCorrect": 19,
+        "readableTotal": 28,
+        "unavailableCorrect": 14,
+        "unavailableTotal": 14,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 24,
+        "usageComplete": true,
+        "tokenTotals": {
+          "input": 802774,
+          "cachedInput": 602624,
+          "uncachedInput": 200150,
+          "output": 2328
+        },
+        "tokensPerSuccessfulTask": {
+          "input": 66897.83333333333,
+          "cachedInput": 50218.666666666664,
+          "uncachedInput": 16679.166666666668,
+          "output": 194
+        },
+        "elapsedMsTotal": 463380
+      },
+      "compact": {
+        "attempts": 20,
+        "successful": 20,
+        "taskAccuracy": 1,
+        "readableCorrect": 28,
+        "readableTotal": 28,
+        "unavailableCorrect": 14,
+        "unavailableTotal": 14,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 20,
+        "usageComplete": true,
+        "tokenTotals": {
+          "input": 743864,
+          "cachedInput": 536704,
+          "uncachedInput": 207160,
+          "output": 2218
+        },
+        "tokensPerSuccessfulTask": {
+          "input": 37193.2,
+          "cachedInput": 26835.2,
+          "uncachedInput": 10358,
+          "output": 110.9
+        },
+        "elapsedMsTotal": 448930
+      }
+    },
+    "resourceReduction": {
+      "toolCalls": 0.16666666666666666,
+      "input": 0.07338304429391086,
+      "cachedInput": 0.10938827527612574,
+      "uncachedInput": -0.03502373220084936,
+      "output": 0.04725085910652921
+    },
+    "cases": [
+      {
+        "caseId": "mixed-ungranted",
+        "legacy": {
+          "attempts": 2,
+          "successful": 1,
+          "taskAccuracy": 0.5,
+          "readableCorrect": 2,
+          "readableTotal": 4,
+          "unavailableCorrect": 2,
+          "unavailableTotal": 2,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 4,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 97985,
+            "cachedInput": 72192,
+            "uncachedInput": 25793,
+            "output": 323
+          },
+          "tokensPerSuccessfulTask": {
+            "input": 97985,
+            "cachedInput": 72192,
+            "uncachedInput": 25793,
+            "output": 323
+          },
+          "elapsedMsTotal": 51607
+        },
+        "compact": {
+          "attempts": 2,
+          "successful": 2,
+          "taskAccuracy": 1,
+          "readableCorrect": 4,
+          "readableTotal": 4,
+          "unavailableCorrect": 2,
+          "unavailableTotal": 2,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 72818,
+            "cachedInput": 47488,
+            "uncachedInput": 25330,
+            "output": 252
+          },
+          "tokensPerSuccessfulTask": {
+            "input": 36409,
+            "cachedInput": 23744,
+            "uncachedInput": 12665,
+            "output": 126
+          },
+          "elapsedMsTotal": 45562
+        }
+      },
+      {
+        "caseId": "conflict-timestamp",
+        "legacy": {
+          "attempts": 2,
+          "successful": 0,
+          "taskAccuracy": 0,
+          "readableCorrect": 0,
+          "readableTotal": 2,
+          "unavailableCorrect": 2,
+          "unavailableTotal": 2,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 73144,
+            "cachedInput": 47616,
+            "uncachedInput": 25528,
+            "output": 216
+          },
+          "tokensPerSuccessfulTask": null,
+          "elapsedMsTotal": 40766
+        },
+        "compact": {
+          "attempts": 2,
+          "successful": 2,
+          "taskAccuracy": 1,
+          "readableCorrect": 2,
+          "readableTotal": 2,
+          "unavailableCorrect": 2,
+          "unavailableTotal": 2,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 73530,
+            "cachedInput": 47872,
+            "uncachedInput": 25658,
+            "output": 219
+          },
+          "tokensPerSuccessfulTask": {
+            "input": 36765,
+            "cachedInput": 23936,
+            "uncachedInput": 12829,
+            "output": 109.5
+          },
+          "elapsedMsTotal": 48088
+        }
+      },
+      {
+        "caseId": "simple-one",
+        "legacy": {
+          "attempts": 2,
+          "successful": 2,
+          "taskAccuracy": 1,
+          "readableCorrect": 2,
+          "readableTotal": 2,
+          "unavailableCorrect": 0,
+          "unavailableTotal": 0,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 73668,
+            "cachedInput": 59264,
+            "uncachedInput": 14404,
+            "output": 189
+          },
+          "tokensPerSuccessfulTask": {
+            "input": 36834,
+            "cachedInput": 29632,
+            "uncachedInput": 7202,
+            "output": 94.5
+          },
+          "elapsedMsTotal": 43663
+        },
+        "compact": {
+          "attempts": 2,
+          "successful": 2,
+          "taskAccuracy": 1,
+          "readableCorrect": 2,
+          "readableTotal": 2,
+          "unavailableCorrect": 0,
+          "unavailableTotal": 0,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 73714,
+            "cachedInput": 59136,
+            "uncachedInput": 14578,
+            "output": 191
+          },
+          "tokensPerSuccessfulTask": {
+            "input": 36857,
+            "cachedInput": 29568,
+            "uncachedInput": 7289,
+            "output": 95.5
+          },
+          "elapsedMsTotal": 49618
+        }
+      },
+      {
+        "caseId": "revoked-grant",
+        "legacy": {
+          "attempts": 2,
+          "successful": 2,
+          "taskAccuracy": 1,
+          "readableCorrect": 0,
+          "readableTotal": 0,
+          "unavailableCorrect": 4,
+          "unavailableTotal": 4,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 73772,
+            "cachedInput": 48128,
+            "uncachedInput": 25644,
+            "output": 222
+          },
+          "tokensPerSuccessfulTask": {
+            "input": 36886,
+            "cachedInput": 24064,
+            "uncachedInput": 12822,
+            "output": 111
+          },
+          "elapsedMsTotal": 45502
+        },
+        "compact": {
+          "attempts": 2,
+          "successful": 2,
+          "taskAccuracy": 1,
+          "readableCorrect": 0,
+          "readableTotal": 0,
+          "unavailableCorrect": 4,
+          "unavailableTotal": 4,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 80064,
+            "cachedInput": 62336,
+            "uncachedInput": 17728,
+            "output": 196
+          },
+          "tokensPerSuccessfulTask": {
+            "input": 40032,
+            "cachedInput": 31168,
+            "uncachedInput": 8864,
+            "output": 98
+          },
+          "elapsedMsTotal": 45883
+        }
+      },
+      {
+        "caseId": "new-confirmed-unshared",
+        "legacy": {
+          "attempts": 2,
+          "successful": 1,
+          "taskAccuracy": 0.5,
+          "readableCorrect": 1,
+          "readableTotal": 2,
+          "unavailableCorrect": 2,
+          "unavailableTotal": 2,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 4,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 109251,
+            "cachedInput": 76160,
+            "uncachedInput": 33091,
+            "output": 267
+          },
+          "tokensPerSuccessfulTask": {
+            "input": 109251,
+            "cachedInput": 76160,
+            "uncachedInput": 33091,
+            "output": 267
+          },
+          "elapsedMsTotal": 47601
+        },
+        "compact": {
+          "attempts": 2,
+          "successful": 2,
+          "taskAccuracy": 1,
+          "readableCorrect": 2,
+          "readableTotal": 2,
+          "unavailableCorrect": 2,
+          "unavailableTotal": 2,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 72918,
+            "cachedInput": 34944,
+            "uncachedInput": 37974,
+            "output": 218
+          },
+          "tokensPerSuccessfulTask": {
+            "input": 36459,
+            "cachedInput": 17472,
+            "uncachedInput": 18987,
+            "output": 109
+          },
+          "elapsedMsTotal": 46085
+        }
+      },
+      {
+        "caseId": "pending-proposal",
+        "legacy": {
+          "attempts": 2,
+          "successful": 2,
+          "taskAccuracy": 1,
+          "readableCorrect": 4,
+          "readableTotal": 4,
+          "unavailableCorrect": 0,
+          "unavailableTotal": 0,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 73734,
+            "cachedInput": 59136,
+            "uncachedInput": 14598,
+            "output": 217
+          },
+          "tokensPerSuccessfulTask": {
+            "input": 36867,
+            "cachedInput": 29568,
+            "uncachedInput": 7299,
+            "output": 108.5
+          },
+          "elapsedMsTotal": 43264
+        },
+        "compact": {
+          "attempts": 2,
+          "successful": 2,
+          "taskAccuracy": 1,
+          "readableCorrect": 4,
+          "readableTotal": 4,
+          "unavailableCorrect": 0,
+          "unavailableTotal": 0,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 73248,
+            "cachedInput": 36096,
+            "uncachedInput": 37152,
+            "output": 219
+          },
+          "tokensPerSuccessfulTask": {
+            "input": 36624,
+            "cachedInput": 18048,
+            "uncachedInput": 18576,
+            "output": 109.5
+          },
+          "elapsedMsTotal": 41240
+        }
+      },
+      {
+        "caseId": "missing",
+        "legacy": {
+          "attempts": 2,
+          "successful": 0,
+          "taskAccuracy": 0,
+          "readableCorrect": 0,
+          "readableTotal": 2,
+          "unavailableCorrect": 2,
+          "unavailableTotal": 2,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 77070,
+            "cachedInput": 72064,
+            "uncachedInput": 5006,
+            "output": 206
+          },
+          "tokensPerSuccessfulTask": null,
+          "elapsedMsTotal": 42670
+        },
+        "compact": {
+          "attempts": 2,
+          "successful": 2,
+          "taskAccuracy": 1,
+          "readableCorrect": 2,
+          "readableTotal": 2,
+          "unavailableCorrect": 2,
+          "unavailableTotal": 2,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 73514,
+            "cachedInput": 59008,
+            "uncachedInput": 14506,
+            "output": 217
+          },
+          "tokensPerSuccessfulTask": {
+            "input": 36757,
+            "cachedInput": 29504,
+            "uncachedInput": 7253,
+            "output": 108.5
+          },
+          "elapsedMsTotal": 39314
+        }
+      },
+      {
+        "caseId": "simple-three",
+        "legacy": {
+          "attempts": 2,
+          "successful": 2,
+          "taskAccuracy": 1,
+          "readableCorrect": 6,
+          "readableTotal": 6,
+          "unavailableCorrect": 0,
+          "unavailableTotal": 0,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 74340,
+            "cachedInput": 48384,
+            "uncachedInput": 25956,
+            "output": 249
+          },
+          "tokensPerSuccessfulTask": {
+            "input": 37170,
+            "cachedInput": 24192,
+            "uncachedInput": 12978,
+            "output": 124.5
+          },
+          "elapsedMsTotal": 39338
+        },
+        "compact": {
+          "attempts": 2,
+          "successful": 2,
+          "taskAccuracy": 1,
+          "readableCorrect": 6,
+          "readableTotal": 6,
+          "unavailableCorrect": 0,
+          "unavailableTotal": 0,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 74430,
+            "cachedInput": 59392,
+            "uncachedInput": 15038,
+            "output": 267
+          },
+          "tokensPerSuccessfulTask": {
+            "input": 37215,
+            "cachedInput": 29696,
+            "uncachedInput": 7519,
+            "output": 133.5
+          },
+          "elapsedMsTotal": 45251
+        }
+      },
+      {
+        "caseId": "new-confirmed-shared",
+        "legacy": {
+          "attempts": 2,
+          "successful": 2,
+          "taskAccuracy": 1,
+          "readableCorrect": 4,
+          "readableTotal": 4,
+          "unavailableCorrect": 0,
+          "unavailableTotal": 0,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 76582,
+            "cachedInput": 60672,
+            "uncachedInput": 15910,
+            "output": 217
+          },
+          "tokensPerSuccessfulTask": {
+            "input": 38291,
+            "cachedInput": 30336,
+            "uncachedInput": 7955,
+            "output": 108.5
+          },
+          "elapsedMsTotal": 60179
+        },
+        "compact": {
+          "attempts": 2,
+          "successful": 2,
+          "taskAccuracy": 1,
+          "readableCorrect": 4,
+          "readableTotal": 4,
+          "unavailableCorrect": 0,
+          "unavailableTotal": 0,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 76638,
+            "cachedInput": 71680,
+            "uncachedInput": 4958,
+            "output": 218
+          },
+          "tokensPerSuccessfulTask": {
+            "input": 38319,
+            "cachedInput": 35840,
+            "uncachedInput": 2479,
+            "output": 109
+          },
+          "elapsedMsTotal": 45898
+        }
+      },
+      {
+        "caseId": "expired-claim",
+        "legacy": {
+          "attempts": 2,
+          "successful": 0,
+          "taskAccuracy": 0,
+          "readableCorrect": 0,
+          "readableTotal": 2,
+          "unavailableCorrect": 2,
+          "unavailableTotal": 2,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 73228,
+            "cachedInput": 59008,
+            "uncachedInput": 14220,
+            "output": 222
+          },
+          "tokensPerSuccessfulTask": null,
+          "elapsedMsTotal": 48790
+        },
+        "compact": {
+          "attempts": 2,
+          "successful": 2,
+          "taskAccuracy": 1,
+          "readableCorrect": 2,
+          "readableTotal": 2,
+          "unavailableCorrect": 2,
+          "unavailableTotal": 2,
+          "unsupportedValues": 0,
+          "unexpectedToolValues": 0,
+          "extraToolValues": 0,
+          "mutationCalls": 0,
+          "toolCalls": 2,
+          "usageComplete": true,
+          "tokenTotals": {
+            "input": 72990,
+            "cachedInput": 58752,
+            "uncachedInput": 14238,
+            "output": 221
+          },
+          "tokensPerSuccessfulTask": {
+            "input": 36495,
+            "cachedInput": 29376,
+            "uncachedInput": 7119,
+            "output": 110.5
+          },
+          "elapsedMsTotal": 41991
+        }
+      }
+    ],
+    "sensitivity": [
+      {
+        "cachedWeight": 0,
+        "outputWeight": 1,
+        "legacyUnits": 202478,
+        "compactUnits": 209378,
+        "reduction": -0.034077776351010974
+      },
+      {
+        "cachedWeight": 0,
+        "outputWeight": 3,
+        "legacyUnits": 207134,
+        "compactUnits": 213814,
+        "reduction": -0.03224965481282648
+      },
+      {
+        "cachedWeight": 0,
+        "outputWeight": 5,
+        "legacyUnits": 211790,
+        "compactUnits": 218250,
+        "reduction": -0.03050191227158978
+      },
+      {
+        "cachedWeight": 0,
+        "outputWeight": 10,
+        "legacyUnits": 223430,
+        "compactUnits": 229340,
+        "reduction": -0.026451237524056752
+      },
+      {
+        "cachedWeight": 0.1,
+        "outputWeight": 1,
+        "legacyUnits": 262740.4,
+        "compactUnits": 263048.4,
+        "reduction": -0.0011722597666746339
+      },
+      {
+        "cachedWeight": 0.1,
+        "outputWeight": 3,
+        "legacyUnits": 267396.4,
+        "compactUnits": 267484.4,
+        "reduction": -0.00032909941943870595
+      },
+      {
+        "cachedWeight": 0.1,
+        "outputWeight": 5,
+        "legacyUnits": 272052.4,
+        "compactUnits": 271920.4,
+        "reduction": 0.00048520064516982753
+      },
+      {
+        "cachedWeight": 0.1,
+        "outputWeight": 10,
+        "legacyUnits": 283692.4,
+        "compactUnits": 283010.4,
+        "reduction": 0.00240401223296782
+      },
+      {
+        "cachedWeight": 0.5,
+        "outputWeight": 1,
+        "legacyUnits": 503790,
+        "compactUnits": 477730,
+        "reduction": 0.05172790249905715
+      },
+      {
+        "cachedWeight": 0.5,
+        "outputWeight": 3,
+        "legacyUnits": 508446,
+        "compactUnits": 482166,
+        "reduction": 0.051686904804049985
+      },
+      {
+        "cachedWeight": 0.5,
+        "outputWeight": 5,
+        "legacyUnits": 513102,
+        "compactUnits": 486602,
+        "reduction": 0.05164665115318202
+      },
+      {
+        "cachedWeight": 0.5,
+        "outputWeight": 10,
+        "legacyUnits": 524742,
+        "compactUnits": 497692,
+        "reduction": 0.05154914224514142
+      },
+      {
+        "cachedWeight": 1,
+        "outputWeight": 1,
+        "legacyUnits": 805102,
+        "compactUnits": 746082,
+        "reduction": 0.07330748153650096
+      },
+      {
+        "cachedWeight": 1,
+        "outputWeight": 3,
+        "legacyUnits": 809758,
+        "compactUnits": 750518,
+        "reduction": 0.07315765944887238
+      },
+      {
+        "cachedWeight": 1,
+        "outputWeight": 5,
+        "legacyUnits": 814414,
+        "compactUnits": 754954,
+        "reduction": 0.07300955042521372
+      },
+      {
+        "cachedWeight": 1,
+        "outputWeight": 10,
+        "legacyUnits": 826054,
+        "compactUnits": 766044,
+        "reduction": 0.07264658242681471
+      }
+    ],
+    "scope": "Exploratory paired interface comparison on synthetic tasks; two profiles per template are not independent users. No invoice or price claim.",
+    "sensitivityNote": "Hypothetical weights only: uncached input + cachedWeight*cached input + outputWeight*output. Not model prices or actual Codex subscription cost. Reasoning tokens are not added again."
+  },
+  "attempts": [
+    {
+      "caseId": "mixed-ungranted",
+      "variant": 0,
+      "arm": "legacy",
+      "index": 0,
+      "elapsedMs": 20092,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": null
+          },
+          {
+            "field": "person.contact.email",
+            "value": null
+          },
+          {
+            "field": "passport.number",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": "alex.current@example.invalid",
+        "passport.number": null
+      },
+      "score": {
+        "taskCorrect": false,
+        "readableCorrect": 0,
+        "readableTotal": 2,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36591,
+        "cached_input_tokens": 23936,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 122,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36591,
+        "cachedInput": 23936,
+        "uncachedInput": 12655,
+        "output": 122,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email",
+              "passport.number"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "Mio operation denied or unavailable. Ask the local operator to review the configuration or permission."
+              }
+            ],
+            "structured_content": null
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "mixed-ungranted",
+      "variant": 0,
+      "arm": "compact",
+      "index": 1,
+      "elapsedMs": 21178,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Alex"
+          },
+          {
+            "field": "person.contact.email",
+            "value": "alex.current@example.invalid"
+          },
+          {
+            "field": "passport.number",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": "alex.current@example.invalid",
+        "passport.number": null
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 2,
+        "readableTotal": 2,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36253,
+        "cached_input_tokens": 23680,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 125,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36253,
+        "cachedInput": 23680,
+        "uncachedInput": 12573,
+        "output": 125,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email",
+              "passport.number"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.contact.email\":\"alex.current@example.invalid\"},\"unavailable\":[\"passport.number\"],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Alex",
+                "person.contact.email": "alex.current@example.invalid"
+              },
+              "unavailable": [
+                "passport.number"
+              ],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "conflict-timestamp",
+      "variant": 0,
+      "arm": "compact",
+      "index": 2,
+      "elapsedMs": 22743,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Alex"
+          },
+          {
+            "field": "person.contact.email",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": null
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 1,
+        "readableTotal": 1,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36766,
+        "cached_input_tokens": 23936,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 110,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36766,
+        "cachedInput": 23936,
+        "uncachedInput": 12830,
+        "output": 110,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Alex\"},\"unavailable\":[\"person.contact.email\"],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Alex"
+              },
+              "unavailable": [
+                "person.contact.email"
+              ],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "conflict-timestamp",
+      "variant": 0,
+      "arm": "legacy",
+      "index": 3,
+      "elapsedMs": 19476,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": null
+          },
+          {
+            "field": "person.contact.email",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": null
+      },
+      "score": {
+        "taskCorrect": false,
+        "readableCorrect": 0,
+        "readableTotal": 1,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36572,
+        "cached_input_tokens": 23808,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 108,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36572,
+        "cachedInput": 23808,
+        "uncachedInput": 12764,
+        "output": 108,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "Mio operation denied or unavailable. Ask the local operator to review the configuration or permission."
+              }
+            ],
+            "structured_content": null
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "simple-one",
+      "variant": 0,
+      "arm": "legacy",
+      "index": 4,
+      "elapsedMs": 21393,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Alex"
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex"
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 1,
+        "readableTotal": 1,
+        "unavailableCorrect": 0,
+        "unavailableTotal": 0,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36833,
+        "cached_input_tokens": 24064,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 94,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36833,
+        "cachedInput": 24064,
+        "uncachedInput": 12769,
+        "output": 94,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Alex\"}}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Alex"
+              }
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "simple-one",
+      "variant": 0,
+      "arm": "compact",
+      "index": 5,
+      "elapsedMs": 30925,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Alex"
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex"
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 1,
+        "readableTotal": 1,
+        "unavailableCorrect": 0,
+        "unavailableTotal": 0,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 37006,
+        "cached_input_tokens": 24064,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 96,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 37006,
+        "cachedInput": 24064,
+        "uncachedInput": 12942,
+        "output": 96,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Alex\"},\"unavailable\":[],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Alex"
+              },
+              "unavailable": [],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "revoked-grant",
+      "variant": 0,
+      "arm": "compact",
+      "index": 6,
+      "elapsedMs": 27494,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": null
+          },
+          {
+            "field": "person.contact.email",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": null,
+        "person.contact.email": null
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 0,
+        "readableTotal": 0,
+        "unavailableCorrect": 2,
+        "unavailableTotal": 2,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 40032,
+        "cached_input_tokens": 25600,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 98,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 40032,
+        "cachedInput": 25600,
+        "uncachedInput": 14432,
+        "output": 98,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "Mio operation denied or unavailable. Ask the local operator to review the configuration or permission."
+              }
+            ],
+            "structured_content": null
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "revoked-grant",
+      "variant": 0,
+      "arm": "legacy",
+      "index": 7,
+      "elapsedMs": 26233,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": null
+          },
+          {
+            "field": "person.contact.email",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": null,
+        "person.contact.email": null
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 0,
+        "readableTotal": 0,
+        "unavailableCorrect": 2,
+        "unavailableTotal": 2,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36586,
+        "cached_input_tokens": 23936,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 112,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36586,
+        "cachedInput": 23936,
+        "uncachedInput": 12650,
+        "output": 112,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "Mio operation denied or unavailable. Ask the local operator to review the configuration or permission."
+              }
+            ],
+            "structured_content": null
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "new-confirmed-unshared",
+      "variant": 0,
+      "arm": "legacy",
+      "index": 8,
+      "elapsedMs": 25551,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Alex"
+          },
+          {
+            "field": "person.contact.email",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": null
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 1,
+        "readableTotal": 1,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 3
+      },
+      "usage": {
+        "input_tokens": 69046,
+        "cached_input_tokens": 39808,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 169,
+        "reasoning_output_tokens": 14
+      },
+      "counters": {
+        "input": 69046,
+        "cachedInput": 39808,
+        "uncachedInput": 29238,
+        "output": 169,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 14
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "Mio operation denied or unavailable. Ask the local operator to review the configuration or permission."
+              }
+            ],
+            "structured_content": null
+          },
+          "error": null
+        },
+        {
+          "server": "mio",
+          "tool": "mio_list_fields",
+          "arguments": {},
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":[\"person.name.first\",\"person.name.last\"]}"
+              }
+            ],
+            "structured_content": {
+              "fields": [
+                "person.name.first",
+                "person.name.last"
+              ]
+            }
+          },
+          "error": null
+        },
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Alex\"}}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Alex"
+              }
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "new-confirmed-unshared",
+      "variant": 0,
+      "arm": "compact",
+      "index": 9,
+      "elapsedMs": 21168,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Alex"
+          },
+          {
+            "field": "person.contact.email",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": null
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 1,
+        "readableTotal": 1,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36459,
+        "cached_input_tokens": 23808,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 109,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36459,
+        "cachedInput": 23808,
+        "uncachedInput": 12651,
+        "output": 109,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Alex\"},\"unavailable\":[\"person.contact.email\"],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Alex"
+              },
+              "unavailable": [
+                "person.contact.email"
+              ],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "pending-proposal",
+      "variant": 0,
+      "arm": "compact",
+      "index": 10,
+      "elapsedMs": 21936,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Alex"
+          },
+          {
+            "field": "person.contact.email",
+            "value": "alex.current@example.invalid"
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": "alex.current@example.invalid"
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 2,
+        "readableTotal": 2,
+        "unavailableCorrect": 0,
+        "unavailableTotal": 0,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36229,
+        "cached_input_tokens": 12032,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 111,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36229,
+        "cachedInput": 12032,
+        "uncachedInput": 24197,
+        "output": 111,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.contact.email\":\"alex.current@example.invalid\"},\"unavailable\":[],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Alex",
+                "person.contact.email": "alex.current@example.invalid"
+              },
+              "unavailable": [],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "pending-proposal",
+      "variant": 0,
+      "arm": "legacy",
+      "index": 11,
+      "elapsedMs": 21760,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Alex"
+          },
+          {
+            "field": "person.contact.email",
+            "value": "alex.current@example.invalid"
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": "alex.current@example.invalid"
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 2,
+        "readableTotal": 2,
+        "unavailableCorrect": 0,
+        "unavailableTotal": 0,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 37134,
+        "cached_input_tokens": 24192,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 102,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 37134,
+        "cachedInput": 24192,
+        "uncachedInput": 12942,
+        "output": 102,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.contact.email\":\"alex.current@example.invalid\"}}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Alex",
+                "person.contact.email": "alex.current@example.invalid"
+              }
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "missing",
+      "variant": 0,
+      "arm": "legacy",
+      "index": 12,
+      "elapsedMs": 18981,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": null
+          },
+          {
+            "field": "person.contact.phone",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.phone": null
+      },
+      "score": {
+        "taskCorrect": false,
+        "readableCorrect": 0,
+        "readableTotal": 1,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36874,
+        "cached_input_tokens": 35200,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 108,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36874,
+        "cachedInput": 35200,
+        "uncachedInput": 1674,
+        "output": 108,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.phone"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "Mio operation denied or unavailable. Ask the local operator to review the configuration or permission."
+              }
+            ],
+            "structured_content": null
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "missing",
+      "variant": 0,
+      "arm": "compact",
+      "index": 13,
+      "elapsedMs": 18587,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Alex"
+          },
+          {
+            "field": "person.contact.phone",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.phone": null
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 1,
+        "readableTotal": 1,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36756,
+        "cached_input_tokens": 23936,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 108,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36756,
+        "cachedInput": 23936,
+        "uncachedInput": 12820,
+        "output": 108,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.phone"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Alex\"},\"unavailable\":[\"person.contact.phone\"],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Alex"
+              },
+              "unavailable": [
+                "person.contact.phone"
+              ],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "simple-three",
+      "variant": 0,
+      "arm": "compact",
+      "index": 14,
+      "elapsedMs": 23960,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Alex"
+          },
+          {
+            "field": "person.name.last",
+            "value": "Rowan"
+          },
+          {
+            "field": "person.contact.email",
+            "value": "alex.current@example.invalid"
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex",
+        "person.name.last": "Rowan",
+        "person.contact.email": "alex.current@example.invalid"
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 3,
+        "readableTotal": 3,
+        "unavailableCorrect": 0,
+        "unavailableTotal": 0,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 37068,
+        "cached_input_tokens": 24064,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 137,
+        "reasoning_output_tokens": 7
+      },
+      "counters": {
+        "input": 37068,
+        "cachedInput": 24064,
+        "uncachedInput": 13004,
+        "output": 137,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 7
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.name.last",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.name.last\":\"Rowan\",\"person.contact.email\":\"alex.current@example.invalid\"},\"unavailable\":[],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Alex",
+                "person.name.last": "Rowan",
+                "person.contact.email": "alex.current@example.invalid"
+              },
+              "unavailable": [],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "simple-three",
+      "variant": 0,
+      "arm": "legacy",
+      "index": 15,
+      "elapsedMs": 19836,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Alex"
+          },
+          {
+            "field": "person.name.last",
+            "value": "Rowan"
+          },
+          {
+            "field": "person.contact.email",
+            "value": "alex.current@example.invalid"
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex",
+        "person.name.last": "Rowan",
+        "person.contact.email": "alex.current@example.invalid"
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 3,
+        "readableTotal": 3,
+        "unavailableCorrect": 0,
+        "unavailableTotal": 0,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 37181,
+        "cached_input_tokens": 24192,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 130,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 37181,
+        "cachedInput": 24192,
+        "uncachedInput": 12989,
+        "output": 130,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.name.last",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.name.last\":\"Rowan\",\"person.contact.email\":\"alex.current@example.invalid\"}}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Alex",
+                "person.name.last": "Rowan",
+                "person.contact.email": "alex.current@example.invalid"
+              }
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "new-confirmed-shared",
+      "variant": 0,
+      "arm": "legacy",
+      "index": 16,
+      "elapsedMs": 28091,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Alex"
+          },
+          {
+            "field": "person.contact.email",
+            "value": "alex.updated@example.invalid"
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": "alex.updated@example.invalid"
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 2,
+        "readableTotal": 2,
+        "unavailableCorrect": 0,
+        "unavailableTotal": 0,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36359,
+        "cached_input_tokens": 23808,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 114,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36359,
+        "cachedInput": 23808,
+        "uncachedInput": 12551,
+        "output": 114,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.contact.email\":\"alex.updated@example.invalid\"}}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Alex",
+                "person.contact.email": "alex.updated@example.invalid"
+              }
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "new-confirmed-shared",
+      "variant": 0,
+      "arm": "compact",
+      "index": 17,
+      "elapsedMs": 21022,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Alex"
+          },
+          {
+            "field": "person.contact.email",
+            "value": "alex.updated@example.invalid"
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": "alex.updated@example.invalid"
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 2,
+        "readableTotal": 2,
+        "unavailableCorrect": 0,
+        "unavailableTotal": 0,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 40092,
+        "cached_input_tokens": 36736,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 101,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 40092,
+        "cachedInput": 36736,
+        "uncachedInput": 3356,
+        "output": 101,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Alex\",\"person.contact.email\":\"alex.updated@example.invalid\"},\"unavailable\":[],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Alex",
+                "person.contact.email": "alex.updated@example.invalid"
+              },
+              "unavailable": [],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "expired-claim",
+      "variant": 0,
+      "arm": "compact",
+      "index": 18,
+      "elapsedMs": 24834,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Alex"
+          },
+          {
+            "field": "person.contact.email",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": null
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 1,
+        "readableTotal": 1,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36530,
+        "cached_input_tokens": 34944,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 110,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36530,
+        "cachedInput": 34944,
+        "uncachedInput": 1586,
+        "output": 110,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Alex\"},\"unavailable\":[\"person.contact.email\"],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Alex"
+              },
+              "unavailable": [
+                "person.contact.email"
+              ],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "expired-claim",
+      "variant": 0,
+      "arm": "legacy",
+      "index": 19,
+      "elapsedMs": 25044,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": null
+          },
+          {
+            "field": "person.contact.email",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": null
+      },
+      "score": {
+        "taskCorrect": false,
+        "readableCorrect": 0,
+        "readableTotal": 1,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36580,
+        "cached_input_tokens": 23936,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 112,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36580,
+        "cachedInput": 23936,
+        "uncachedInput": 12644,
+        "output": 112,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "Mio operation denied or unavailable. Ask the local operator to review the configuration or permission."
+              }
+            ],
+            "structured_content": null
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "mixed-ungranted",
+      "variant": 1,
+      "arm": "compact",
+      "index": 20,
+      "elapsedMs": 24384,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Mira"
+          },
+          {
+            "field": "person.contact.email",
+            "value": "mira.current@example.invalid"
+          },
+          {
+            "field": "passport.number",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": "mira.current@example.invalid",
+        "passport.number": null
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 2,
+        "readableTotal": 2,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36565,
+        "cached_input_tokens": 23808,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 127,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36565,
+        "cachedInput": 23808,
+        "uncachedInput": 12757,
+        "output": 127,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email",
+              "passport.number"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Mira\",\"person.contact.email\":\"mira.current@example.invalid\"},\"unavailable\":[\"passport.number\"],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Mira",
+                "person.contact.email": "mira.current@example.invalid"
+              },
+              "unavailable": [
+                "passport.number"
+              ],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "mixed-ungranted",
+      "variant": 1,
+      "arm": "legacy",
+      "index": 21,
+      "elapsedMs": 31515,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Mira"
+          },
+          {
+            "field": "person.contact.email",
+            "value": "mira.current@example.invalid"
+          },
+          {
+            "field": "passport.number",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": "mira.current@example.invalid",
+        "passport.number": null
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 2,
+        "readableTotal": 2,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 3
+      },
+      "usage": {
+        "input_tokens": 61394,
+        "cached_input_tokens": 48256,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 201,
+        "reasoning_output_tokens": 9
+      },
+      "counters": {
+        "input": 61394,
+        "cachedInput": 48256,
+        "uncachedInput": 13138,
+        "output": 201,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 9
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email",
+              "passport.number"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "Mio operation denied or unavailable. Ask the local operator to review the configuration or permission."
+              }
+            ],
+            "structured_content": null
+          },
+          "error": null
+        },
+        {
+          "server": "mio",
+          "tool": "mio_list_fields",
+          "arguments": {},
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":[\"person.contact.email\",\"person.name.first\",\"person.name.last\"]}"
+              }
+            ],
+            "structured_content": {
+              "fields": [
+                "person.contact.email",
+                "person.name.first",
+                "person.name.last"
+              ]
+            }
+          },
+          "error": null
+        },
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Mira\",\"person.contact.email\":\"mira.current@example.invalid\"}}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Mira",
+                "person.contact.email": "mira.current@example.invalid"
+              }
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "conflict-timestamp",
+      "variant": 1,
+      "arm": "legacy",
+      "index": 22,
+      "elapsedMs": 21290,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": null
+          },
+          {
+            "field": "person.contact.email",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": null
+      },
+      "score": {
+        "taskCorrect": false,
+        "readableCorrect": 0,
+        "readableTotal": 1,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36572,
+        "cached_input_tokens": 23808,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 108,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36572,
+        "cachedInput": 23808,
+        "uncachedInput": 12764,
+        "output": 108,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "Mio operation denied or unavailable. Ask the local operator to review the configuration or permission."
+              }
+            ],
+            "structured_content": null
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "conflict-timestamp",
+      "variant": 1,
+      "arm": "compact",
+      "index": 23,
+      "elapsedMs": 25345,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Mira"
+          },
+          {
+            "field": "person.contact.email",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": null
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 1,
+        "readableTotal": 1,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36764,
+        "cached_input_tokens": 23936,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 109,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36764,
+        "cachedInput": 23936,
+        "uncachedInput": 12828,
+        "output": 109,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Mira\"},\"unavailable\":[\"person.contact.email\"],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Mira"
+              },
+              "unavailable": [
+                "person.contact.email"
+              ],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "simple-one",
+      "variant": 1,
+      "arm": "compact",
+      "index": 24,
+      "elapsedMs": 18693,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Mira"
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira"
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 1,
+        "readableTotal": 1,
+        "unavailableCorrect": 0,
+        "unavailableTotal": 0,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36708,
+        "cached_input_tokens": 35072,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 95,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36708,
+        "cachedInput": 35072,
+        "uncachedInput": 1636,
+        "output": 95,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Mira\"},\"unavailable\":[],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Mira"
+              },
+              "unavailable": [],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "simple-one",
+      "variant": 1,
+      "arm": "legacy",
+      "index": 25,
+      "elapsedMs": 22270,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Mira"
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira"
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 1,
+        "readableTotal": 1,
+        "unavailableCorrect": 0,
+        "unavailableTotal": 0,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36835,
+        "cached_input_tokens": 35200,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 95,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36835,
+        "cachedInput": 35200,
+        "uncachedInput": 1635,
+        "output": 95,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Mira\"}}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Mira"
+              }
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "revoked-grant",
+      "variant": 1,
+      "arm": "legacy",
+      "index": 26,
+      "elapsedMs": 19269,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": null
+          },
+          {
+            "field": "person.contact.email",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": null,
+        "person.contact.email": null
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 0,
+        "readableTotal": 0,
+        "unavailableCorrect": 2,
+        "unavailableTotal": 2,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 37186,
+        "cached_input_tokens": 24192,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 110,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 37186,
+        "cachedInput": 24192,
+        "uncachedInput": 12994,
+        "output": 110,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "Mio operation denied or unavailable. Ask the local operator to review the configuration or permission."
+              }
+            ],
+            "structured_content": null
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "revoked-grant",
+      "variant": 1,
+      "arm": "compact",
+      "index": 27,
+      "elapsedMs": 18389,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": null
+          },
+          {
+            "field": "person.contact.email",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": null,
+        "person.contact.email": null
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 0,
+        "readableTotal": 0,
+        "unavailableCorrect": 2,
+        "unavailableTotal": 2,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 40032,
+        "cached_input_tokens": 36736,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 98,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 40032,
+        "cachedInput": 36736,
+        "uncachedInput": 3296,
+        "output": 98,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "Mio operation denied or unavailable. Ask the local operator to review the configuration or permission."
+              }
+            ],
+            "structured_content": null
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "new-confirmed-unshared",
+      "variant": 1,
+      "arm": "compact",
+      "index": 28,
+      "elapsedMs": 24917,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Mira"
+          },
+          {
+            "field": "person.contact.email",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": null
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 1,
+        "readableTotal": 1,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36459,
+        "cached_input_tokens": 11136,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 109,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36459,
+        "cachedInput": 11136,
+        "uncachedInput": 25323,
+        "output": 109,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Mira\"},\"unavailable\":[\"person.contact.email\"],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Mira"
+              },
+              "unavailable": [
+                "person.contact.email"
+              ],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "new-confirmed-unshared",
+      "variant": 1,
+      "arm": "legacy",
+      "index": 29,
+      "elapsedMs": 22050,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": null
+          },
+          {
+            "field": "person.contact.email",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": null
+      },
+      "score": {
+        "taskCorrect": false,
+        "readableCorrect": 0,
+        "readableTotal": 1,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 40205,
+        "cached_input_tokens": 36352,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 98,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 40205,
+        "cachedInput": 36352,
+        "uncachedInput": 3853,
+        "output": 98,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "Mio operation denied or unavailable. Ask the local operator to review the configuration or permission."
+              }
+            ],
+            "structured_content": null
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "pending-proposal",
+      "variant": 1,
+      "arm": "legacy",
+      "index": 30,
+      "elapsedMs": 21504,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Mira"
+          },
+          {
+            "field": "person.contact.email",
+            "value": "mira.current@example.invalid"
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": "mira.current@example.invalid"
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 2,
+        "readableTotal": 2,
+        "unavailableCorrect": 0,
+        "unavailableTotal": 0,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36600,
+        "cached_input_tokens": 34944,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 115,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36600,
+        "cachedInput": 34944,
+        "uncachedInput": 1656,
+        "output": 115,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Mira\",\"person.contact.email\":\"mira.current@example.invalid\"}}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Mira",
+                "person.contact.email": "mira.current@example.invalid"
+              }
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "pending-proposal",
+      "variant": 1,
+      "arm": "compact",
+      "index": 31,
+      "elapsedMs": 19304,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Mira"
+          },
+          {
+            "field": "person.contact.email",
+            "value": "mira.current@example.invalid"
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": "mira.current@example.invalid"
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 2,
+        "readableTotal": 2,
+        "unavailableCorrect": 0,
+        "unavailableTotal": 0,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 37019,
+        "cached_input_tokens": 24064,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 108,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 37019,
+        "cachedInput": 24064,
+        "uncachedInput": 12955,
+        "output": 108,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Mira\",\"person.contact.email\":\"mira.current@example.invalid\"},\"unavailable\":[],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Mira",
+                "person.contact.email": "mira.current@example.invalid"
+              },
+              "unavailable": [],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "missing",
+      "variant": 1,
+      "arm": "compact",
+      "index": 32,
+      "elapsedMs": 20727,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Mira"
+          },
+          {
+            "field": "person.contact.phone",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.phone": null
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 1,
+        "readableTotal": 1,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36758,
+        "cached_input_tokens": 35072,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 109,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36758,
+        "cachedInput": 35072,
+        "uncachedInput": 1686,
+        "output": 109,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.phone"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Mira\"},\"unavailable\":[\"person.contact.phone\"],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Mira"
+              },
+              "unavailable": [
+                "person.contact.phone"
+              ],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "missing",
+      "variant": 1,
+      "arm": "legacy",
+      "index": 33,
+      "elapsedMs": 23689,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": null
+          },
+          {
+            "field": "person.contact.phone",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.phone": null
+      },
+      "score": {
+        "taskCorrect": false,
+        "readableCorrect": 0,
+        "readableTotal": 1,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 40196,
+        "cached_input_tokens": 36864,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 98,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 40196,
+        "cachedInput": 36864,
+        "uncachedInput": 3332,
+        "output": 98,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.phone"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "Mio operation denied or unavailable. Ask the local operator to review the configuration or permission."
+              }
+            ],
+            "structured_content": null
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "simple-three",
+      "variant": 1,
+      "arm": "legacy",
+      "index": 34,
+      "elapsedMs": 19502,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Mira"
+          },
+          {
+            "field": "person.name.last",
+            "value": "Linden"
+          },
+          {
+            "field": "person.contact.email",
+            "value": "mira.current@example.invalid"
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira",
+        "person.name.last": "Linden",
+        "person.contact.email": "mira.current@example.invalid"
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 3,
+        "readableTotal": 3,
+        "unavailableCorrect": 0,
+        "unavailableTotal": 0,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 37159,
+        "cached_input_tokens": 24192,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 119,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 37159,
+        "cachedInput": 24192,
+        "uncachedInput": 12967,
+        "output": 119,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.name.last",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Mira\",\"person.name.last\":\"Linden\",\"person.contact.email\":\"mira.current@example.invalid\"}}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Mira",
+                "person.name.last": "Linden",
+                "person.contact.email": "mira.current@example.invalid"
+              }
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "simple-three",
+      "variant": 1,
+      "arm": "compact",
+      "index": 35,
+      "elapsedMs": 21291,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Mira"
+          },
+          {
+            "field": "person.name.last",
+            "value": "Linden"
+          },
+          {
+            "field": "person.contact.email",
+            "value": "mira.current@example.invalid"
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira",
+        "person.name.last": "Linden",
+        "person.contact.email": "mira.current@example.invalid"
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 3,
+        "readableTotal": 3,
+        "unavailableCorrect": 0,
+        "unavailableTotal": 0,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 37362,
+        "cached_input_tokens": 35328,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 130,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 37362,
+        "cachedInput": 35328,
+        "uncachedInput": 2034,
+        "output": 130,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.name.last",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Mira\",\"person.name.last\":\"Linden\",\"person.contact.email\":\"mira.current@example.invalid\"},\"unavailable\":[],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Mira",
+                "person.name.last": "Linden",
+                "person.contact.email": "mira.current@example.invalid"
+              },
+              "unavailable": [],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "new-confirmed-shared",
+      "variant": 1,
+      "arm": "compact",
+      "index": 36,
+      "elapsedMs": 24876,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Mira"
+          },
+          {
+            "field": "person.contact.email",
+            "value": "mira.updated@example.invalid"
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": "mira.updated@example.invalid"
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 2,
+        "readableTotal": 2,
+        "unavailableCorrect": 0,
+        "unavailableTotal": 0,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36546,
+        "cached_input_tokens": 34944,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 117,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36546,
+        "cachedInput": 34944,
+        "uncachedInput": 1602,
+        "output": 117,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Mira\",\"person.contact.email\":\"mira.updated@example.invalid\"},\"unavailable\":[],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Mira",
+                "person.contact.email": "mira.updated@example.invalid"
+              },
+              "unavailable": [],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "new-confirmed-shared",
+      "variant": 1,
+      "arm": "legacy",
+      "index": 37,
+      "elapsedMs": 32088,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Mira"
+          },
+          {
+            "field": "person.contact.email",
+            "value": "mira.updated@example.invalid"
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": "mira.updated@example.invalid"
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 2,
+        "readableTotal": 2,
+        "unavailableCorrect": 0,
+        "unavailableTotal": 0,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 40223,
+        "cached_input_tokens": 36864,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 103,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 40223,
+        "cachedInput": 36864,
+        "uncachedInput": 3359,
+        "output": 103,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Mira\",\"person.contact.email\":\"mira.updated@example.invalid\"}}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Mira",
+                "person.contact.email": "mira.updated@example.invalid"
+              }
+            }
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "expired-claim",
+      "variant": 1,
+      "arm": "legacy",
+      "index": 38,
+      "elapsedMs": 23746,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": null
+          },
+          {
+            "field": "person.contact.email",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": null
+      },
+      "score": {
+        "taskCorrect": false,
+        "readableCorrect": 0,
+        "readableTotal": 1,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36648,
+        "cached_input_tokens": 35072,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 110,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36648,
+        "cachedInput": 35072,
+        "uncachedInput": 1576,
+        "output": 110,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_read",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "Mio operation denied or unavailable. Ask the local operator to review the configuration or permission."
+              }
+            ],
+            "structured_content": null
+          },
+          "error": null
+        }
+      ]
+    },
+    {
+      "caseId": "expired-claim",
+      "variant": 1,
+      "arm": "compact",
+      "index": 39,
+      "elapsedMs": 17157,
+      "exitCode": 0,
+      "timedOut": false,
+      "overflow": false,
+      "spawnError": null,
+      "answer": {
+        "answers": [
+          {
+            "field": "person.name.first",
+            "value": "Mira"
+          },
+          {
+            "field": "person.contact.email",
+            "value": null
+          }
+        ]
+      },
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": null
+      },
+      "score": {
+        "taskCorrect": true,
+        "readableCorrect": 1,
+        "readableTotal": 1,
+        "unavailableCorrect": 1,
+        "unavailableTotal": 1,
+        "unsupportedValues": 0,
+        "unexpectedToolValues": 0,
+        "extraToolValues": 0,
+        "mutationCalls": 0,
+        "toolCalls": 1
+      },
+      "usage": {
+        "input_tokens": 36460,
+        "cached_input_tokens": 23808,
+        "cache_write_input_tokens": 0,
+        "output_tokens": 111,
+        "reasoning_output_tokens": 0
+      },
+      "counters": {
+        "input": 36460,
+        "cachedInput": 23808,
+        "uncachedInput": 12652,
+        "output": 111,
+        "cacheWriteInput": 0,
+        "reasoningOutput": 0
+      },
+      "tools": [
+        {
+          "server": "mio",
+          "tool": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email"
+            ]
+          },
+          "result": {
+            "content": [
+              {
+                "type": "text",
+                "text": "{\"fields\":{\"person.name.first\":\"Mira\"},\"unavailable\":[\"person.contact.email\"],\"checkedAt\":\"2026-11-14T12:00:00.000Z\"}"
+              }
+            ],
+            "structured_content": {
+              "fields": {
+                "person.name.first": "Mira"
+              },
+              "unavailable": [
+                "person.contact.email"
+              ],
+              "checkedAt": "2026-11-14T12:00:00.000Z"
+            }
+          },
+          "error": null
+        }
+      ]
+    }
+  ]
+}

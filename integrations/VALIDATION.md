@@ -1,5 +1,20 @@
 # Integration validation record
 
+## 0.3.0-alpha update
+
+The default server now exposes `mio_context` and `mio_propose_update`; add
+`--legacy-tools` to retain the old three names. The complete 110-test check
+passed, including official-SDK calls for both toolsets. The standalone
+`scripts/codex-mcp-smoke.mjs` now explicitly selects the legacy toolset so its
+original five-call probe remains reproducible. Historical results below have
+not been relabelled as a new-version native Claude or GitHub installation.
+
+The new 40-session paired Codex evaluation is documented in its
+[protocol](../experiments/accuracy-cost/README.md) and
+[research report](../docs/research/accuracy-cost-optimization.zh-CN.md).
+
+## Historical 0.2.0-alpha record
+
 Recorded on 2026-11-14. This records observed integration behavior, not model
 quality or production security certification. All tested data was fictional.
 Personal filesystem paths below are replaced with shell variables.

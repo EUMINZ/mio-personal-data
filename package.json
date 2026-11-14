@@ -1,6 +1,6 @@
 {
   "name": "mio-personal-data",
-  "version": "0.2.0-alpha",
+  "version": "0.3.0-alpha",
   "private": true,
   "type": "module",
   "description": "A user-controlled personal data layer for AI.",

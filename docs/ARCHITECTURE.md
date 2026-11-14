@@ -17,7 +17,7 @@ Mio Core: contracts, importers, repository, compiled views
 Local SQLite: claims, evidence, review, grants, wiki, notes, audit
 ```
 
-The trusted host boundary is an integration responsibility. This repository includes a two-mock-assistant example and a local stdio MCP adapter. The adapter binds a person, requester and grant in an operator-controlled config, checks scope on every call and keeps approval outside the model's tool catalog. It is not a remote authentication service or an OS sandbox.
+The trusted host boundary is an integration responsibility. This repository includes a two-mock-assistant example and a local stdio MCP adapter. The adapter binds a person, requester and grant in an operator-controlled config, checks scope on every call and keeps approval outside the model's tool catalog. Version `0.3.0-alpha` exposes `mio_context` and `mio_propose_update` by default. It is not a remote authentication service or an OS sandbox.
 
 The repository uses Node.js 24's `node:sqlite`. Ordered SQL migrations create the schema. The database is the structured source of truth; Markdown dossiers and JSON snapshots are derived views.
 
@@ -52,6 +52,16 @@ The core compiles summaries, evidence digests, context snapshots, pending review
 These operations can return information across a person's records. They do not automatically enforce a requester grant. Including a grant in a context snapshot is descriptive; it does not restrict the snapshot's contents.
 
 The [two-assistant example](../examples/two-assistants.js) illustrates a separate reader that selects permitted fields for local mocks. A real integration needs authenticated requester identity, checks at every read and write boundary, and policies for derived information as well as raw claims. Revocation can prevent future disclosure through such a host; it cannot recall information already exported.
+
+### Scoped MCP context
+
+The MCP adapter's `mio_context` is separate from the core's unscoped context builders. With `{}`, it discovers currently readable field keys without returning values. With a `fields` array, it checks 1–50 keys in one transaction and returns `{fields, unavailable, checkedAt}`. Available values are keyed by field; unavailable keys share one representation regardless of whether they are missing, ungranted, expired, ambiguous, or newly confirmed but not shared. An invalid overall grant, database failure, or failed audit aborts the call without returning partial values.
+
+Selection uses confirmed, unsuperseded claims and parsed update timestamps. Invalid or future timestamps and ties fail closed; an expired or unshared latest claim does not cause fallback to an older value. Each call rereads the database and grant without a read cache. `checkedAt` is the server's check time, not evidence of external verification or a guarantee that a stored fact is still true.
+
+`--legacy-tools` restores `mio_list_fields`, `mio_read`, and `mio_propose_update`. Both interfaces use the same selection policy; legacy reads fail as a whole if any requested field is unavailable. Compact reads let a caller retain the available subset. Proposals remain pending until operator review; sharing a confirmed replacement is a separate action. The unchanged Claude plugin launcher follows the default compact toolset.
+
+The [accuracy/cost experiment](../experiments/accuracy-cost/README.md) compares these interfaces with identical fictional tasks and host policy. Its [study](research/accuracy-cost-optimization.zh-CN.md) tracks the model-level evidence; a smaller tool catalog alone does not demonstrate better answers or lower cost.
 
 ## Compatibility and limitations
 

@@ -18,7 +18,7 @@ const OLD = 'alex.old@example.invalid';
 const NEW = 'alex.new@example.invalid';
 async function connect(t, args) {
   const client = new Client({ name: 'mio-integration-test', version: '1.0.0' });
-  const transport = new StdioClientTransport({ command: process.execPath, args: [server, ...args], stderr: 'pipe' });
+  const transport = new StdioClientTransport({ command: process.execPath, args: [server, '--legacy-tools', ...args], stderr: 'pipe' });
   let stderr = ''; transport.stderr.on('data', (chunk) => { stderr += chunk; });
   await client.connect(transport);
   t.after(async () => { await client.close(); assert.doesNotMatch(stderr, /FICTIONAL_PRIVATE_DO_NOT_DISCLOSE/); });
@@ -213,7 +213,7 @@ test('npm-style symlink launcher starts a usable stdio server', async (t) => {
   t.after(() => fs.rmSync(parent, { recursive: true, force: true }));
   const client = new Client({ name: 'mio-bin-test', version: '1.0.0' });
   try {
-    await client.connect(new StdioClientTransport({ command: process.execPath, args: [bin, '--demo'], stderr: 'pipe' }));
+    await client.connect(new StdioClientTransport({ command: process.execPath, args: [bin, '--legacy-tools', '--demo'], stderr: 'pipe' }));
     assert.equal(data(await read(client)).fields[EMAIL], OLD);
   } finally { await client.close(); }
 });

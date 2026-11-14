@@ -1,6 +1,6 @@
 {
   "name": "mio-personal-data",
-  "version": "0.2.0-alpha",
+  "version": "0.3.0-alpha",
   "description": "A local personal data MCP layer. Starts with fictional data; reads scoped fields and queues proposed updates for human review.",
   "author": {
     "name": "EUMINZ"

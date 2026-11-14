@@ -12,7 +12,7 @@ function walk(dir) {
   return readdirSync(join(root, dir), { withFileTypes: true }).flatMap(entry =>
     entry.isDirectory() ? walk(join(dir, entry.name)) : [join(dir, entry.name)]);
 }
-for (const dir of ['mio-core', 'examples', 'scripts', 'adapters', 'benchmarks', 'integrations', 'tests'].filter(dir => existsSync(join(root, dir)))) {
+for (const dir of ['mio-core', 'examples', 'scripts', 'adapters', 'benchmarks', 'experiments', 'integrations', 'tests'].filter(dir => existsSync(join(root, dir)))) {
   for (const file of walk(dir).filter(file => /\.m?js$/.test(file))) run(['--check', file]);
 }
 run(['--test', ...['mio-core/tests', 'tests'].flatMap(walk).filter(file => file.endsWith('.test.js'))]);

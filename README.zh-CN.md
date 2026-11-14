@@ -6,17 +6,21 @@
 
 Mio 为个人事实、证据、更新建议、授权与审核记录提供一个本地结构化存储层。目标是让用户在不同 AI 助手之间携带自己的信息，并决定每项任务可以使用哪些内容。
 
-当前是**从身份信息起步的 Alpha 版本**，包含 SQLite 核心、JSON 交换格式、本地 MCP 插件接口和两个模拟助手的示例。通用偏好与关系模型、远程认证，以及生产环境安全机制仍在规划中。
+`0.3.0-alpha` 是**从身份信息起步的 Alpha 版本**，包含 SQLite 核心、JSON 交换格式、本地 MCP 插件接口和两个模拟助手的示例。通用偏好与关系模型、远程认证，以及生产环境安全机制仍在规划中。
 
 ## 接入 Codex、Claude Code 或其他 MCP 客户端
 
-需要 Node.js 24。从 GitHub 克隆后运行 `npm ci --ignore-scripts`，再按[接入指南](docs/INTEGRATIONS.md)注册 Mio。也提供固定 GitHub 版本的 npm 启动方式和 Claude Code 插件封装；尚未上架官方插件目录。
+需要 Node.js 24。从 GitHub 克隆并切换到 `v0.3.0-alpha`，运行 `npm ci --ignore-scripts`，再按[接入指南](docs/INTEGRATIONS.md)注册 Mio。也提供固定 GitHub 版本的 npm 安装方式和 Claude Code 插件封装；尚未上架官方插件目录。
 
-模型可以查看可用字段、读取已授权资料、提出待审修改。确认、重新分享和撤销由本地管理 CLI 执行。`--demo` 使用虚构内存资料；自己的资料通过显式字段配置导入。
+默认只有两个工具：`mio_context` 用 `{}` 发现可读字段，用 `fields` 数组批量读取；`mio_propose_update` 提出待审修改。批量读取返回已授权值、统一的 `unavailable` 字段列表和检查时间 `checkedAt`。缺失或不可读字段不会拖累其余可读字段，但整个授权失效、数据库或审计失败时，整次调用失败。
+
+每次读取重新检查数据库和授权，不使用读取缓存；`checkedAt` 不保证资料在现实中仍真实、最新。`--legacy-tools` 保留原来的三个工具；Claude 插件跟随新的默认接口。确认、重新分享和撤销仍由本地管理 CLI 执行。`--demo` 使用虚构内存资料；自己的资料通过显式字段配置导入。
 
 GitHub 用于分发代码，数据库保存在本地。工具返回的授权内容仍会进入 AI 客户端，并可能发送到其模型服务。本地文件或 shell 权限可以绕过 MCP，这不是同账户进程之间的安全沙箱。
 
-本轮[研究文章](docs/research/mio-personal-data-layer.zh-CN.md)保留了公平对照：Mio 与正确实现相同策略的 JSON 方案结果一致，二者都比整包传递减少无关资料。尚未证明模型准确率、token 成本或开发效率提升。另有[真实 Codex 调用记录](experiments/results/codex-mcp-smoke.json)验证接入流程。
+此前的[工程研究](docs/research/mio-personal-data-layer.zh-CN.md)保留了公平对照：Mio 与正确实现相同策略的 JSON 方案结果一致，二者都比整包传递减少无关资料。这不能证明模型准确率、token 成本或开发效率提升。另有 `0.2.0-alpha` 的[真实 Codex 调用记录](experiments/results/codex-mcp-smoke.json)验证接入流程。
+
+新的[准确率与成本实验](experiments/accuracy-cost/README.md)在同模型、同任务和同授权规则下完成了 40 次真实 Codex 会话：旧接口正确完成 12/20，新接口 20/20，差异来自减少可读字段漏填。总输入 token 减少 7.34%，但非缓存输入增加 3.50%；不能声称单次请求的实际费用更低。`0.3.0-alpha` 通过 110 项自动测试。[研究记录](docs/research/accuracy-cost-optimization.zh-CN.md)提供完整结果与边界；合成小样本不能代表通用模型准确率。
 
 ## 运行
 
@@ -48,7 +52,7 @@ npm run check
 
 ## 使用边界
 
-底层 repository 和 CLI 供可信宿主使用，可以直接访问数据。数据库和导出默认明文；`actorId` 与授权记录不等于身份认证。完整上下文、检索和全量导出不按授权裁剪，不能直接作为助手的受限接口。
+底层 repository 和 CLI 供可信宿主使用，可以直接访问数据。数据库和导出默认明文；`actorId` 与授权记录不等于身份认证。核心的完整上下文、检索和全量导出不按授权裁剪；MCP 的 `mio_context` 另行执行授权检查，仍无法隔离拥有同账户文件权限的进程。
 
 宿主需要验证调用者、执行权限检查、取得用户确认，并单独应用已审核的事实更新。审计记录位于同一数据库，不具备防篡改保证。接入个人资料前请阅读[安全说明](SECURITY.md)。
 

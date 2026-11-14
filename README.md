@@ -6,11 +6,13 @@
 
 Mio gives applications a local, structured place to keep facts about a person, the evidence behind them, proposed updates, and records of permission and review. The goal is to let people carry their information between AI assistants and decide what each task may use.
 
-This release is an **identity-first Alpha**. It provides a SQLite core, JSON contracts, a local MCP adapter for AI clients, and a demonstration with two mock assistants. A general preference and relationship model, remote authentication, and production security controls are still roadmap work.
+Version `0.3.0-alpha` is an **identity-first Alpha**. It provides a SQLite core, JSON contracts, a local MCP adapter for AI clients, and a demonstration with two mock assistants. A general preference and relationship model, remote authentication, and production security controls are still roadmap work.
 
 ## Connect to Codex, Claude Code, or another MCP client
 
-Install Node.js 24, clone this repository, then run `npm ci --ignore-scripts`. The MCP adapter uses the official MCP SDK and exposes only field discovery, scoped reads, and pending update proposals. User approval and sharing stay in a separate local operator CLI.
+Install Node.js 24, clone this repository at `v0.3.0-alpha`, then run `npm ci --ignore-scripts`. The official-SDK MCP adapter defaults to two tools: `mio_context` discovers keys with `{}` or batches requested `fields`; `mio_propose_update` records pending changes. User approval and sharing stay in a separate local operator CLI.
+
+Batched context returns allowed values, a uniform `unavailable` key list, and `checkedAt`. An invalid overall grant or database/audit failure fails the whole call. Reads are not cached; the timestamp records a permission/read check, not a guarantee that a fact is true or up to date. `--legacy-tools` preserves the previous three-tool interface. The Claude plugin uses the new default.
 
 Start with fictional data using `node adapters/mcp/server.js --demo`; this command speaks MCP over stdio and waits for an MCP client. For the actual Codex/Claude registration commands, a pinned GitHub package option, and personal-profile setup, follow the [installation guide](docs/INTEGRATIONS.md).
 
@@ -46,7 +48,9 @@ The [two-assistant demo](examples/two-assistants.js) uses fictional information.
 | [adapters/mcp](adapters/mcp/) | Local stdio tools and separate operator administration |
 | [benchmarks](benchmarks/README.md) | Reproducible comparison against a capable scoped JSON host |
 
-The [engineering study](docs/research/mio-personal-data-layer.zh-CN.md) found identical outcomes for Mio and a competent JSON host on the tested policies. Both reduced unnecessary application payload compared with full-profile delivery. This is **not evidence of better model accuracy, token cost, or unique performance superiority**. A separate [real Codex smoke test](experiments/results/codex-mcp-smoke.json) verifies tool integration, not comparative AI quality.
+The [engineering study](docs/research/mio-personal-data-layer.zh-CN.md) found identical outcomes for Mio and a competent JSON host on the tested policies. Both reduced unnecessary application payload compared with full-profile delivery. This is **not evidence of better model accuracy, token cost, or unique performance superiority**. A historical `0.2.0-alpha` [real Codex smoke test](experiments/results/codex-mcp-smoke.json) verifies tool integration, not comparative AI quality.
+
+The new [accuracy/cost experiment](experiments/accuracy-cost/README.md) completed 40 real Codex sessions with the same model, tasks and host policy. Legacy completed 12/20 tasks correctly; compact completed 20/20 by avoiding omissions of readable fields. Total input tokens fell 7.34%, but uncached input rose 3.50%: lower actual per-request charges are not established. Version `0.3.0-alpha` passes 110 automated tests. The [study](docs/research/accuracy-cost-optimization.zh-CN.md) includes all results and limits; this small synthetic sample does not establish general model accuracy.
 
 The core includes:
 
@@ -64,7 +68,7 @@ The repository API and CLI are **trusted-host tools**. They can access the under
 
 - SQLite files and generated exports are plaintext by default.
 - Actor identifiers and grant records are data; they do not authenticate a user or assistant.
-- Context builders, search, and full exports are not permission-scoped APIs. The demo reader is an example boundary, not a production security layer.
+- Core context builders, search, and full exports are not permission-scoped APIs; the MCP adapter applies its own grant checks. Neither the adapter nor the demo reader isolates the database from the same OS account.
 - Review decisions record workflow state. Applying an approved change to a canonical claim remains a separate host operation.
 - Audit records live in the same database and are not tamper-proof.
 

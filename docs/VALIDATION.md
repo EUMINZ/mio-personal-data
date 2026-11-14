@@ -1,5 +1,23 @@
 # Validation
 
+## 0.3.0-alpha: compact context and paired evaluation
+
+Checked on 2026-11-14 with Node.js 24.12.0 and Codex CLI 0.160.1.
+`npm run check` passed **110 tests**, with zero failures or skips, plus syntax
+checks and the fictional demo. This includes 10 new compact-interface tests,
+22 deterministic fixture tests, and 3 scoring/resource-accounting tests.
+
+The default adapter exposes `mio_context` and `mio_propose_update`. Tests cover
+batched partial results, optional key discovery, uniformly unavailable fields,
+future claim timestamps, fresh permission checks, no partial response on audit
+failure, transaction rollback, and compatibility through `--legacy-tools`.
+
+The [real-client evaluation protocol](../experiments/accuracy-cost/README.md)
+fixes 20 synthetic tasks per arm before inference. Its
+[separate report](research/accuracy-cost-optimization.zh-CN.md) distinguishes
+task correctness, per-attempt resources and per-success resources from model
+pricing, subscription charges and general real-world accuracy.
+
 ## 0.2.0-alpha: MCP and architecture study
 
 Checked on 2026-11-14 with Node.js 24.12.0 and npm 11.6.2 on macOS arm64.

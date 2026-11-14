@@ -7,7 +7,7 @@ Mio is an identity-first Alpha for local development and integration research. I
 - **Plaintext storage.** SQLite databases, journal files, and generated exports are not encrypted by Mio. File permissions, backups, and disk protection are the host's responsibility.
 - **Trusted-host access.** The repository API and CLI can read and write personal records directly. They are not a sandbox or a multi-tenant authorization service.
 - **No caller authentication.** Requester IDs, actor IDs, grant records, and labels such as `actorType: "user"` are supplied data. They do not establish the caller's identity or consent.
-- **Unscoped reads.** Context builders, search, dossiers, and full exports are not restricted to a grant. The example reader demonstrates checks in trusted local code; it does not authenticate assistants or secure the underlying database.
+- **Unscoped core reads.** Core context builders, search, dossiers, and full exports are not restricted to a grant. The MCP adapter applies separate scope checks. Neither it nor the example reader authenticates assistants or secures the underlying database from direct access.
 - **Review is a workflow.** Recording an accepted decision does not automatically change a canonical claim. Hosts must control both review submission and subsequent claim updates.
 - **Mutable audit records.** Events are stored alongside other records in SQLite. A process with database access can change them; they are not a tamper-proof ledger.
 - **Validation has limits.** JavaScript and JSON Schema validators check payload structure. They do not establish caller identity, permission, or consent. A recorded source does not prove that content is true or safe to use as instructions.
@@ -16,7 +16,11 @@ Use fictional information when experimenting. Before handling sensitive data, de
 
 ## Local MCP adapter
 
-The adapter binds one person/requester/grant tuple in a local configuration file. Tool arguments cannot replace that binding. It exposes field discovery, scoped reads and pending proposals; approval, sharing and revocation are operator CLI operations outside MCP. Config and database files are checked for private POSIX permissions where supported; Windows ACL verification is not implemented.
+The adapter binds one person/requester/grant tuple in a local configuration file. Tool arguments cannot replace that binding. In `0.3.0-alpha`, `mio_context` handles discovery and scoped batch reads, while `mio_propose_update` creates pending proposals. Approval, sharing and revocation are operator CLI operations outside MCP. Config and database files are checked for private POSIX permissions where supported; Windows ACL verification is not implemented.
+
+For a valid grant, a batch may return readable values alongside `unavailable` keys. Missing, unauthorized, expired, ambiguous and unshared updated fields have the same unavailable representation; it must not be interpreted as proof that data exists. Invalid overall grants and database/audit errors fail the entire call without partial values. `--legacy-tools` preserves the same field policy but rejects the entire legacy read when any field is unavailable.
+
+The adapter does not cache reads: it checks current records and grant state on each call. `checkedAt` is a server check timestamp, not proof of current real-world truth. Invalid or future claim update timestamps and ambiguous latest versions are rejected; a newer expired or unshared claim does not allow fallback to an older one. These controls cannot verify the accuracy of operator-supplied facts or the host clock, and cannot invalidate copies already retained by clients.
 
 This is a boundary for tool calls, not isolation from the OS account running the client. An assistant with shell or filesystem access to the same database/config can bypass it or invoke the operator CLI. Operator confirmation flags and IDs do not authenticate a human. Restrict those capabilities separately if that threat is relevant.
 

@@ -42,7 +42,7 @@ const args = ['exec', '--ignore-user-config', '--ephemeral', '--skip-git-repo-ch
   '-c', 'features.multi_agent=false', '-c', 'features.skip_host_skill_discovery=true',
   '-c', 'web_search="disabled"',
   '-c', `mcp_servers.mio.command=${JSON.stringify(process.execPath)}`,
-  '-c', `mcp_servers.mio.args=${JSON.stringify([join(root, 'adapters/mcp/server.js'), '--demo'])}`,
+  '-c', `mcp_servers.mio.args=${JSON.stringify([join(root, 'adapters/mcp/server.js'), '--legacy-tools', '--demo'])}`,
   '-c', 'mcp_servers.mio.required=true', '-c', 'mcp_servers.mio.startup_timeout_sec=30', prompt];
 const start = performance.now();
 const run = spawnSync('codex', args, { encoding: 'utf8', timeout: 180_000, maxBuffer: 16 * 1024 * 1024 });
@@ -76,7 +76,7 @@ const result = {
   schemaVersion: 'mio.codex-mcp-smoke.v1', generatedAt: new Date().toISOString(),
   kind: 'single real-client integration probe; not comparative quality evidence',
   clientVersion: spawnSync('codex', ['--version'], { encoding: 'utf8' }).stdout?.trim(),
-  requestedModel: model, reasoningEffort: 'low', dataset: 'fictional --demo',
+  requestedModel: model, reasoningEffort: 'low', dataset: 'fictional --demo', toolset: 'legacy',
   isolatedUserConfig: true, ephemeral: true, elapsedMs, exitCode: run.status,
   answer, expected, answerMatches, traceMatches,
   success: run.status === 0 && answerMatches && traceMatches,

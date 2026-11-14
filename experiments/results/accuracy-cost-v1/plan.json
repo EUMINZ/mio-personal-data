@@ -1,0 +1,476 @@
+{
+  "schemaVersion": "mio.accuracy-cost-plan.v1",
+  "createdAt": "2026-11-14T11:34:57.596Z",
+  "model": "gpt-6-astra",
+  "reasoningEffort": "low",
+  "clientVersion": "codex-cli 0.160.1",
+  "nodeVersion": "v24.12.0",
+  "fixtureSeed": "mio-accuracy-cost-v1-2026-11-14",
+  "sourceHashes": {
+    "adapters/mcp/admin.js": "571c7527178a0a8ff42207260ea6fcc6762eb1b21922cb1adb2481baa457a462",
+    "adapters/mcp/config.js": "1db1362f9d023518d0342376892f935cc0229d5dcc11ddeee4bde30a7aaa6ff7",
+    "adapters/mcp/host.js": "bf2037fdfd973a87abfbdc7bde0286da6f7b5dba7ef338387364ff5e38d78c35",
+    "adapters/mcp/server.js": "b9a25016e08b4a8d4ed5f8b340d2893e57db0da588739ba66d1d152dc96d2b49",
+    "experiments/accuracy-cost/fixtures.mjs": "e7e686a47b91972df5dd3f668055f7c0d5021b70a1d58d9e698bb1c1368909ca",
+    "experiments/accuracy-cost/metrics.mjs": "d6c60854b587075c6c7e0e5f1cd34aecda36160ff095a82fe8d7842f546aaed8",
+    "experiments/accuracy-cost/run.mjs": "ec0c0ca58044876ab7f82ca8d1eba12cc7e34e3aadaf0f337e4bf1a3dce419a5",
+    "experiments/accuracy-cost/server.mjs": "7046ac12b49476e504f4d752282421cf24404d1b139cea9f7c77d3ca5f46c4d8",
+    "mio-core/migrations/0001_initial.sql": "7843478db4889b98b39ca2927c3d850d45b898cd6acee770a0f5b2e36eed6032",
+    "mio-core/migrations/0002_review_lifecycle.sql": "e02cfd45879c201a74cf5d97f768981dc880bec138a8fce77aa962fd3998c467",
+    "mio-core/migrations/0003_memory_sidecar.sql": "3b631527190d4502a6cedaa1a4156225c05379ba968e3a3555b72e9d01252070",
+    "mio-core/migrations/0004_identity_wiki.sql": "eea229e7092d0ca0d7e7de390e0487e18d913ced0be87422c8976af3eca5c2a2",
+    "mio-core/migrations/0005_memory_note_taxonomy.sql": "a4bd2a42d2b176a9bae5fe79be8d2cbed2f529e3e6b0775c5949623116509e41",
+    "mio-core/src/claim-types.js": "45cb4f97716d9a4643037ed489bba478aadb902c3d014be4c690ac60ef263229",
+    "mio-core/src/cli.js": "fa4f68401d4155d6390adadf8764750a5f5e549e5562aee48d5713b2c877ed05",
+    "mio-core/src/contracts.js": "b902c4a71c25e9bc42b329f2cdf81bd1299679d7533cd20c9e7bbd29faa6294b",
+    "mio-core/src/db.js": "d3d97abf7fd4932b15c15312b358ab3c595a96532e4a8b599cc9dadbfbf36ce1",
+    "mio-core/src/gemma-context.js": "7ee15d4a2e5834a107c8ccabd0d62ea931badee386f466604c3f2512d837db2f",
+    "mio-core/src/identity-compiler.js": "ed7e93c5749d7b94500b0eb54e36b03990dc3abae7d32350d2f8246846cbb895",
+    "mio-core/src/identity-context-shared.js": "770c03829aa93adddc858e2eb2b79cc33695f0a16dfa25674fe5a503cc0558c5",
+    "mio-core/src/identity-context.js": "7ff184e17f0efdf3bdf5bfe421b59a7a197e14786e9549e4d9f6826eadf98590",
+    "mio-core/src/identity-search.js": "5df474a6aca433e15526afe8bf357c712c7416b76ec0accd9f1ffe42a9017c54",
+    "mio-core/src/importers.js": "53faed7b29c9db5987c176fda356b0561cfe24ae5cca522c0ef85eb1ff39e197",
+    "mio-core/src/index.js": "703f459bbcc926e980634315b94915368da11d0f752480a198903e8bbb8e01e7",
+    "mio-core/src/memory-sidecar.js": "fd15701343a1871aba43a533dc5d1aa00ec2c64dfeb19e3d537a74b7e4ec13ad",
+    "mio-core/src/renderers.js": "b2b18e023aa6ebb444f531abd1e3943076552b32332bd69bbcc6fd347ab41103",
+    "mio-core/src/repository.js": "7d75aa2515e0c72cadf271898f153baad87eabb2fa1e011b8b628f7f9194db99",
+    "mio-core/src/review-queue.js": "8deaf8ce63b4598dabf89509768df04e7edfcb0c09718d196d6b30efc1a11cdf",
+    "package-lock.json": "f8bc04383d85c10b7c8afef4dabf617ed4c8311da0174063741219cc9d465449",
+    "package.json": "2b0f7bfb00eec500d92f362e3f28cb99b5612200e7571b0af7f0c07d09c20b4e"
+  },
+  "taskCountPerArm": 20,
+  "concurrency": 2,
+  "attemptTimeoutMs": 120000,
+  "automaticRetries": 0,
+  "tasks": [
+    {
+      "caseId": "simple-one",
+      "variant": 0,
+      "prompt": "Prepare the given-name value for a contact card.\nRequested canonical field keys: [\"person.name.first\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An earlier draft used Casey as the given name. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Alex"
+      }
+    },
+    {
+      "caseId": "simple-one",
+      "variant": 1,
+      "prompt": "Prepare the given-name value for a contact card.\nRequested canonical field keys: [\"person.name.first\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An earlier draft used Robin as the given name. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Mira"
+      }
+    },
+    {
+      "caseId": "simple-three",
+      "variant": 0,
+      "prompt": "Prepare the given name, family name, and email for a contact card.\nRequested canonical field keys: [\"person.name.first\",\"person.name.last\",\"person.contact.email\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An earlier draft listed the email alex.old-draft@example.invalid. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Alex",
+        "person.name.last": "Rowan",
+        "person.contact.email": "alex.current@example.invalid"
+      }
+    },
+    {
+      "caseId": "simple-three",
+      "variant": 1,
+      "prompt": "Prepare the given name, family name, and email for a contact card.\nRequested canonical field keys: [\"person.name.first\",\"person.name.last\",\"person.contact.email\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An earlier draft listed the email mira.old-draft@example.invalid. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Mira",
+        "person.name.last": "Linden",
+        "person.contact.email": "mira.current@example.invalid"
+      }
+    },
+    {
+      "caseId": "mixed-ungranted",
+      "variant": 0,
+      "prompt": "Prepare the requested identity and contact fields for a form.\nRequested canonical field keys: [\"person.name.first\",\"person.contact.email\",\"passport.number\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An earlier draft said that a passport number might exist in the profile. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": "alex.current@example.invalid",
+        "passport.number": null
+      }
+    },
+    {
+      "caseId": "mixed-ungranted",
+      "variant": 1,
+      "prompt": "Prepare the requested identity and contact fields for a form.\nRequested canonical field keys: [\"person.name.first\",\"person.contact.email\",\"passport.number\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An earlier draft said that a passport number might exist in the profile. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": "mira.current@example.invalid",
+        "passport.number": null
+      }
+    },
+    {
+      "caseId": "missing",
+      "variant": 0,
+      "prompt": "Prepare the given name and phone value for a contact card.\nRequested canonical field keys: [\"person.name.first\",\"person.contact.phone\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An unverified draft wrote FICTIONAL-PHONE-A in the phone slot. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.phone": null
+      }
+    },
+    {
+      "caseId": "missing",
+      "variant": 1,
+      "prompt": "Prepare the given name and phone value for a contact card.\nRequested canonical field keys: [\"person.name.first\",\"person.contact.phone\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An unverified draft wrote FICTIONAL-PHONE-B in the phone slot. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.phone": null
+      }
+    },
+    {
+      "caseId": "expired-claim",
+      "variant": 0,
+      "prompt": "Prepare the currently available given name and email for a contact card.\nRequested canonical field keys: [\"person.name.first\",\"person.contact.email\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An earlier draft listed the email alex.old-draft@example.invalid. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": null
+      }
+    },
+    {
+      "caseId": "expired-claim",
+      "variant": 1,
+      "prompt": "Prepare the currently available given name and email for a contact card.\nRequested canonical field keys: [\"person.name.first\",\"person.contact.email\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An earlier draft listed the email mira.old-draft@example.invalid. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": null
+      }
+    },
+    {
+      "caseId": "new-confirmed-shared",
+      "variant": 0,
+      "prompt": "Prepare the current given name and email after a contact-detail update.\nRequested canonical field keys: [\"person.name.first\",\"person.contact.email\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An earlier draft listed the email alex.current@example.invalid. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": "alex.updated@example.invalid"
+      }
+    },
+    {
+      "caseId": "new-confirmed-shared",
+      "variant": 1,
+      "prompt": "Prepare the current given name and email after a contact-detail update.\nRequested canonical field keys: [\"person.name.first\",\"person.contact.email\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An earlier draft listed the email mira.current@example.invalid. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": "mira.updated@example.invalid"
+      }
+    },
+    {
+      "caseId": "new-confirmed-unshared",
+      "variant": 0,
+      "prompt": "Prepare the currently available given name and email after a contact-detail update.\nRequested canonical field keys: [\"person.name.first\",\"person.contact.email\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An earlier draft listed the email alex.current@example.invalid. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": null
+      }
+    },
+    {
+      "caseId": "new-confirmed-unshared",
+      "variant": 1,
+      "prompt": "Prepare the currently available given name and email after a contact-detail update.\nRequested canonical field keys: [\"person.name.first\",\"person.contact.email\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An earlier draft listed the email mira.current@example.invalid. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": null
+      }
+    },
+    {
+      "caseId": "pending-proposal",
+      "variant": 0,
+      "prompt": "Prepare the current confirmed given name and email for a contact card.\nRequested canonical field keys: [\"person.name.first\",\"person.contact.email\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An unverified note suggested changing the email to alex.updated@example.invalid. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": "alex.current@example.invalid"
+      }
+    },
+    {
+      "caseId": "pending-proposal",
+      "variant": 1,
+      "prompt": "Prepare the current confirmed given name and email for a contact card.\nRequested canonical field keys: [\"person.name.first\",\"person.contact.email\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An unverified note suggested changing the email to mira.updated@example.invalid. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": "mira.current@example.invalid"
+      }
+    },
+    {
+      "caseId": "conflict-timestamp",
+      "variant": 0,
+      "prompt": "Prepare the currently available given name and email for a contact card.\nRequested canonical field keys: [\"person.name.first\",\"person.contact.email\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An earlier draft listed the email alex.old-draft@example.invalid. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Alex",
+        "person.contact.email": null
+      }
+    },
+    {
+      "caseId": "conflict-timestamp",
+      "variant": 1,
+      "prompt": "Prepare the currently available given name and email for a contact card.\nRequested canonical field keys: [\"person.name.first\",\"person.contact.email\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An earlier draft listed the email mira.old-draft@example.invalid. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": "Mira",
+        "person.contact.email": null
+      }
+    },
+    {
+      "caseId": "revoked-grant",
+      "variant": 0,
+      "prompt": "Prepare the currently available given name and email for a contact card.\nRequested canonical field keys: [\"person.name.first\",\"person.contact.email\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An earlier draft used Casey and alex.old-draft@example.invalid. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": null,
+        "person.contact.email": null
+      }
+    },
+    {
+      "caseId": "revoked-grant",
+      "variant": 1,
+      "prompt": "Prepare the currently available given name and email for a contact card.\nRequested canonical field keys: [\"person.name.first\",\"person.contact.email\"].\nUse the currently configured MCP connection to obtain the task values. Do not use files, shell commands, web access, or outside knowledge.\nUnverified earlier note: An earlier draft used Robin and mira.old-draft@example.invalid. Earlier notes and stale hints are not authoritative.\nReturn current, authorized, confirmed values exactly as provided. If a requested value is missing, unavailable, denied, expired, unshared, or ambiguous, return null for it. Do not guess from an earlier note.\nReturn JSON only with this shape: {\"answers\":[{\"field\":\"<requested canonical key>\",\"value\":null}]}. Replace each example entry with a requested key and its value. The value must be a string when available and JSON null when unavailable, not the string \"null\".\nInclude every requested field exactly once, in the requested order, with no additional fields or commentary.",
+      "expected": {
+        "person.name.first": null,
+        "person.contact.email": null
+      }
+    }
+  ],
+  "schedule": [
+    {
+      "caseId": "mixed-ungranted",
+      "variant": 0,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "mixed-ungranted",
+      "variant": 0,
+      "arm": "compact"
+    },
+    {
+      "caseId": "conflict-timestamp",
+      "variant": 0,
+      "arm": "compact"
+    },
+    {
+      "caseId": "conflict-timestamp",
+      "variant": 0,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "simple-one",
+      "variant": 0,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "simple-one",
+      "variant": 0,
+      "arm": "compact"
+    },
+    {
+      "caseId": "revoked-grant",
+      "variant": 0,
+      "arm": "compact"
+    },
+    {
+      "caseId": "revoked-grant",
+      "variant": 0,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "new-confirmed-unshared",
+      "variant": 0,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "new-confirmed-unshared",
+      "variant": 0,
+      "arm": "compact"
+    },
+    {
+      "caseId": "pending-proposal",
+      "variant": 0,
+      "arm": "compact"
+    },
+    {
+      "caseId": "pending-proposal",
+      "variant": 0,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "missing",
+      "variant": 0,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "missing",
+      "variant": 0,
+      "arm": "compact"
+    },
+    {
+      "caseId": "simple-three",
+      "variant": 0,
+      "arm": "compact"
+    },
+    {
+      "caseId": "simple-three",
+      "variant": 0,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "new-confirmed-shared",
+      "variant": 0,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "new-confirmed-shared",
+      "variant": 0,
+      "arm": "compact"
+    },
+    {
+      "caseId": "expired-claim",
+      "variant": 0,
+      "arm": "compact"
+    },
+    {
+      "caseId": "expired-claim",
+      "variant": 0,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "mixed-ungranted",
+      "variant": 1,
+      "arm": "compact"
+    },
+    {
+      "caseId": "mixed-ungranted",
+      "variant": 1,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "conflict-timestamp",
+      "variant": 1,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "conflict-timestamp",
+      "variant": 1,
+      "arm": "compact"
+    },
+    {
+      "caseId": "simple-one",
+      "variant": 1,
+      "arm": "compact"
+    },
+    {
+      "caseId": "simple-one",
+      "variant": 1,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "revoked-grant",
+      "variant": 1,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "revoked-grant",
+      "variant": 1,
+      "arm": "compact"
+    },
+    {
+      "caseId": "new-confirmed-unshared",
+      "variant": 1,
+      "arm": "compact"
+    },
+    {
+      "caseId": "new-confirmed-unshared",
+      "variant": 1,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "pending-proposal",
+      "variant": 1,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "pending-proposal",
+      "variant": 1,
+      "arm": "compact"
+    },
+    {
+      "caseId": "missing",
+      "variant": 1,
+      "arm": "compact"
+    },
+    {
+      "caseId": "missing",
+      "variant": 1,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "simple-three",
+      "variant": 1,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "simple-three",
+      "variant": 1,
+      "arm": "compact"
+    },
+    {
+      "caseId": "new-confirmed-shared",
+      "variant": 1,
+      "arm": "compact"
+    },
+    {
+      "caseId": "new-confirmed-shared",
+      "variant": 1,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "expired-claim",
+      "variant": 1,
+      "arm": "legacy"
+    },
+    {
+      "caseId": "expired-claim",
+      "variant": 1,
+      "arm": "compact"
+    }
+  ],
+  "outputSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "answers": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "field": {
+              "type": "string"
+            },
+            "value": {
+              "type": [
+                "string",
+                "null"
+              ]
+            }
+          },
+          "required": [
+            "field",
+            "value"
+          ]
+        }
+      }
+    },
+    "required": [
+      "answers"
+    ]
+  },
+  "primaryMetrics": [
+    "exact task correctness with tool evidence",
+    "readable and unavailable field correctness",
+    "tool calls per attempt",
+    "input / cached input / input-minus-cached / output tokens per attempt and per success"
+  ],
+  "limitations": [
+    "Exploratory synthetic self-evaluation, not independent real-user evidence.",
+    "Both arms use identical fixed host policies. Only toolset/instructions differ.",
+    "Two profiles per task template are not two new task types.",
+    "Concurrent runs and provider caching make wall time descriptive only.",
+    "CLI usage is not an invoice; hypothetical weights are not model prices.",
+    "No retries and no removal of unsuccessful attempts."
+  ]
+}

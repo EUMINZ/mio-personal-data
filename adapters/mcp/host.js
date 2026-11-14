@@ -30,7 +30,7 @@ export function createScopedHost(repository, binding, { clock = Date.now } = {})
       .filter((item) => item.claimTypeKey === field && item.supersededByClaimId === null);
     // ISO-8601 offsets can have different text ordering from actual instants.
     // Invalid timestamps anywhere in this candidate set make ordering unsafe.
-    requireAccess(claims.every((claim) => Number.isFinite(Date.parse(claim.updatedAt))));
+    requireAccess(claims.every((claim) => Number.isFinite(Date.parse(claim.updatedAt)) && Date.parse(claim.updatedAt) <= now));
     claims.sort((a, b) => Date.parse(b.updatedAt) - Date.parse(a.updatedAt));
     const claim = claims[0];
     requireAccess(claim && claim.personId === personId && unexpired(claim.expiresAt, now));
@@ -53,6 +53,29 @@ export function createScopedHost(repository, binding, { clock = Date.now } = {})
       eventType, eventPayload: { grantId, ...payload }, createdAt: new Date(now).toISOString() });
   }
   return {
+    context(fields) {
+      return repository.importWithinTransaction(() => {
+        requireAccess(Array.isArray(fields) && fields.length > 0 && fields.length <= 50);
+        requireAccess(fields.every((field) => typeof field === 'string' && field.length > 0 && field.length <= 120));
+        const requested = [...new Set(fields)];
+        const now = time(); const grant = grantAt(now);
+        const available = []; const unavailable = [];
+        for (const field of requested) {
+          try {
+            const [claim] = selected(grant, [field], now);
+            available.push([field, claim.value]);
+          } catch (error) {
+            // Missing, unshared, expired, ambiguous and unauthorized facts have
+            // the same public representation. Database failures must propagate.
+            if (!(error instanceof AccessDenied)) throw error;
+            unavailable.push(field);
+          }
+        }
+        // A failed audit must abort the entire batch before any values escape.
+        audit('mcp.context.read', { fields: available.map(([field]) => field), unavailable }, now);
+        return { fields: Object.fromEntries(available), unavailable, checkedAt: new Date(now).toISOString() };
+      });
+    },
     listFields() {
       return repository.importWithinTransaction(() => {
         const now = time(); const grant = grantAt(now);
