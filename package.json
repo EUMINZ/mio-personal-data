@@ -1,0 +1,20 @@
+{
+  "name": "mio-personal-data",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "A user-controlled personal data layer for AI.",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "test": "node --test mio-core/tests/*.test.js",
+    "demo": "node examples/two-assistants.js",
+    "check": "node scripts/check.mjs"
+  },
+  "devDependencies": {
+    "ajv": "8.17.1",
+    "ajv-formats": "3.0.1"
+  }
+}

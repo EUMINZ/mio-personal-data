@@ -1,0 +1,22 @@
+{
+  "name": "mio-core",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Local-first personal data core: claims, evidence, human review, grants and audit.",
+  "scripts": {
+    "test": "node --test ./tests/*.test.js",
+    "init-db": "node ./src/cli.js init-db",
+    "sync-web-to-core": "node ./scripts/sync-web-to-core.js",
+    "render-person-summary": "node ./src/cli.js render-person-summary",
+    "render-gemma-context": "node ./src/cli.js render-gemma-context",
+    "search-person-context": "node ./src/cli.js search-person-context",
+    "render-review-queue-json": "node ./src/cli.js render-review-queue-json",
+    "import-review-decisions": "node ./src/cli.js import-review-decisions",
+    "validate-contract": "node ./src/cli.js validate-contract"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "license": "Apache-2.0"
+}

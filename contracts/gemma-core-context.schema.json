@@ -1,0 +1,542 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mio.local/contracts/gemma-core-context.schema.json",
+  "title": "Mio Core Context (legacy Gemma v1)",
+  "description": "Full trusted-host context snapshot; not a grant-filtered or authenticated assistant API.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "generatedAt",
+    "person",
+    "profileSummary",
+    "knowledgeCards",
+    "evidence",
+    "proposals"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "mio.gemma.core-context.v1"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "person": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "displayName"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "displayName": {
+          "type": "string"
+        }
+      }
+    },
+    "profileSummary": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "knowledgeCards": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "titleEn",
+          "titleZh",
+          "summaryEn",
+          "summaryZh",
+          "facts"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "titleEn": {
+            "type": "string"
+          },
+          "titleZh": {
+            "type": "string"
+          },
+          "summaryEn": {
+            "type": "string"
+          },
+          "summaryZh": {
+            "type": "string"
+          },
+          "facts": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "kind",
+          "headline",
+          "fields"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "kind": {
+            "type": "string"
+          },
+          "headline": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": [
+              "number",
+              "null"
+            ]
+          },
+          "fields": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "string"
+            }
+          },
+          "sourceDocumentIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "supportingEvidenceIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "proposals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "field",
+          "currentValue",
+          "suggestedValue",
+          "rationale",
+          "confidence",
+          "action"
+        ],
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "currentValue": {
+            "type": "string"
+          },
+          "suggestedValue": {
+            "type": "string"
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "confidence": {
+            "type": "string",
+            "enum": [
+              "low",
+              "medium",
+              "high"
+            ]
+          },
+          "action": {
+            "type": "string",
+            "enum": [
+              "fill-empty",
+              "review-conflict"
+            ]
+          },
+          "sourceDocumentIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "supportingEvidenceIds": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "relatedMemory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/memoryItem"
+            }
+          }
+        }
+      }
+    },
+    "pendingReview": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "itemId",
+          "bundleId",
+          "field",
+          "target",
+          "suggestedValue",
+          "status",
+          "createdAt"
+        ],
+        "properties": {
+          "itemId": {
+            "type": "string"
+          },
+          "bundleId": {
+            "type": "string"
+          },
+          "field": {
+            "type": "string"
+          },
+          "target": {
+            "type": "string"
+          },
+          "suggestedValue": {
+            "type": "string"
+          },
+          "currentValue": {
+            "type": "string"
+          },
+          "rationale": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "relatedMemory": {
+            "type": "array",
+            "items": {
+              "$ref": "#/$defs/memoryItem"
+            }
+          }
+        }
+      }
+    },
+    "compiledIdentity": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "headlineText",
+        "summaryText",
+        "stableFieldCount",
+        "extractedFieldCount",
+        "pendingReviewCount",
+        "pendingBundleCount",
+        "wikiEntryCount",
+        "activeGrantCount",
+        "lastUpdatedAt"
+      ],
+      "properties": {
+        "headlineText": {
+          "type": "string"
+        },
+        "summaryText": {
+          "type": "string"
+        },
+        "summaryLines": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "stableFieldCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "extractedFieldCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pendingReviewCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "pendingBundleCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "wikiEntryCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "activeGrantCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "attentionFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "lastUpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "timeline": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "eventType",
+          "eventAt",
+          "title",
+          "detail",
+          "sourceKind",
+          "sourceRef"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "eventType": {
+            "type": "string"
+          },
+          "eventAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "title": {
+            "type": "string"
+          },
+          "detail": {
+            "type": "string"
+          },
+          "sourceKind": {
+            "type": "string"
+          },
+          "sourceRef": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "activeGrants": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "grantId",
+          "purpose",
+          "requesterId",
+          "allowedFields"
+        ],
+        "properties": {
+          "grantId": {
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string"
+          },
+          "requesterId": {
+            "type": "string"
+          },
+          "expiresAt": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "format": "date-time"
+          },
+          "allowedFields": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "memory": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/memoryItem"
+      }
+    },
+    "wikiEntries": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/wikiEntry"
+      }
+    }
+  },
+  "$defs": {
+    "memoryItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "kind",
+        "title",
+        "snippetText",
+        "rationale",
+        "sourceKind",
+        "sourceRef",
+        "sourceLocator",
+        "createdAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "snippetText": {
+          "type": "string"
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "sourceKind": {
+          "type": "string"
+        },
+        "sourceRef": {
+          "type": "string"
+        },
+        "sourceLocator": {
+          "type": "string"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "field": {
+          "type": "string"
+        },
+        "serviceKey": {
+          "type": "string"
+        },
+        "sessionOrBundleId": {
+          "type": "string"
+        },
+        "confidence": {
+          "type": [
+            "number",
+            "null"
+          ]
+        }
+      }
+    },
+    "wikiEntry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "title",
+        "category",
+        "fieldKey",
+        "valueText",
+        "summaryText",
+        "status",
+        "trustLevel",
+        "sourceKind",
+        "sourceRef",
+        "sourceLocator",
+        "reviewedAt",
+        "updatedAt"
+      ],
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "fieldKey": {
+          "type": "string"
+        },
+        "valueText": {
+          "type": "string"
+        },
+        "summaryText": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "trustLevel": {
+          "type": "string"
+        },
+        "sourceKind": {
+          "type": "string"
+        },
+        "sourceRef": {
+          "type": "string"
+        },
+        "sourceLocator": {
+          "type": "string"
+        },
+        "reviewedAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "autofillEligible": {
+          "type": "boolean"
+        },
+        "sourceDocumentIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "supportingEvidenceIds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  }
+}

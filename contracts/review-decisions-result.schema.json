@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mio.local/contracts/review-decisions-result.schema.json",
+  "title": "Mio Review Decisions Import Result",
+  "description": "Structured sync receipt produced by mio-core after importing review decisions batch.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "generatedAt",
+    "person",
+    "batchId",
+    "totalDecisions",
+    "appliedCount",
+    "skippedCount",
+    "acknowledgedDecisionIds",
+    "applied",
+    "skipped"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "const": "mio.review.decisions.result.v1"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "person": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "displayName"],
+      "properties": {
+        "id": { "type": "string" },
+        "displayName": { "type": "string" }
+      }
+    },
+    "batchId": { "type": "string" },
+    "totalDecisions": { "type": "integer", "minimum": 0 },
+    "appliedCount": { "type": "integer", "minimum": 0 },
+    "skippedCount": { "type": "integer", "minimum": 0 },
+    "acknowledgedDecisionIds": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "applied": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["decisionId", "reviewItemId", "bundleId", "decision"],
+        "properties": {
+          "decisionId": { "type": "string" },
+          "reviewItemId": { "type": "string" },
+          "bundleId": { "type": "string" },
+          "decision": { "type": "string" },
+          "itemStatus": { "type": ["string", "null"] },
+          "bundleStatus": { "type": ["string", "null"] }
+        }
+      }
+    },
+    "skipped": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["reason"],
+        "properties": {
+          "decisionId": { "type": "string" },
+          "reviewItemId": { "type": "string" },
+          "bundleId": { "type": "string" },
+          "reason": { "type": "string" },
+          "itemStatus": { "type": "string" }
+        }
+      }
+    }
+  }
+}

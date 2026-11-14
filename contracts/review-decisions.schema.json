@@ -1,0 +1,68 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mio.local/contracts/review-decisions.schema.json",
+  "title": "Mio Review Decisions Batch",
+  "description": "Structured review decision batch exported by review shells and imported into mio-core review lifecycle.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "generatedAt", "person", "decisions"],
+  "properties": {
+    "schemaVersion": {
+      "const": "mio.review.decisions.v1"
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "batchId": {
+      "type": "string"
+    },
+    "person": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id"],
+      "properties": {
+        "id": { "type": "string" },
+        "displayName": { "type": "string" }
+      }
+    },
+    "source": {
+      "type": "object"
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "decisionId",
+          "reviewItemId",
+          "bundleId",
+          "decision",
+          "actorType",
+          "actorId",
+          "createdAt"
+        ],
+        "properties": {
+          "decisionId": { "type": "string" },
+          "reviewItemId": { "type": "string" },
+          "bundleId": { "type": "string" },
+          "decision": {
+            "type": "string",
+            "enum": ["accepted", "dismissed", "superseded"]
+          },
+          "actorType": {
+            "type": "string",
+            "enum": ["user", "system", "agent", "requester"]
+          },
+          "actorId": { "type": "string" },
+          "note": { "type": "string" },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    }
+  }
+}

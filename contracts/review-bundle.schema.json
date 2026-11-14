@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://mio.local/contracts/review-bundle.schema.json",
+  "title": "Mio Review Bundle",
+  "description": "Structured review artifact returned by the extension or other execution adapters before local merge.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "createdAt", "source", "summary", "requestedFields", "injectedFields", "pageProfile", "observations", "proposals"],
+  "properties": {
+    "schemaVersion": {
+      "const": "mio.review.bundle.v1"
+    },
+    "reviewBundleId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "producer": { "type": "string" },
+        "templateId": { "type": "string" },
+        "formType": { "type": "string" },
+        "countryCode": { "type": "string" },
+        "siteName": { "type": "string" },
+        "pageStage": { "type": "string" },
+        "pageStageLabel": { "type": "string" },
+        "mappingId": { "type": "string" },
+        "mappingSource": { "type": "string" },
+        "url": { "type": "string" },
+        "title": { "type": "string" },
+        "vaultId": { "type": "string" },
+        "serviceRequestId": { "type": "string" },
+        "grantId": { "type": "string" },
+        "executionSessionId": { "type": "string" },
+        "generatedAt": { "type": "string", "format": "date-time" }
+      }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "requestedFieldCount": { "type": "integer", "minimum": 0 },
+        "injectedFieldCount": { "type": "integer", "minimum": 0 },
+        "proposalCount": { "type": "integer", "minimum": 0 },
+        "observationCount": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "requestedFields": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "injectedFields": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "pageProfile": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "tripRecord": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "observations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["field"],
+        "properties": {
+          "observationId": { "type": "string" },
+          "field": { "type": "string" },
+          "type": { "type": "string", "enum": ["fill"] },
+          "selector": { "type": "string" },
+          "previousValue": { "type": "string" },
+          "nextValue": { "type": "string" },
+          "sourceValue": { "type": "string" },
+          "observedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "proposals": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["field", "value"],
+        "properties": {
+          "proposalId": { "type": "string" },
+          "field": { "type": "string" },
+          "target": { "type": "string", "enum": ["service-context"] },
+          "value": { "type": "string" },
+          "derivedFrom": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "rationale": { "type": "string" },
+          "proposedAt": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "mergeGuidance": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "rationale": { "type": "string" },
+        "target": { "type": "string" }
+      }
+    }
+  }
+}
