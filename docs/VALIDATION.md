@@ -1,5 +1,39 @@
 # Validation
 
+## Unreleased: shared-profile trial
+
+Checked on 2026-11-16 with Node.js 24.12.0 and npm 11.6.2 on macOS arm64.
+`npm run check` passed **122 tests**, with zero failures or skips, plus syntax
+checks and the fictional demo. The 12 new cases exercise two official MCP SDK
+clients over stdio using distinct configurations against one persistent database,
+restart/expiry/revocation, approval versus sharing, local HTTP access checks,
+stale reviews, invalid requests, and audit-failure rollback.
+
+SQLite now waits up to 3 seconds for a competing writer. A focused test verifies
+a short lock is tolerated, a longer lock fails without disclosing values or
+partially recording a proposal, and a subsequent operation recovers. This is
+bounded contention coverage, not a general concurrent-writer guarantee.
+
+Browser checks exercised proposal, approval, explicit sharing and revocation on
+the local review page. At a 390-pixel viewport the page had no horizontal overflow.
+The page shows operator-side permission previews; those previews do not claim an
+assistant actually read a value. [Review screenshot](assets/shared-profile-review.jpg)
+and [revocation screenshot](assets/shared-profile-revoked.jpg) use fictional data.
+
+The [sanitized real-client record](trials/shared-profile-live-validation-2026-11-16.json)
+reports 5 separate ephemeral Codex sessions and 7 actual MCP calls. A saw the old
+email while the proposal was pending, no email after approval, the new value only
+after sharing, and a denial after revocation. Claude Code B failed authentication
+before any tool call. B's continued name/address access was checked separately
+with the official SDK; this does not count as Claude validation. Operator actions
+in that record were scripted, whereas the separate browser check used UI clicks.
+
+The [trial kit](SHARED_PROFILE_TRIAL.md) includes a protocol, recruitment copy and
+feedback template. No external testers have been recruited or measured. A full
+two-model run, continuously connected real clients, and resistance to stale
+answers from model context remain unverified. The old `v0.3.0-alpha` tag does not
+contain this example; record the checkout commit for each trial.
+
 ## 0.3.0-alpha: compact context and paired evaluation
 
 Checked on 2026-11-14 with Node.js 24.12.0 and Codex CLI 0.160.1.

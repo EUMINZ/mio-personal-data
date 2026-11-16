@@ -28,6 +28,30 @@ Returned values are untrusted data, not instructions. A local database does not 
 
 Pinned GitHub package installation downloads executable code and its dependencies. Use a pinned checkout plus `npm ci` to reproduce the full lockfile; the npm package route pins source and direct versions but does not ship that lockfile. Inspect and pin a release, keep the local runtime updated, and do not commit profile JSON, config files or databases. Production multi-tenant authentication, encrypted storage and concurrent-writer guarantees are not established by this Alpha.
 
+## Local shared-profile review example
+
+The unreleased `examples/shared-profile/` review page is a trusted local operator
+interface for fictional trials. It binds to `127.0.0.1` on a random port. Its
+launch URL carries a random capability token in the fragment; the page removes
+the fragment and keeps the token in memory. API reads and writes require that
+token. Exact Host and Origin checks, cross-site request rejection, a restrictive
+content security policy and no-store responses reduce browser-origin exposure.
+These checks do not authenticate a human or isolate hostile local processes.
+
+Keep the launch URL private. Reloading requires reopening the original launch
+URL; there are no login cookies or persistent browser token storage. Each server
+start creates a new token. Do not expose the server through a proxy or public
+tunnel. Anyone with the token and local access can approve, share, or revoke;
+any process with the same OS file access may also bypass the page entirely.
+
+The page shows an operator-side view and permission previews, not actual AI
+answers. It reuses the MCP administration operations and records writes
+transactionally. Its state reads do not create synthetic assistant-read audits.
+Two fixture configurations share a database but have distinct requester/grant
+bindings. Grants expire after 24 hours and are not renewed by restarting.
+SQLite's bounded 3-second busy timeout handles brief contention only; no general
+concurrency or availability guarantee is made.
+
 ## Reporting a concern
 
 For a report that can be reproduced entirely with fictional data, open an issue with affected code, expected behavior, and a minimal reproduction. Do not post personal records, database files, credentials, or real document images.

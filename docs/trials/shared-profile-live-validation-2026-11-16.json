@@ -1,0 +1,345 @@
+{
+  "schemaVersion": "mio.shared-profile-live-validation.v1",
+  "recordedAt": "2026-11-16T09:43:27.967Z",
+  "status": "partial: Codex A lifecycle verified; Claude B blocked before tool calls",
+  "scope": "Maintainer-operated fictional integration validation, not an external user trial or comparative benchmark.",
+  "source": {
+    "baseCommit": "3f42a7a82231a18f75b15efb18a88b757298aab1",
+    "workingTreeChanges": true,
+    "hashCapture": "SHA-256 captured after the run; no before/after identity assertion.",
+    "sha256": {
+      "examples/shared-profile/fixture.js": "0732f68bd022ae537170983f341acdcc3568983985fbacdf5883557d8b52dd50",
+      "adapters/mcp/config.js": "1db1362f9d023518d0342376892f935cc0229d5dcc11ddeee4bde30a7aaa6ff7",
+      "adapters/mcp/host.js": "fe2ad6d375c148eac5eda9d7bb9e7ff04bd6b4d36dd478af01796e4ca49d8be1",
+      "adapters/mcp/admin.js": "571c7527178a0a8ff42207260ea6fcc6762eb1b21922cb1adb2481baa457a462",
+      "adapters/mcp/server.js": "b9a25016e08b4a8d4ed5f8b340d2893e57db0da588739ba66d1d152dc96d2b49"
+    }
+  },
+  "environment": {
+    "node": "v24.12.0",
+    "platform": "macOS arm64",
+    "clients": [
+      {
+        "name": "Codex CLI",
+        "version": "0.169.0-alpha.11.1",
+        "modelSelection": "client default; not explicitly pinned"
+      },
+      {
+        "name": "Claude Code",
+        "version": "2.0.76",
+        "modelSelection": "client default; request rejected before tool use"
+      }
+    ],
+    "sdkVersion": "2.4.0"
+  },
+  "setup": {
+    "data": "fictional Alex Rowan profile",
+    "sharedPersistentDatabase": true,
+    "distinctRequesterAndGrantBindings": true,
+    "codexBinding": "A: first name and email; proposals permitted",
+    "claudeBinding": "B: first name and home address; read-only",
+    "independentCliSessions": true,
+    "userConfigurationUnchanged": true,
+    "agentInspectedOrExportedCredentials": false
+  },
+  "assertions": {
+    "initialAReadsNameAndOldEmail": true,
+    "initialADoesNotReadAddress": true,
+    "proposalPending": true,
+    "pendingKeepsOldEmail": true,
+    "approvalDoesNotShare": true,
+    "separateSharingRevealsNewEmail": true,
+    "revokedReadReturnsDenialWithoutValues": true,
+    "sdkBRetainsNameAddressAndNoEmail": true,
+    "claudeBCompletedToolCall": false
+  },
+  "sessions": [
+    {
+      "client": "codex",
+      "phase": "initial",
+      "evidenceMode": "real-client",
+      "exitCode": 0,
+      "elapsedMs": 19510,
+      "toolCalls": [
+        {
+          "name": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email",
+              "person.contact.home_address"
+            ]
+          },
+          "response": {
+            "fields": {
+              "person.name.first": "Alex",
+              "person.contact.email": "alex.old@example.invalid"
+            },
+            "unavailable": [
+              "person.contact.home_address"
+            ],
+            "checkedAt": "2026-11-16T09:39:06.353Z"
+          },
+          "resultPresent": true,
+          "denialObserved": false
+        },
+        {
+          "name": "mio_propose_update",
+          "arguments": {
+            "field": "person.contact.email",
+            "value": "alex.new@example.invalid",
+            "rationale": "Fictional shared-profile live trial"
+          },
+          "response": {
+            "status": "pending",
+            "message": "Recorded for human review. The confirmed value is unchanged."
+          },
+          "resultPresent": true,
+          "denialObserved": false
+        },
+        {
+          "name": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.contact.email"
+            ]
+          },
+          "response": {
+            "fields": {
+              "person.contact.email": "alex.old@example.invalid"
+            },
+            "unavailable": [],
+            "checkedAt": "2026-11-16T09:39:11.345Z"
+          },
+          "resultPresent": true,
+          "denialObserved": false
+        }
+      ]
+    },
+    {
+      "client": "codex",
+      "phase": "pre-approval-recheck-after-operator-launch-error",
+      "evidenceMode": "real-client",
+      "exitCode": 0,
+      "elapsedMs": 14794,
+      "toolCalls": [
+        {
+          "name": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email",
+              "person.contact.home_address"
+            ]
+          },
+          "response": {
+            "fields": {
+              "person.name.first": "Alex",
+              "person.contact.email": "alex.old@example.invalid"
+            },
+            "unavailable": [
+              "person.contact.home_address"
+            ],
+            "checkedAt": "2026-11-16T09:40:07.648Z"
+          },
+          "resultPresent": true,
+          "denialObserved": false
+        }
+      ]
+    },
+    {
+      "client": "codex",
+      "phase": "after-approval",
+      "evidenceMode": "real-client",
+      "exitCode": 0,
+      "elapsedMs": 14070,
+      "toolCalls": [
+        {
+          "name": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email",
+              "person.contact.home_address"
+            ]
+          },
+          "response": {
+            "fields": {
+              "person.name.first": "Alex"
+            },
+            "unavailable": [
+              "person.contact.email",
+              "person.contact.home_address"
+            ],
+            "checkedAt": "2026-11-16T09:40:56.079Z"
+          },
+          "resultPresent": true,
+          "denialObserved": false
+        }
+      ]
+    },
+    {
+      "client": "codex",
+      "phase": "after-sharing",
+      "evidenceMode": "real-client",
+      "exitCode": 0,
+      "elapsedMs": 13990,
+      "toolCalls": [
+        {
+          "name": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email",
+              "person.contact.home_address"
+            ]
+          },
+          "response": {
+            "fields": {
+              "person.name.first": "Alex",
+              "person.contact.email": "alex.new@example.invalid"
+            },
+            "unavailable": [
+              "person.contact.home_address"
+            ],
+            "checkedAt": "2026-11-16T09:41:38.009Z"
+          },
+          "resultPresent": true,
+          "denialObserved": false
+        }
+      ]
+    },
+    {
+      "client": "codex",
+      "phase": "after-revocation",
+      "evidenceMode": "real-client",
+      "exitCode": 0,
+      "elapsedMs": 14348,
+      "toolCalls": [
+        {
+          "name": "mio_context",
+          "arguments": {
+            "fields": [
+              "person.name.first",
+              "person.contact.email",
+              "person.contact.home_address"
+            ]
+          },
+          "response": {
+            "message": "Mio operation denied or unavailable. Ask the local operator to review the configuration or permission."
+          },
+          "resultPresent": true,
+          "denialObserved": true
+        }
+      ]
+    }
+  ],
+  "claudeAttempt": {
+    "phase": "initial",
+    "evidenceMode": "real-client",
+    "exitCode": 1,
+    "elapsedMs": 536,
+    "mcpToolCalls": 0,
+    "observedError": "Invalid API key / Please run /login",
+    "outcome": "blocked by existing client authentication",
+    "retried": false,
+    "reloginAttempted": false
+  },
+  "operatorActions": [
+    {
+      "action": "approve",
+      "at": "2026-11-16T09:40:43.682Z",
+      "status": "confirmed",
+      "shared": false,
+      "operator": "scripted local administration"
+    },
+    {
+      "action": "share",
+      "at": "2026-11-16T09:41:26.995Z",
+      "status": null,
+      "shared": true,
+      "operator": "scripted local administration"
+    },
+    {
+      "action": "revoke",
+      "at": "2026-11-16T09:42:04.727Z",
+      "status": "revoked",
+      "shared": null,
+      "operator": "scripted local administration"
+    }
+  ],
+  "supplementalSdkB": [
+    {
+      "phase": "after-approval",
+      "evidenceMode": "sdk",
+      "client": "official MCP SDK; not Claude Code",
+      "name": "mio_context",
+      "response": {
+        "fields": {
+          "person.name.first": "Alex",
+          "person.contact.home_address": "12 Example Lane, Example City (fictional)"
+        },
+        "unavailable": [
+          "person.contact.email"
+        ],
+        "checkedAt": "2026-11-16T09:41:18.063Z"
+      },
+      "isError": false,
+      "matchesExpected": true
+    },
+    {
+      "phase": "after-sharing",
+      "evidenceMode": "sdk",
+      "client": "official MCP SDK; not Claude Code",
+      "name": "mio_context",
+      "response": {
+        "fields": {
+          "person.name.first": "Alex",
+          "person.contact.home_address": "12 Example Lane, Example City (fictional)"
+        },
+        "unavailable": [
+          "person.contact.email"
+        ],
+        "checkedAt": "2026-11-16T09:41:30.986Z"
+      },
+      "isError": false,
+      "matchesExpected": true
+    },
+    {
+      "phase": "after-revocation",
+      "evidenceMode": "sdk",
+      "client": "official MCP SDK; not Claude Code",
+      "name": "mio_context",
+      "response": {
+        "fields": {
+          "person.name.first": "Alex",
+          "person.contact.home_address": "12 Example Lane, Example City (fictional)"
+        },
+        "unavailable": [
+          "person.contact.email"
+        ],
+        "checkedAt": "2026-11-16T09:42:08.891Z"
+      },
+      "isError": false,
+      "matchesExpected": true
+    }
+  ],
+  "orchestrationIncidents": [
+    {
+      "stage": "first operator approval launch",
+      "outcome": "No database mutation occurred.",
+      "reason": "Importing admin.js from a Node stdin module failed because its CLI entrypoint guard resolved the stdin marker as a file.",
+      "recovery": "Used a temporary .mjs operator runner; an intervening Codex read still returned the old email and is retained above."
+    }
+  ],
+  "limitations": [
+    "Claude Code B did not complete an authenticated model request; this does not establish a successful Codex-plus-Claude trial.",
+    "B observations after approval, sharing and revocation came from the official MCP SDK, not a Claude model.",
+    "Codex phases used separate ephemeral CLI sessions against the same database; continuously connected multi-client operation and long-context stale answers were not tested here.",
+    "Approval, sharing and revocation were scripted local operator actions, not human clicks or proof of human authentication.",
+    "Codex JSON events expose the generic denial text but omit the MCP isError flag; revoked-read assertion uses denial text and absence of field values.",
+    "Shell/browser/plugins/memory were disabled for the Codex probe; Claude used no built-in tools and only its MCP read tool. This configuration and observed tool use are not OS-level isolation proofs.",
+    "The sample is fictional and small, the model was not pinned, and no accuracy, cost-saving, security-audit or external-adoption claim follows.",
+    "Raw diagnostic logs remain outside the repository; the published record includes only fictional tool data, sanitized outcomes and source fingerprints."
+  ]
+}

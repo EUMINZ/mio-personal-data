@@ -42,13 +42,23 @@ npm run check
 
 ## 已有能力
 
+当前开发分支新增了[共享资料试用示例](examples/shared-profile/README.md)：两个独立 MCP 配置共用一个持久 SQLite 数据库，并提供本地审核页。A 可读姓名和邮箱并提出修改，B 只能读姓名和地址；批准更新后仍需单独共享，撤销 A 不影响 B。
+
+此示例尚未包含在 `v0.3.0-alpha` 标签及其安装包中。使用包含 `examples/shared-profile/` 的检出版本，安装依赖后运行：
+
+```sh
+npm run demo:shared -- /absolute/new-mio-shared-demo
+```
+
+按终端输出打开本地页面，并参考[试用指南](docs/SHARED_PROFILE_TRIAL.md)接入客户端。当前 122 项自动测试通过，审核页面已经浏览器验证；真实 Codex 完成了 A 的流程，Claude Code 因认证失败未调用工具，B 另由官方 MCP SDK 验证。因此，完整双模型试用及独立外部用户试用仍待完成。示例使用虚构资料，真实模型调用可能消耗客户端账户额度。
+
 - **事实与证据：** 身份、联系方式、任职信息及其来源、状态和时间。
 - **审核流程：** 更新建议、待审队列、审核决定和回执。
 - **授权与审计记录：** 请求方、使用目的、允许的事实、到期时间、撤销和事件。
 - **Wiki 与解释笔记：** 与结构化事实并存的背景信息。
 - **检索和导出：** 摘要、时间线、Markdown 档案，以及精确、关键词和基于词语别名的语义检索。
 
-公开范围包含 [mio-core](mio-core/README.md)、[contracts](contracts/README.md)、[examples](examples/)、[MCP 接口](adapters/mcp/)和[对照评测](benchmarks/README.md)，不包含 Web、iOS、浏览器扩展或特定国家业务流程。
+公开范围包含 [mio-core](mio-core/README.md)、[contracts](contracts/README.md)、[examples](examples/)及本地审核示例页、[MCP 接口](adapters/mcp/)和[对照评测](benchmarks/README.md)，不包含完整产品应用、iOS、浏览器扩展或特定国家业务流程。
 
 ## 使用边界
 

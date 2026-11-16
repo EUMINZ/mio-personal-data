@@ -34,6 +34,22 @@ npm run check
 
 Run these commands from the repository root. See the [validation record](docs/VALIDATION.md) for the tested environment and known limits.
 
+## Try one profile with two assistants
+
+The **unreleased [shared-profile example](examples/shared-profile/README.md)** adds a small local review page and two MCP configurations backed by one persistent SQLite database. A can read name/email and propose changes; B can read name/address. Approval creates a new confirmed value, sharing makes that version available to A, and revoking A leaves B's grant unchanged.
+
+Use a checkout containing `examples/shared-profile/`; the `v0.3.0-alpha` tag and its package do not include this example. After `npm ci --ignore-scripts`, run:
+
+```sh
+npm run demo:shared -- /absolute/new-mio-shared-demo
+```
+
+Open the printed local URL and follow the [15–20 minute trial guide](docs/SHARED_PROFILE_TRIAL.md) to connect clients, exercise the workflow, and record feedback. The page and fixtures make no model calls. Real AI client sessions require their own login and may consume account usage.
+
+![Local review page after approval, before separately sharing the new email](docs/assets/shared-profile-review.jpg)
+
+The fictional workflow passed automated and browser checks. A real Codex client completed A's lifecycle; Claude Code B was blocked by authentication before tool use, so B was checked separately with the MCP SDK. **A complete two-model trial and independent external user trials remain unverified.** See the [sanitized validation record](docs/trials/shared-profile-live-validation-2026-11-16.json).
+
 ## Connect your AI
 
 Mio exposes a local **stdio MCP server** for Codex, Claude Code, and other compatible clients. Follow the [installation guide](docs/INTEGRATIONS.md) for client registration, a pinned GitHub package option, and personal-profile setup.
@@ -92,7 +108,7 @@ A core review decision is a workflow record: recording acceptance alone does not
 | [benchmarks](benchmarks/README.md) | Reproducible comparison against a capable scoped JSON host. |
 | [experiments](experiments/accuracy-cost/README.md) | Client integration and accuracy/cost evaluation. |
 
-The public project focuses on the core, contracts, adapters, and examples. It does not include a web app, mobile app, browser extension, or country-specific workflow.
+The public project focuses on the core, contracts, adapters, and examples, including the local review page above. It does not include the full product application, a mobile app, browser extension, or country-specific workflow.
 
 Some API and contract names retain `Gemma` for compatibility. No Gemma model is required. Runtime validation is implemented in JavaScript; JSON Schema describes the exchange formats. See [contracts](contracts/README.md) for details.
 
@@ -116,6 +132,7 @@ The evidence below describes specific checks and experiments, not a general clai
 | Evidence | Finding and limit |
 | --- | --- |
 | [Automated validation](docs/VALIDATION.md) | The `0.3.0-alpha` record reports 110 passing tests, including MCP behavior. GitHub Actions runs the checks on Node.js 24. |
+| [Unreleased shared-profile trial](docs/SHARED_PROFILE_TRIAL.md) | 122 tests pass locally, including shared-database stdio clients, review HTTP boundaries, and bounded lock contention. Browser checks and partial real-client evidence are recorded separately; external adoption is untested. |
 | [Architecture study (Chinese)](docs/research/mio-personal-data-layer.zh-CN.md) | Mio and a competent scoped JSON host produced identical outcomes on the tested policies. Both reduced unnecessary application payload compared with full-profile delivery; this does not establish unique performance superiority. |
 | [Codex integration smoke test](experiments/results/codex-mcp-smoke.json) | A historical `0.2.0-alpha` session verified real tool integration, not comparative model quality. |
 | [Accuracy/cost experiment](experiments/accuracy-cost/README.md) | In 40 real Codex sessions with the same model, tasks, and host policy, legacy completed 12/20 tasks correctly and compact completed 20/20 by avoiding omissions of readable fields. This small synthetic sample does not establish general model accuracy. |
