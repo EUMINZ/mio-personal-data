@@ -8,7 +8,31 @@ Mio 为个人事实、证据、更新建议、授权与审核记录提供一个�
 
 `0.3.0-alpha` 是**从身份信息起步的 Alpha 版本**，包含 SQLite 核心、JSON 交换格式、本地 MCP 插件接口和两个模拟助手的示例。通用偏好与关系模型、远程认证，以及生产环境安全机制仍在规划中。
 
-## 接入 Codex、Claude Code 或其他 MCP 客户端
+## 开始共享资料试用
+
+需要 **Node.js 24、npm 和 Git**。以下命令适用于 macOS/Linux 的 POSIX shell，会下载尚未发布的试用分支；`v0.3.0-alpha` 旧版本不含审核页面。请在准备存放新检出的目录运行：
+
+```sh
+git clone --branch codex/shared-profile-trial --single-branch https://github.com/EUMINZ/mio-personal-data.git mio-personal-data-trial
+cd mio-personal-data-trial
+git rev-parse HEAD
+npm ci --ignore-scripts
+mio_trial_dir="$(mktemp -d)/profile"
+npm run demo:shared -- "$mio_trial_dir"
+```
+
+记录输出的提交号，反馈时用它标明版本。`mktemp` 在仓库外新建父目录，启动器在其中创建虚构资料。保持终端运行，打开输出的本地审核地址；该地址包含操作令牌，请不要分享。
+
+两个独立 MCP 配置共用一个持久 SQLite 数据库：A 可读姓名和邮箱并提出修改，B 只能读姓名和地址。批准更新后仍需单独共享，撤销 A 不影响 B。审核页还支持**填写理由拒绝提议**和**关闭过时提议**；这两项操作不修改正式事实或授权，处理记录保留在决定历史中。
+
+- **本地体验：** 使用页面的模拟提议控件，不需要模型账户或 API Key，也不会调用模型。
+- **真实客户端：** 将启动器输出的完整 **Codex A** 和 **Claude Code B** 命令分别复制到两个终端。实际路径已填好，不修改用户级 MCP 注册；客户端需要已有登录和模型访问权限，调用可能消耗账户额度。
+
+完整步骤见[试用指南](docs/SHARED_PROFILE_TRIAL.md)。需要重新显示客户端命令时，在仓库根目录运行 `npm run demo:shared:commands -- /absolute/existing-demo-directory`，目录使用启动时输出的资料目录。该命令不会创建资料或续期授权。
+
+初始流程已经自动测试和浏览器验证；真实 Codex 完成了 A 的流程，Claude Code 因认证失败未调用工具，B 另由官方 MCP SDK 验证。该[历史记录](docs/trials/shared-profile-live-validation-2026-11-16.json)不代表完整双模型或外部试用通过；后续改动的检查见[验证记录](docs/VALIDATION.md)。
+
+## 接入已发布的 MCP 版本
 
 需要 Node.js 24。从 GitHub 克隆并切换到 `v0.3.0-alpha`，运行 `npm ci --ignore-scripts`，再按[接入指南](docs/INTEGRATIONS.md)注册 Mio。也提供固定 GitHub 版本的 npm 安装方式和 Claude Code 插件封装；尚未上架官方插件目录。
 
@@ -22,35 +46,26 @@ GitHub 用于分发代码，数据库保存在本地。工具返回的授权内�
 
 新的[准确率与成本实验](experiments/accuracy-cost/README.md)在同模型、同任务和同授权规则下完成了 40 次真实 Codex 会话：旧接口正确完成 12/20，新接口 20/20，差异来自减少可读字段漏填。总输入 token 减少 7.34%，但非缓存输入增加 3.50%；不能声称单次请求的实际费用更低。`0.3.0-alpha` 通过 110 项自动测试。[研究记录](docs/research/accuracy-cost-optimization.zh-CN.md)提供完整结果与边界；合成小样本不能代表通用模型准确率。
 
-## 运行
+## 已发布版本的模拟演示与开发检查
 
-需要 Node.js 24。核心和示例没有第三方运行时依赖，无需下载模型或配置 API Key。在仓库根目录运行：
+要复现旧版的内存模拟演示，请使用一个独立检出：
 
 ```sh
+git clone --branch v0.3.0-alpha --single-branch https://github.com/EUMINZ/mio-personal-data.git mio-personal-data-v0.3
+cd mio-personal-data-v0.3
+npm ci --ignore-scripts
 npm run demo
 ```
 
-测试使用 Ajv 和 ajv-formats 校验 JSON Schema，先安装开发依赖：
+该旧版本不含共享审核页面，也没有 `demo:shared` 脚本。核心和内存模拟演示没有第三方运行时依赖；MCP 接口与共享审核示例使用 npm 安装的 SDK 和校验器。两个版本都可在各自仓库根目录运行：
 
 ```sh
-npm ci
-npm test
 npm run check
 ```
 
 `check` 执行 JavaScript 语法检查、测试和示例。[双助手示例](examples/two-assistants.js)使用虚构资料，向两个本地模拟助手提供不同字段，并演示将更新建议交回审核。它没有连接真实模型，示例中的权限检查也不包含调用者身份认证。记录“接受”决定不会自动修改正式事实。
 
 ## 已有能力
-
-当前开发分支新增了[共享资料试用示例](examples/shared-profile/README.md)：两个独立 MCP 配置共用一个持久 SQLite 数据库，并提供本地审核页。A 可读姓名和邮箱并提出修改，B 只能读姓名和地址；批准更新后仍需单独共享，撤销 A 不影响 B。
-
-此示例尚未包含在 `v0.3.0-alpha` 标签及其安装包中。使用包含 `examples/shared-profile/` 的检出版本，安装依赖后运行：
-
-```sh
-npm run demo:shared -- /absolute/new-mio-shared-demo
-```
-
-按终端输出打开本地页面，并参考[试用指南](docs/SHARED_PROFILE_TRIAL.md)接入客户端。当前 122 项自动测试通过，审核页面已经浏览器验证；真实 Codex 完成了 A 的流程，Claude Code 因认证失败未调用工具，B 另由官方 MCP SDK 验证。因此，完整双模型试用及独立外部用户试用仍待完成。示例使用虚构资料，真实模型调用可能消耗客户端账户额度。
 
 - **事实与证据：** 身份、联系方式、任职信息及其来源、状态和时间。
 - **审核流程：** 更新建议、待审队列、审核决定和回执。

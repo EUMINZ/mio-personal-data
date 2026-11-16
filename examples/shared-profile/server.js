@@ -5,9 +5,10 @@ import path from 'node:path';
 import { randomBytes, timingSafeEqual } from 'node:crypto';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { z } from 'zod/v4';
-import { approveReview, listReviews, shareClaim, revoke } from '../../adapters/mcp/admin.js';
+import { approveReview, listReviews, shareClaim, revoke, rejectReview, closeStaleReview, isReviewStale } from '../../adapters/mcp/admin.js';
 import { createScopedHost, AccessDenied, selectLatestConfirmedClaim } from '../../adapters/mcp/host.js';
 import { initializeSharedProfile, openSharedProfile, SHARED_PROFILE_FIELDS as F } from './fixture.js';
+import { formatClientCommands } from './client-commands.js';
 
 const uiDirectory = fileURLToPath(new URL('./ui/', import.meta.url));
 const LABELS = { [F.firstName]: 'First name', [F.email]: 'Email', [F.address]: 'Home address' };
@@ -17,6 +18,8 @@ const id = z.string().min(1).max(200);
 const ACTIONS = {
   '/api/propose': z.strictObject({ assistantId, field: id, value: z.string().min(1).max(2048), rationale: z.string().min(1).max(1000) }),
   '/api/approve': z.strictObject({ assistantId, reviewItemId: id, expectedVersion: id, expectedValue: z.string().min(1).max(2048), confirmed }),
+  '/api/reject': z.strictObject({ assistantId, reviewItemId: id, expectedVersion: id, reason: z.string().trim().min(1).max(1000), confirmed }),
+  '/api/close-stale': z.strictObject({ assistantId, reviewItemId: id, expectedVersion: id, confirmed }),
   '/api/share': z.strictObject({ assistantId, field: id, claimId: id, confirmed }),
   '/api/revoke': z.strictObject({ assistantId, confirmed }),
 };
@@ -25,6 +28,8 @@ const AUDIT_LABELS = {
   'demo.shared-profile.initialized': 'Created the fictional shared profile',
   'mcp.update.proposed': 'Suggested a change for review',
   'mcp.operator.approved': 'Approved a new version; sharing stays separate',
+  'mcp.operator.rejected': 'Rejected a proposal; facts and sharing stay unchanged',
+  'mcp.operator.closed-stale': 'Closed an outdated proposal; facts and sharing stay unchanged',
   'mcp.operator.shared': 'Shared a confirmed version',
   'mcp.operator.revoked': 'Revoked future access',
   'mcp.context.read': 'Checked scoped context',
@@ -41,7 +46,6 @@ export function operatorSnapshot(demo) {
   try {
     const now = Date.now();
     const person = repository.getPerson(demo.manifest.personId);
-    const allClaims = repository.listClaimsForPerson(person.id, { statuses: ['confirmed'] });
     const current = Object.fromEntries(Object.keys(LABELS).map((field) => {
       try { return [field, selectLatestConfirmedClaim(repository, person.id, field, now)]; }
       catch (error) { if (error instanceof AccessDenied) return [field, null]; throw error; }
@@ -68,11 +72,20 @@ export function operatorSnapshot(demo) {
     const reviews = Object.keys(demo.states).flatMap((id) => listReviews({ ...demo.states[id], repository })
       .map((review) => {
         const item = repository.getReviewItem(review.reviewItemId);
-        const candidates = allClaims.filter((claim) => claim.claimTypeKey === review.field && claim.supersededByClaimId === null);
-        const stale = candidates.length !== 1 || current[review.field]?.id !== item.metadata.expectedClaimId
-          || current[review.field]?.value !== review.currentValue;
+        const stale = isReviewStale({ ...demo.states[id], repository }, item, now);
         return { ...review, assistantId: id, label: LABELS[review.field] ?? review.field, stale };
       }));
+    const decisions = repository.listReviewDecisionsForPerson(person.id).flatMap((decision) => {
+      const item = repository.getReviewItem(decision.reviewItemId);
+      if (!item || item.personId !== person.id || item.metadata?.adapter !== 'mio-mcp-v1'
+        || !Object.hasOwn(LABELS, item.metadata.claimTypeKey) || !['applied', 'dismissed', 'superseded'].includes(item.status)) return [];
+      const binding = Object.entries(demo.states).find(([, state]) => state.config.requesterId === item.metadata.requesterId
+        && state.config.grantId === item.metadata.grantId);
+      if (!binding) return [];
+      return [{ reviewItemId: item.id, assistantId: binding[0], field: item.metadata.claimTypeKey,
+        label: LABELS[item.metadata.claimTypeKey], status: item.status, decision: decision.decision,
+        note: decision.note, resolvedAt: item.resolvedAt, suggestedValue: item.suggestedValue }];
+    }).slice(0, 20);
     const requesterLabels = Object.fromEntries(Object.entries(demo.states).map(([id, state]) => [state.config.requesterId, demo.manifest.assistants[id].label]));
     const audit = repository.listAuditEventsForPerson(person.id).slice(0, 30).map((event) => ({
       time: event.createdAt, actor: requesterLabels[event.actorId] ?? 'Local operator', type: event.eventType,
@@ -82,7 +95,7 @@ export function operatorSnapshot(demo) {
       claims: Object.entries(current).filter(([, claim]) => claim).map(([field, claim]) => ({
         field, label: LABELS[field], value: claim.value, claimId: claim.id, updatedAt: claim.updatedAt,
         source: claim.issuer === 'local-operator' ? 'Approved by the local operator' : 'Fictional profile fixture',
-      })), assistants, reviews, audit };
+      })), assistants, reviews, decisions, audit };
     db.exec('COMMIT');
     return result;
   } catch (error) { db.exec('ROLLBACK'); throw error; }
@@ -149,13 +162,15 @@ export async function startReviewServer({ directory, port = 0 } = {}) {
       let result;
       if (route === '/api/propose') result = createScopedHost(state.repository, state.config).propose(input);
       else if (route === '/api/approve') result = approveReview(state, input);
+      else if (route === '/api/reject') result = rejectReview(state, input);
+      else if (route === '/api/close-stale') result = closeStaleReview(state, input);
       else if (route === '/api/share') result = shareClaim(state, input);
       else result = revoke(state, true);
       json(response, 200, result);
     } catch (error) {
       if (error.status) return json(response, error.status, { error: error.message });
       if (error instanceof AccessDenied) return json(response, 403, { error: 'The assistant cannot propose this change under its current grant.' });
-      const conflict = /does not match|Confirmed data changed|Current claim and active allowed grant required|Configured grant not found/.test(error.message);
+      const conflict = /does not match|Confirmed data changed|Current claim and active allowed grant required|Configured grant not found|not (?:stale|outdated)/i.test(error.message);
       json(response, conflict ? 409 : 500, { error: conflict ? 'The review, confirmed value, or grant changed. Refresh and review it again.' : 'Operation failed. No success was recorded; refresh before retrying.' });
     }
   });
@@ -166,7 +181,7 @@ export async function startReviewServer({ directory, port = 0 } = {}) {
   } catch (error) { demo.close(); throw error; }
   origin = `http://127.0.0.1:${server.address().port}`;
   let closed = false;
-  return { server, origin, token, url: `${origin}/#token=${token}`, close: async () => {
+  return { server, origin, token, url: `${origin}/#token=${token}`, clientCommands: formatClientCommands(demo.manifest), close: async () => {
     if (closed) return;
     closed = true;
     await new Promise((resolve) => { server.close(resolve); server.closeAllConnections(); });
@@ -186,9 +201,10 @@ async function main(args) {
   if (!fs.existsSync(directory)) initializeSharedProfile(directory);
   const running = await startReviewServer({ directory });
   console.log(`Mio shared-profile trial — fictional data\nReview: ${running.url}\nKeep this URL local; it authorizes operator actions for this session.\nAssistant A config: ${path.join(directory, 'assistant-a.json')}\nAssistant B config: ${path.join(directory, 'assistant-b.json')}\nStop with Ctrl+C. Data remains in ${directory}.`);
+  console.log(`\nOptional real-client sessions (macOS/Linux POSIX shell):\nThese commands use your existing client login and may consume model usage.\nThey apply to this invocation and do not save MCP registrations.\n\nAssistant A — run in another terminal:\n${running.clientCommands.a}\n\nAssistant B — run in a third terminal:\n${running.clientCommands.b}\n\nThe page is an operator view, not proof that either client connected.\n`);
   const stop = () => { running.close().catch(() => { process.exitCode = 1; }); };
   process.once('SIGINT', stop); process.once('SIGTERM', stop);
 }
-if (process.argv[1] && import.meta.url === pathToFileURL(fs.realpathSync(process.argv[1])).href) {
+if (process.argv[1] && fs.existsSync(process.argv[1]) && import.meta.url === pathToFileURL(fs.realpathSync(process.argv[1])).href) {
   main(process.argv.slice(2)).catch((error) => { console.error(error.message); process.exitCode = 1; });
 }

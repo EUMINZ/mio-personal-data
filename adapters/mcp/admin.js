@@ -5,7 +5,7 @@ import { pathToFileURL } from 'node:url';
 import { isDeepStrictEqual } from 'node:util';
 import { openCoreDatabase, closeCoreDatabase } from '../../mio-core/src/db.js';
 import { openConfiguredHost, seedFictionalDatabase, seedProfileDatabase, profileSchema } from './config.js';
-import { reviewVersion } from './host.js';
+import { AccessDenied, reviewVersion, selectLatestConfirmedClaim } from './host.js';
 import { getClaimTypeKeyForField } from '../../mio-core/src/claim-types.js';
 
 // Local operator interface. These actions are intentionally absent from MCP.
@@ -40,25 +40,48 @@ export function listReviews(state) {
       currentValue: item.currentValue, suggestedValue: item.suggestedValue, rationale: item.rationale,
       expectedVersion: reviewVersion(item) }));
 }
+function pendingReview(state, reviewItemId, expectedVersion) {
+  const { repository, config } = state;
+  const item = repository.getReviewItem(reviewItemId);
+  if (!item || item.personId !== config.personId || item.status !== 'pending' || item.itemType !== 'proposal' ||
+      item.target !== 'identity_claim' || item.metadata?.adapter !== 'mio-mcp-v1' ||
+      item.metadata.requesterId !== config.requesterId || item.metadata.grantId !== config.grantId ||
+      reviewVersion(item) !== expectedVersion || getClaimTypeKeyForField(item.fieldKey) !== item.metadata.claimTypeKey) {
+    throw new Error('Pending review/version/value does not match');
+  }
+  return item;
+}
+
+// Shared by operator previews and mutations. This is a fact-version check,
+// not a grant check: an operator can resolve a queue after access is revoked.
+export function isReviewStale(state, item, now = Date.now()) {
+  const field = item.metadata?.claimTypeKey;
+  const candidates = state.repository.listClaimsForPerson(state.config.personId, { statuses: ['confirmed'] })
+    .filter((claim) => claim.claimTypeKey === field && claim.supersededByClaimId === null);
+  if (candidates.length !== 1) return true;
+  try {
+    const current = selectLatestConfirmedClaim(state.repository, state.config.personId, field, now);
+    return current.id !== item.metadata.expectedClaimId || !isDeepStrictEqual(current.value, item.currentValue);
+  } catch (error) {
+    if (error instanceof AccessDenied) return true;
+    throw error;
+  }
+}
+
 export function approveReview(state, { reviewItemId, expectedVersion, expectedValue, confirmed = false }) {
   if (!confirmed) throw new Error('Explicit local operator confirmation required');
   const { db, repository, config } = state;
   return repository.importWithinTransaction(() => {
-    const item = repository.getReviewItem(reviewItemId);
-    if (!item || item.personId !== config.personId || item.status !== 'pending' || item.target !== 'identity_claim' ||
-        item.metadata?.adapter !== 'mio-mcp-v1' || item.metadata.requesterId !== config.requesterId ||
-        item.metadata.grantId !== config.grantId || reviewVersion(item) !== expectedVersion ||
-        !isDeepStrictEqual(item.suggestedValue, expectedValue) || typeof expectedValue !== 'string' ||
-        getClaimTypeKeyForField(item.fieldKey) !== item.metadata.claimTypeKey) throw new Error('Pending review/version/value does not match');
-    const current = repository.listClaimsForPerson(config.personId, { statuses: ['confirmed'] })
-      .filter((claim) => claim.claimTypeKey === item.metadata.claimTypeKey && claim.supersededByClaimId === null);
-    if (current.length !== 1 || !Number.isFinite(Date.parse(current[0].updatedAt)) || current[0].id !== item.metadata.expectedClaimId ||
-        !isDeepStrictEqual(current[0].value, item.currentValue)) throw new Error('Confirmed data changed; review a new proposal');
+    const item = pendingReview(state, reviewItemId, expectedVersion);
+    if (!isDeepStrictEqual(item.suggestedValue, expectedValue) || typeof expectedValue !== 'string') {
+      throw new Error('Pending review/version/value does not match');
+    }
+    if (isReviewStale(state, item)) throw new Error('Confirmed data changed; review a new proposal');
     const timestamp = new Date().toISOString();
     const claim = repository.createClaim({ personId: config.personId, claimTypeKey: item.metadata.claimTypeKey,
       value: expectedValue, status: 'confirmed', issuer: 'local-operator', observedAt: timestamp, createdAt: timestamp });
     db.prepare('UPDATE claims SET superseded_by_claim_id = ? WHERE id = ? AND person_id = ?')
-      .run(claim.id, current[0].id, config.personId);
+      .run(claim.id, item.metadata.expectedClaimId, config.personId);
     repository.createReviewDecision({ reviewItemId: item.id, bundleId: item.bundleId, personId: config.personId,
       decision: 'accepted', actorType: 'user', actorId: 'local-operator', appliedClaimId: claim.id, createdAt: timestamp });
     repository.resolveReviewItem({ reviewItemId: item.id, status: 'applied', resolvedAt: timestamp,
@@ -66,6 +89,38 @@ export function approveReview(state, { reviewItemId, expectedVersion, expectedVa
     repository.createAuditEvent({ personId: config.personId, actorType: 'user', actorId: 'local-operator',
       eventType: 'mcp.operator.approved', eventPayload: { reviewItemId: item.id, claimId: claim.id }, createdAt: timestamp });
     return { claimId: claim.id, field: claim.claimTypeKey, status: 'confirmed', shared: false };
+  });
+}
+
+function resolveWithoutApplying(state, item, { status, note, eventType }) {
+  const { repository, config } = state;
+  const timestamp = new Date().toISOString();
+  repository.createReviewDecision({ reviewItemId: item.id, bundleId: item.bundleId, personId: config.personId,
+    decision: status, actorType: 'user', actorId: 'local-operator', note, createdAt: timestamp });
+  repository.resolveReviewItem({ reviewItemId: item.id, status, resolvedAt: timestamp,
+    resolvedByActorType: 'user', resolvedByActorId: 'local-operator', resolutionNote: note });
+  repository.createAuditEvent({ personId: config.personId, actorType: 'user', actorId: 'local-operator',
+    eventType, eventPayload: { reviewItemId: item.id, field: item.metadata.claimTypeKey }, createdAt: timestamp });
+  return { reviewItemId: item.id, status, decision: status };
+}
+
+export function rejectReview(state, { reviewItemId, expectedVersion, reason, confirmed = false }) {
+  if (!confirmed) throw new Error('Explicit local operator confirmation required');
+  const note = typeof reason === 'string' ? reason.trim() : '';
+  if (!note || note.length > 1000) throw new Error('Rejection reason must be 1–1000 characters');
+  return state.repository.importWithinTransaction(() => {
+    const item = pendingReview(state, reviewItemId, expectedVersion);
+    return resolveWithoutApplying(state, item, { status: 'dismissed', note, eventType: 'mcp.operator.rejected' });
+  });
+}
+
+export function closeStaleReview(state, { reviewItemId, expectedVersion, confirmed = false }) {
+  if (!confirmed) throw new Error('Explicit local operator confirmation required');
+  return state.repository.importWithinTransaction(() => {
+    const item = pendingReview(state, reviewItemId, expectedVersion);
+    if (!isReviewStale(state, item)) throw new Error('Review is not stale; reject or approve the current proposal');
+    return resolveWithoutApplying(state, item, { status: 'superseded',
+      note: 'Closed because this proposal no longer matches a current, unambiguous confirmed fact.', eventType: 'mcp.operator.closed-stale' });
   });
 }
 export function shareClaim(state, { field, claimId, confirmed = false }) {
@@ -106,9 +161,12 @@ const USAGE = `Local operator commands (Node 24+):
   node adapters/mcp/admin.js init-profile /absolute/NEW-directory /absolute/profile.json --confirm
   node adapters/mcp/admin.js reviews /absolute/config.json
   node adapters/mcp/admin.js approve /absolute/config.json REVIEW_ID EXPECTED_VERSION EXPECTED_VALUE_JSON --confirm
+  node adapters/mcp/admin.js reject /absolute/config.json REVIEW_ID EXPECTED_VERSION REASON --confirm
+  node adapters/mcp/admin.js close-stale /absolute/config.json REVIEW_ID EXPECTED_VERSION --confirm
   node adapters/mcp/admin.js share /absolute/config.json --field FIELD --claim-id CLAIM_ID --confirm
   node adapters/mcp/admin.js revoke /absolute/config.json --confirm
 Approval records a confirmed value; separate share explicitly attaches its version.
+Reject and close-stale resolve a proposal without changing facts or grants.
 The one-hour demo grant is not renewed by approval/sharing. This CLI is trusted local administration, not human authentication.`;
 function main(args) {
   process.umask(0o077);
@@ -119,13 +177,17 @@ function main(args) {
     if (!path.isAbsolute(rest[0])) throw new Error('Profile path must be absolute');
     return console.log(JSON.stringify(initializeProfile(target, JSON.parse(fs.readFileSync(rest[0], 'utf8')), true), null, 2));
   }
-  if (!target || !['reviews', 'approve', 'share', 'revoke'].includes(command)) throw new Error(USAGE);
+  if (!target || !['reviews', 'approve', 'reject', 'close-stale', 'share', 'revoke'].includes(command)) throw new Error(USAGE);
   const state = openConfiguredHost(target);
   try {
     let result;
     if (command === 'reviews' && rest.length === 0) result = listReviews(state);
     else if (command === 'approve' && rest.length === 4 && rest[3] === '--confirm') result = approveReview(state,
       { reviewItemId: rest[0], expectedVersion: rest[1], expectedValue: JSON.parse(rest[2]), confirmed: true });
+    else if (command === 'reject' && rest.length === 4 && rest[3] === '--confirm') result = rejectReview(state,
+      { reviewItemId: rest[0], expectedVersion: rest[1], reason: rest[2], confirmed: true });
+    else if (command === 'close-stale' && rest.length === 3 && rest[2] === '--confirm') result = closeStaleReview(state,
+      { reviewItemId: rest[0], expectedVersion: rest[1], confirmed: true });
     else if (command === 'share' && rest.length === 5 && rest[0] === '--field' && rest[2] === '--claim-id' && rest[4] === '--confirm') result = shareClaim(state,
       { field: rest[1], claimId: rest[3], confirmed: true });
     else if (command === 'share' && rest.length === 3 && rest[2] === '--confirm') result = shareClaim(state,
@@ -135,7 +197,7 @@ function main(args) {
     console.log(JSON.stringify(result, null, 2));
   } finally { state.close(); }
 }
-if (process.argv[1] && import.meta.url === pathToFileURL(fs.realpathSync(process.argv[1])).href) {
+if (process.argv[1] && fs.existsSync(process.argv[1]) && import.meta.url === pathToFileURL(fs.realpathSync(process.argv[1])).href) {
   try { main(process.argv.slice(2)); }
   catch (error) { console.error(error.message); process.exitCode = 1; }
 }

@@ -25,40 +25,55 @@ are verified:
 5. Revoking A prevents its subsequent reads while B continues to work.
 6. Restarting a client retains the state; it does not reset the database,
    replace the client's grant, or extend the grant's expiry.
+7. Rejecting a proposal records a reason and removes it from pending review
+   without changing confirmed facts or grants.
+8. An outdated proposal can be closed without applying its suggestion; the
+   decision remains inspectable after it leaves the pending queue.
 
 The [November 16, 2026 maintainer record](trials/shared-profile-live-validation-2026-11-16.json)
-contains actual Codex A tool traces for this lifecycle. Claude Code B could not
-authenticate and made no tool calls; its permission checks were exercised with
-the official SDK instead. These are separate evidence levels. The two-model
-trial and independent external trial remain unverified.
+contains actual Codex A tool traces for the initial approval/sharing/revocation
+workflow; it predates rejection and outdated-proposal closure. Claude Code B
+could not authenticate and made no tool calls; its permission checks were
+exercised with the official SDK instead. These are separate evidence levels.
+The two-model trial and independent external trial remain unverified. See
+[validation](VALIDATION.md) for checks of later changes.
 
 ## Prepare a local demo
 
-Use Node.js 24, npm, and a checkout containing `examples/shared-profile/`. The
-older `v0.3.0-alpha` tag does not include this example; record the exact checkout
-commit instead of treating that tag as the trial version.
-
-From the repository root:
+Use **Node.js 24**, npm, and Git. These commands target macOS/Linux POSIX
+shells; equivalent Windows launch commands have not been validated. Start from
+a directory where a new `mio-personal-data-trial` checkout can be created:
 
 ```sh
+git clone --branch codex/shared-profile-trial --single-branch https://github.com/EUMINZ/mio-personal-data.git mio-personal-data-trial
+cd mio-personal-data-trial
 git rev-parse HEAD
 node --version
 npm ci --ignore-scripts
-npm run check
-npm run demo:shared -- /absolute/new-mio-shared-demo
+mio_trial_dir="$(mktemp -d)/profile"
+npm run demo:shared -- "$mio_trial_dir"
 ```
 
-Use a new absolute directory outside the repository, with an existing parent.
-Open the printed loopback URL and retain it locally. Its token authorizes the
-operator page; never include it in screenshots, chat prompts, issue reports, or
-feedback. The generated data is fictional. The page does not send telemetry.
+This downloads the **unreleased trial branch**. Record the exact commit printed
+by `git rev-parse HEAD` because the branch can change. The older `v0.3.0-alpha`
+tag and its package do not contain the shared-profile example. If you already
+have this trial checkout, start at `git rev-parse HEAD`; do not switch to the
+old release to run this guide. A maintainer can reproduce the recorded source
+with `git checkout --detach FULL_RECORDED_COMMIT` in a separate checkout.
 
-The two configurations are:
+`mktemp` creates a fresh parent outside the repository, and the launcher creates
+its `profile` child. Keep this terminal running. Open the printed loopback URL
+and retain it locally. Its token authorizes the operator page; never include it
+in screenshots, chat prompts, issue reports, or feedback. The generated data is
+fictional. The page does not send telemetry or make model calls.
 
-| Binding | Configuration | Permitted fields |
+The launcher prints the actual paths for these two configurations and complete
+client commands that use them:
+
+| Binding | File in the printed profile directory | Permitted fields |
 | --- | --- | --- |
-| A | `/absolute/new-mio-shared-demo/assistant-a.json` | `person.name.first`, `person.contact.email`; may propose updates |
-| B | `/absolute/new-mio-shared-demo/assistant-b.json` | `person.name.first`, `person.contact.home_address`; reads only |
+| A | `assistant-a.json` | `person.name.first`, `person.contact.email`; may propose updates |
+| B | `assistant-b.json` | `person.name.first`, `person.contact.home_address`; reads only |
 
 Both configurations refer to the same database. **Do not use `--demo` or give
 both clients the same configuration**: those would test independent in-memory
@@ -66,49 +81,56 @@ profiles or a shared permission, rather than the intended scenario. Grants
 expire 24 hours after initialization. Resuming a directory does not renew them;
 use a new directory for a fresh trial after expiry or revocation.
 
-## Connect two clients without saving registrations
+To check the code without making model calls, run `npm run check` from another
+terminal in the checkout. Record its result separately from any real-client
+trial result.
 
-The examples below use session options and leave user-level MCP registrations
-unchanged. Replace every `/absolute/...` placeholder. Check your installed
-client's `--help` if its options differ. Existing client login and model access
-are prerequisites; real model sessions may consume account usage. The local
-page and SDK tests do not call a model.
+## Choose a trial mode
 
-### Codex as A
+### Local walkthrough
 
-Start a separate Codex CLI session:
+Open the review page and use its simulated A proposal control. Walk through
+approval, sharing and revocation using the page's permission previews. The
+page can also demonstrate rejection and closing outdated proposals, described
+below. This needs no client login or model account. Label it `simulation` in
+feedback: the panels do not prove an actual assistant received those values.
+
+### Real clients without saved registrations
+
+Copy the **Codex A** command printed by the launcher into a new terminal. Copy
+the **Claude Code B** command into another terminal. They contain the checkout
+and profile paths for this run, so no path substitutions are needed. The
+commands use session options and do not change user-level MCP registrations.
+The commands do not log you in: existing client login and model access are
+prerequisites, and real model sessions may consume account usage.
+
+To print the commands again, run this from the checkout with the profile
+directory printed by the launcher:
 
 ```sh
-codex --sandbox read-only \
-  -c 'mcp_servers.mio_trial_a.command="node"' \
-  -c 'mcp_servers.mio_trial_a.args=["/absolute/mio-personal-data/adapters/mcp/server.js","--config","/absolute/new-mio-shared-demo/assistant-a.json"]' \
-  -c 'mcp_servers.mio_trial_a.startup_timeout_sec=30'
+npm run demo:shared:commands -- /absolute/existing-demo-directory
 ```
 
-Inspect `/mcp` and confirm `mio_trial_a` is connected. This adds a server for that
-invocation; other configured servers may still be present. Use only
-`mio_trial_a` for this trial. Read-only shell settings are not proof that the MCP
-process or its underlying database is isolated. See the
+This validates the existing demo and prints commands; it does not initialize
+or reset a profile, renew a grant, or start either AI client.
+
+In Codex, inspect `/mcp` and confirm `mio_trial_a` is connected. The session
+adds that server; other configured servers may still be present. Use only
+`mio_trial_a` for this trial. Its read-only shell setting is not proof that the
+MCP process or database is isolated. See the
 [Codex MCP guide](https://learn.chatgpt.com/docs/extend/mcp?surface=cli).
 
-### Claude Code as B
+In Claude Code, inspect `/mcp` and confirm `mio_trial_b` is connected. Its strict
+MCP option limits this session to the supplied MCP definition; it does not
+disable built-in file/shell tools. See the
+[Claude Code MCP guide](https://code.claude.com/docs/en/mcp). Other clients can
+use the same stdio entrypoint with B's configuration path, subject to their own
+configuration format. Connection status alone does not establish tool use.
 
-In another terminal, start Claude Code with a session-scoped MCP definition:
-
-```sh
-claude --strict-mcp-config --mcp-config '{"mcpServers":{"mio_trial_b":{"command":"node","args":["/absolute/mio-personal-data/adapters/mcp/server.js","--config","/absolute/new-mio-shared-demo/assistant-b.json"]}}}'
-```
-
-Inspect `/mcp` and confirm `mio_trial_b` is connected. The strict MCP option
-limits this session to the supplied MCP definition; it does not disable the
-client's built-in file/shell tools. See the
-[Claude Code MCP guide](https://code.claude.com/docs/en/mcp). Other clients can use
-the same `mcpServers` JSON with B's path, subject to their own configuration
-format. Connection status alone does not establish successful tool use.
-
-These instructions were checked against CLI help for Codex
-`0.169.0-alpha.11.1` and Claude Code `2.0.76`. That check verifies option syntax,
-not a completed two-client model trial. Record the versions actually used.
+The session options were originally checked against CLI help for Codex
+`0.169.0-alpha.11.1` and Claude Code `2.0.76`. Check your installed client's
+`--help` if its options differ and record the versions actually used. That
+syntax check does not constitute a completed two-client model trial.
 
 ## Run the scenario
 
@@ -140,6 +162,47 @@ The operator's page displays broader information than either assistant receives.
 Its scoped panels can help explain the rules, but record actual tool outputs
 when evaluating real clients. Proposal rationale is unverified input, not proof
 that the suggested value is correct. Do not insert real identity documents.
+
+## Check rejection and outdated proposals
+
+Use **a separate fresh demo directory** for these branches, before revoking A.
+They deliberately create rejected or competing proposals and should not be
+mixed into the single-proposal scenario above. Use either actual A tool calls
+or the page's simulated proposal control, and record which evidence mode you
+used.
+
+### Reject a proposal
+
+1. Propose `alex.rejected@example.invalid` as A's email update.
+2. In its review card, open **Reject this proposal**, enter a reason such as
+   `Incorrect fictional email`, and click **Confirm rejection**.
+3. The item leaves pending review and appears in the handled-decision history
+   as **Rejected**, including the reason. A fresh A read still returns
+   `alex.old@example.invalid`; B still reads its name/address and no email.
+
+A rejection is a review decision, not a deletion of the proposal or a change to
+facts or sharing. A reason is required. To correct a rejected suggestion,
+submit a new proposal rather than editing its historical decision.
+
+### Close an outdated proposal
+
+1. While the same old email is still current, submit two proposals from A:
+   `alex.first@example.invalid` and `alex.second@example.invalid`.
+2. Approve the proposal for `alex.first@example.invalid`. Do not share it yet.
+3. The other proposal becomes outdated because it was based on the old claim.
+   Its approval control is disabled. Choose **Close outdated proposal**.
+4. It leaves pending review and appears in the handled-decision history as
+   **Closed as outdated**. The confirmed email remains
+   `alex.first@example.invalid`; A still cannot read that version until it is
+   separately shared. B's access remains unchanged.
+
+Closing an outdated proposal records a `superseded` decision. The server checks
+that it is actually outdated when the action is submitted; an ordinary pending
+proposal cannot be closed through that action. A changed or already handled
+review requires refreshing the page, rather than reapplying an old decision.
+
+The recent handled-decision list is an operator view, not an AI tool response.
+It retains the outcome and reason without claiming that a model has read them.
 
 ## Evidence and measurements
 

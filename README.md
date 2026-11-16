@@ -10,45 +10,48 @@ The goal is to let people carry their information between AI assistants and deci
 
 **Status: `0.3.0-alpha` — an identity-first Alpha.** This repository contains a SQLite core, JSON contracts, a local MCP adapter, and executable examples with fictional data. Broader preference and relationship models, remote authentication, and production security controls remain roadmap work.
 
-## Quick start
+## Start the shared-profile trial
 
-Use **Node.js 24**, npm, and Git. From a terminal:
+Use **Node.js 24**, npm, and Git. The commands below are for macOS/Linux POSIX shells and download the **unreleased trial branch**, not the older `v0.3.0-alpha` release. Run them from a directory where you want a new checkout:
 
 ```sh
-git clone https://github.com/EUMINZ/mio-personal-data.git
-cd mio-personal-data
-git checkout --detach v0.3.0-alpha
+git clone --branch codex/shared-profile-trial --single-branch https://github.com/EUMINZ/mio-personal-data.git mio-personal-data-trial
+cd mio-personal-data-trial
+git rev-parse HEAD
+npm ci --ignore-scripts
+mio_trial_dir="$(mktemp -d)/profile"
+npm run demo:shared -- "$mio_trial_dir"
+```
+
+Record the printed commit for feedback: the trial branch can change. `mktemp` creates an empty parent outside the checkout; the launcher creates a new fictional profile inside it. Keep the terminal running and open the printed local review URL. Keep that URL private because it authorizes operator actions.
+
+The [shared-profile example](examples/shared-profile/README.md) gives A name/email access and permission to propose changes; B can read name/address from the same persistent SQLite database. Approval creates a confirmed version, separate sharing makes that version readable to A, and revoking A leaves B's grant unchanged. You can also **reject a proposal with a reason** or **close an outdated proposal**; neither operation changes confirmed facts or grants. Handled proposals remain in the decision history.
+
+Choose one way to try it:
+
+- **Local walkthrough:** use the page's simulated proposal control. No model account, API key, or model call is needed.
+- **Real MCP clients:** copy the complete **Codex A** and **Claude Code B** commands printed by the launcher into separate terminals. Paths are filled in for your checkout and profile; user-level registrations are not changed. Client login and model access are required and may consume account usage.
+
+Follow the [15–20 minute trial guide](docs/SHARED_PROFILE_TRIAL.md) for the exact scenario and feedback form. To print the client commands again, run `npm run demo:shared:commands -- /absolute/existing-demo-directory` from the checkout, using the profile directory printed at startup. This does not create a profile or renew a grant.
+
+![Local review page with approved, rejected and closed outdated proposals](docs/assets/shared-profile-decisions.jpg)
+
+The initial fictional workflow passed automated and browser checks. A real Codex client completed A's lifecycle; Claude Code B was blocked by authentication before tool use, so B was checked separately with the MCP SDK. **A complete two-model trial and independent external user trials remain unverified.** The [sanitized validation record](docs/trials/shared-profile-live-validation-2026-11-16.json) describes that earlier snapshot; see [validation](docs/VALIDATION.md) for checks of later changes.
+
+## Released simulation and development checks
+
+To reproduce the older **in-memory mock-assistant simulation**, use a separate checkout:
+
+```sh
+git clone --branch v0.3.0-alpha --single-branch https://github.com/EUMINZ/mio-personal-data.git mio-personal-data-v0.3
+cd mio-personal-data-v0.3
 npm ci --ignore-scripts
 npm run demo
 ```
 
-The [two-assistant demo](examples/two-assistants.js) uses fictional information. Two local mock assistants receive different field selections, and a proposed update enters a review workflow. It needs no model downloads or API keys and makes no model API calls.
+That release has no shared-profile review page and no `demo:shared` script. The [two-assistant simulation](examples/two-assistants.js) needs no model downloads or API keys and makes no model calls. The core and that simulation have no third-party runtime dependencies; the MCP adapter and review example use the official MCP SDK and validators installed by npm.
 
-The core and demo have no third-party runtime dependencies. The MCP adapter uses the official MCP SDK; the installation above also includes development validators.
-
-To run JavaScript syntax checks, all tests, and the demo:
-
-```sh
-npm run check
-```
-
-Run these commands from the repository root. See the [validation record](docs/VALIDATION.md) for the tested environment and known limits.
-
-## Try one profile with two assistants
-
-The **unreleased [shared-profile example](examples/shared-profile/README.md)** adds a small local review page and two MCP configurations backed by one persistent SQLite database. A can read name/email and propose changes; B can read name/address. Approval creates a new confirmed value, sharing makes that version available to A, and revoking A leaves B's grant unchanged.
-
-Use a checkout containing `examples/shared-profile/`; the `v0.3.0-alpha` tag and its package do not include this example. After `npm ci --ignore-scripts`, run:
-
-```sh
-npm run demo:shared -- /absolute/new-mio-shared-demo
-```
-
-Open the printed local URL and follow the [15–20 minute trial guide](docs/SHARED_PROFILE_TRIAL.md) to connect clients, exercise the workflow, and record feedback. The page and fixtures make no model calls. Real AI client sessions require their own login and may consume account usage.
-
-![Local review page after approval, before separately sharing the new email](docs/assets/shared-profile-review.jpg)
-
-The fictional workflow passed automated and browser checks. A real Codex client completed A's lifecycle; Claude Code B was blocked by authentication before tool use, so B was checked separately with the MCP SDK. **A complete two-model trial and independent external user trials remain unverified.** See the [sanitized validation record](docs/trials/shared-profile-live-validation-2026-11-16.json).
+In either checkout, `npm run check` runs syntax checks, the tests available in that version, and the mock-assistant simulation. See the [validation record](docs/VALIDATION.md) for tested environments and limits.
 
 ## Connect your AI
 
@@ -132,7 +135,7 @@ The evidence below describes specific checks and experiments, not a general clai
 | Evidence | Finding and limit |
 | --- | --- |
 | [Automated validation](docs/VALIDATION.md) | The `0.3.0-alpha` record reports 110 passing tests, including MCP behavior. GitHub Actions runs the checks on Node.js 24. |
-| [Unreleased shared-profile trial](docs/SHARED_PROFILE_TRIAL.md) | 122 tests pass locally, including shared-database stdio clients, review HTTP boundaries, and bounded lock contention. Browser checks and partial real-client evidence are recorded separately; external adoption is untested. |
+| [Unreleased shared-profile trial](docs/SHARED_PROFILE_TRIAL.md) | The current trial checkout passed 136 tests, including review rejection/closure and generated client commands. [Validation](docs/VALIDATION.md) separates these checks from earlier browser and partial real-client evidence; external adoption is untested. |
 | [Architecture study (Chinese)](docs/research/mio-personal-data-layer.zh-CN.md) | Mio and a competent scoped JSON host produced identical outcomes on the tested policies. Both reduced unnecessary application payload compared with full-profile delivery; this does not establish unique performance superiority. |
 | [Codex integration smoke test](experiments/results/codex-mcp-smoke.json) | A historical `0.2.0-alpha` session verified real tool integration, not comparative model quality. |
 | [Accuracy/cost experiment](experiments/accuracy-cost/README.md) | In 40 real Codex sessions with the same model, tasks, and host policy, legacy completed 12/20 tasks correctly and compact completed 20/20 by avoiding omissions of readable fields. This small synthetic sample does not establish general model accuracy. |

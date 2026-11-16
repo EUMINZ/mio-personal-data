@@ -6,17 +6,40 @@ new version. It uses the same MCP adapter that real clients connect to.
 
 ## Start
 
-Use Node.js 24 and run these commands from a checkout containing this example:
+Use Node.js 24, npm, and Git. From a macOS/Linux POSIX shell, create a new
+checkout of the unreleased trial branch:
 
 ```sh
+git clone --branch codex/shared-profile-trial --single-branch https://github.com/EUMINZ/mio-personal-data.git mio-personal-data-trial
+cd mio-personal-data-trial
+git rev-parse HEAD
 npm ci --ignore-scripts
-npm run demo:shared -- /absolute/new-mio-shared-demo
+mio_trial_dir="$(mktemp -d)/profile"
+npm run demo:shared -- "$mio_trial_dir"
 ```
 
-Replace the absolute path with a new directory outside the checkout. Its parent
-must already exist. Open the loopback URL printed by the command; keep the
-terminal running. The URL contains a token for the local operator page. Do not
-share that URL or paste it into an assistant chat.
+Record the commit for feedback; the branch may change. The old `v0.3.0-alpha`
+tag/package does not contain this example. `mktemp` creates a fresh parent
+outside the checkout; the launcher creates its `profile` child. Open the
+printed loopback URL and keep the terminal running. The URL contains a token
+for the local operator page. Do not share it or paste it into an assistant chat.
+
+For a local walkthrough, use the simulated proposal control on the page; no
+model account or API key is required. For real clients, copy the launcher's
+complete **Codex A** and **Claude Code B** session commands into separate
+terminals. They use your actual paths and do not save user-level registrations.
+Client login and model access are separate prerequisites; real model sessions
+may consume account usage. Windows shell commands have not been validated.
+
+To display the client commands again, use the existing profile directory
+printed at startup:
+
+```sh
+npm run demo:shared:commands -- /absolute/existing-demo-directory
+```
+
+This prints commands without starting a client, changing registrations,
+creating a new profile, or extending a grant.
 
 The command initializes the directory when it is absent, or resumes a valid
 existing shared demo. To initialize without starting the page:
@@ -37,7 +60,9 @@ sharing does not extend them. Use a different new directory to start over.
 | --- | --- | --- |
 | Initial read | First name and email are shared. | First name and home address are shared. |
 | A proposes a new email | The old confirmed email remains readable. | Its view is unchanged. |
+| Operator rejects the proposal with a reason | The old confirmed email remains readable; the proposal is recorded as rejected. | Its view is unchanged. |
 | Operator approves | The new email is confirmed but unavailable to A until shared. The old version is not returned as a fallback. | Its view is unchanged. |
+| Operator closes another, now outdated proposal | The confirmed value and sharing remain unchanged; the old proposal is recorded as superseded. | Its view is unchanged. |
 | Operator shares the latest email with A | The new email becomes readable. | Email remains outside its grant. |
 | Operator revokes A | New tool reads fail because the grant is revoked. | Its reads continue to work. |
 
@@ -46,6 +71,13 @@ assistant panels are scoped views of the database, not evidence that a real AI
 client has connected. The operator can see the broader profile and review queue.
 For the cross-client trial, connect A and B using their separate configuration
 files and follow the [trial guide](../../docs/SHARED_PROFILE_TRIAL.md).
+
+Rejection and approval are alternative decisions. To test outdated closure,
+create two proposals based on the same old value, approve one, then close the
+other. The page shows recent handled decisions and rejection reasons; closing
+or rejecting a proposal does not erase its record or change facts or grants.
+The [separate review branches](../../docs/SHARED_PROFILE_TRIAL.md#check-rejection-and-outdated-proposals)
+give the exact steps without mixing them into the main sharing walkthrough.
 
 ## Checks
 

@@ -9,6 +9,12 @@ results to its model provider under that client's settings.
 资料留在本地数据库；助手取得的字段会进入助手的上下文。当前提供可运行的
 虚构资料演示与显式配置接口，不会自动读取你的个人文件、聊天或账户。
 
+**For the shared-profile trial and local review page, start with the
+[trial guide](SHARED_PROFILE_TRIAL.md).** It provides the exact trial-branch
+checkout, a fictional persistent profile, and generated session commands for
+two distinct clients. The released `v0.3.0-alpha` routes below do not contain
+that example; two `--demo` processes also do not share a database.
+
 ## Requirements and verification status
 
 Version `0.3.0-alpha` defaults to two tools: `mio_context` for discovery or batched

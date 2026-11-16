@@ -1,5 +1,37 @@
 # Validation
 
+## Unreleased: trial entry and review resolution
+
+Checked on 2026-11-16 with Node.js 24.12.0 on macOS arm64. `npm run check`
+passed **136 tests**, with zero failures or skips, plus syntax checks and the
+fictional simulation. The 14 additional cases cover operator rejection and
+outdated-proposal closure, binding/version checks, duplicate requests, unchanged
+facts and grants, audit-failure rollback, CLI commands, and generated client
+commands. The shell tests use fake clients to inspect arguments, including paths
+with spaces, apostrophes, dollar substitutions and backticks; they make no model
+calls and do not establish new Codex or Claude model validation.
+
+The review page now records rejected proposals as `dismissed` with a required
+reason, and outdated proposals as `superseded`. The proposal and decision remain
+stored; the pending queue no longer includes them. Approval and outdated closure
+use the same current-fact check as the page. Invalid, future, expired or ambiguous
+facts cannot be approved through the operator CLI.
+
+Browser checks confirmed that blank rejection reasons are blocked, a typed reason
+and its focus survive another tab submitting a proposal, rejection preserves the
+current facts and sharing, and an outdated proposal can be closed after another
+proposal is approved. The resolved list shows all three outcomes. At a 390-pixel
+viewport, the expanded decision list had no horizontal overflow.
+[Review-resolution screenshot](assets/shared-profile-decisions.jpg).
+
+The README now starts with explicit trial-branch installation and records the
+checkout SHA. The launcher prints session-only Codex A and Claude Code B commands
+using actual Node, server and configuration paths; a separate command reprints
+them without resetting the profile or renewing its grants. The initial 122-test
+and real-client records below describe the earlier snapshot; their hashes have
+not been rewritten to imply they tested these changes. No new real-model or
+external-user trial is claimed here.
+
 ## Unreleased: shared-profile trial
 
 Checked on 2026-11-16 with Node.js 24.12.0 and npm 11.6.2 on macOS arm64.

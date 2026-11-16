@@ -47,6 +47,11 @@ any process with the same OS file access may also bypass the page entirely.
 The page shows an operator-side view and permission previews, not actual AI
 answers. It reuses the MCP administration operations and records writes
 transactionally. Its state reads do not create synthetic assistant-read audits.
+Rejection and outdated-proposal closure require the same operator capability,
+binding and review-version checks as approval. They retain the proposal, decision
+and audit without changing confirmed facts or grants; these operations are not
+exposed as model tools. Rejection reasons are stored as untrusted text and are
+visible only through the trusted operator interface.
 Two fixture configurations share a database but have distinct requester/grant
 bindings. Grants expire after 24 hours and are not renewed by restarting.
 SQLite's bounded 3-second busy timeout handles brief contention only; no general

@@ -26,7 +26,7 @@
           </div>
           <ol class="steps" aria-label="Demo workflow">
             <li><span>01</span><div><strong>Propose</strong><p>An assistant suggests a change.</p></div></li>
-            <li><span>02</span><div><strong>Approve</strong><p>You confirm the new version.</p></div></li>
+            <li><span>02</span><div><strong>Review</strong><p>You approve or reject the change.</p></div></li>
             <li><span>03</span><div><strong>Share</strong><p>You grant access to that version.</p></div></li>
           </ol>
         </section>
@@ -45,6 +45,11 @@
             <section class="ledger-section review-section" aria-labelledby="reviews-title">
               <div class="section-heading"><div><p class="eyebrow">Your decision</p><h2 id="reviews-title" tabindex="-1">Review changes</h2></div><span id="review-count" class="count">0 pending</span></div>
               <div id="reviews"></div>
+              <details class="decision-history">
+                <summary><span>Resolved proposals</span><span id="decision-count" class="count">0 recent</span></summary>
+                <p class="history-description">The latest 20 decisions remain here after proposals leave the pending queue.</p>
+                <div id="decisions"></div>
+              </details>
             </section>
 
             <section class="ledger-section simulator" aria-labelledby="simulate-title">

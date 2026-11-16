@@ -12,6 +12,7 @@
     "test": "node --test mio-core/tests/*.test.js tests/*.test.js",
     "demo": "node examples/two-assistants.js",
     "demo:shared": "node examples/shared-profile/server.js",
+    "demo:shared:commands": "node examples/shared-profile/client-commands.js",
     "check": "node scripts/check.mjs",
     "benchmark": "node benchmarks/run.mjs",
     "mcp:demo": "node adapters/mcp/server.js --demo"

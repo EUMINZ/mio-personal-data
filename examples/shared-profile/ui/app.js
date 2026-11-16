@@ -11,6 +11,9 @@ let refreshPromise = null;
 let connected = false;
 let connectionNotice = false;
 const rendered = new Map();
+// Keep in-progress operator notes in this page only, across background polls.
+const reviewDrafts = new Map();
+const reviewCards = new Map();
 
 function node(tag, className, text) {
   const element = document.createElement(tag);
@@ -63,6 +66,9 @@ function updateControls() {
   for (const button of document.querySelectorAll('[data-mutation]')) {
     button.disabled = busy || !connected || button.dataset.stale === 'true';
   }
+  for (const input of document.querySelectorAll('[data-review-input]')) {
+    input.disabled = busy || !connected;
+  }
   $('refresh-button').disabled = busy;
   $('workspace').setAttribute('aria-busy', String(busy));
 }
@@ -106,16 +112,59 @@ function actionButton(label, className, handler) {
   return button;
 }
 function renderReviews(reviews) {
+  const container = $('reviews');
+  const focused = document.activeElement;
+  const focusedReview = focused?.closest('[data-review-id]')?.dataset.reviewId;
+  const focusedControl = focused?.dataset.reviewControl;
+  const selection = focusedControl === 'reason' ? [focused.selectionStart, focused.selectionEnd] : null;
+  const pending = new Set(reviews.map((review) => review.reviewItemId));
+  for (const id of reviewCards.keys()) {
+    if (!pending.has(id)) {
+      reviewCards.get(id).element.remove();
+      reviewCards.delete(id);
+      reviewDrafts.delete(id);
+    }
+  }
   $('review-count').textContent = `${reviews.length} pending`;
   $('review-count').classList.toggle('has-pending', reviews.length > 0);
   if (!reviews.length) {
     const empty = node('div', 'empty-state');
     empty.append(node('strong', '', 'No changes waiting for review.'), node('p', '', 'Use the demo control below, or ask a connected assistant to propose a new email.'));
-    $('reviews').replaceChildren(empty);
+    container.replaceChildren(empty);
+    if (focusedReview) $('reviews-title').focus({ preventScroll: true });
     return;
   }
-  const items = reviews.map((review) => {
+  if (!container.querySelector('[data-review-id]')) container.replaceChildren();
+  reviews.forEach((review, index) => {
+    const signature = JSON.stringify(review);
+    const existing = reviewCards.get(review.reviewItemId);
+    let card;
+    if (existing?.signature === signature) {
+      card = existing.element;
+    } else {
+      card = buildReviewCard(review);
+      if (existing) existing.element.replaceWith(card);
+      reviewCards.set(review.reviewItemId, { signature, element: card });
+    }
+    const position = container.children[index];
+    if (position !== card) container.insertBefore(card, position ?? null);
+  });
+  if (focusedReview && focusedControl && document.activeElement !== focused) {
+    const card = reviewCards.get(focusedReview)?.element;
+    const control = card && [...card.querySelectorAll('[data-review-control]')]
+      .find((entry) => entry.dataset.reviewControl === focusedControl);
+    if (control && !control.disabled) {
+      control.focus({ preventScroll: true });
+      if (selection) control.setSelectionRange(...selection);
+    } else {
+      const fallback = card?.querySelector('[data-review-control="close-stale"]') ?? $('reviews-title');
+      fallback.focus({ preventScroll: true });
+    }
+  }
+}
+function buildReviewCard(review) {
     const card = node('article', 'review');
+    card.dataset.reviewId = review.reviewItemId;
     const top = node('div', 'review-top');
     top.append(node('h3', '', `${review.label} update`), node('span', 'review-origin', `Assistant ${review.assistantId.toUpperCase()} proposal`));
     const comparison = node('div', 'comparison');
@@ -128,19 +177,101 @@ function renderReviews(reviews) {
     const rationale = node('div', 'rationale');
     rationale.append(node('span', 'comparison-label', 'Assistant’s reason · not independently verified'), node('p', '', review.rationale));
     const footer = node('div', 'review-footer');
+    const actions = node('div', 'review-actions');
     const approveButton = actionButton('Approve update', 'button', () => mutate('/api/approve', {
       assistantId: review.assistantId, reviewItemId: review.reviewItemId,
       expectedVersion: review.expectedVersion, expectedValue: review.suggestedValue, confirmed: true,
     }, 'Update approved. Share the new version with an assistant when you are ready.', 'reviews-title'));
     approveButton.dataset.stale = String(review.stale === true);
+    approveButton.dataset.reviewControl = 'approve';
     approveButton.disabled = review.stale === true;
+    actions.append(approveButton);
+    if (review.stale) {
+      const closeButton = actionButton('Close outdated proposal', 'button secondary', () => mutate('/api/close-stale', {
+        assistantId: review.assistantId, reviewItemId: review.reviewItemId,
+        expectedVersion: review.expectedVersion, confirmed: true,
+      }, 'Outdated proposal closed. Confirmed facts and sharing are unchanged.', 'reviews-title'));
+      closeButton.dataset.reviewControl = 'close-stale';
+      actions.append(closeButton);
+    }
     footer.append(node('p', review.stale ? 'stale-notice' : '', review.stale
-      ? 'The confirmed value changed. Request a new proposal.'
-      : 'Approving updates the fact. Sharing is a separate choice.'), approveButton);
+      ? 'This proposal no longer matches the current fact. Closing it leaves facts and sharing unchanged.'
+      : 'Approving updates the fact. Sharing is a separate choice.'), actions);
     card.append(top, comparison, rationale, footer);
+    if (!review.stale) card.append(buildRejectionForm(review));
     return card;
+}
+function buildRejectionForm(review) {
+  const draft = reviewDrafts.get(review.reviewItemId) ?? { reason: '', open: false };
+  reviewDrafts.set(review.reviewItemId, draft);
+  const details = node('details', 'rejection');
+  details.open = draft.open;
+  const summary = node('summary', '', 'Reject this proposal');
+  summary.dataset.reviewControl = 'reject-toggle';
+  const form = node('form', 'rejection-form');
+  const reasonId = `reject-reason-${review.reviewItemId}`;
+  const label = node('label', '', 'Reason for rejection');
+  label.htmlFor = reasonId;
+  const reason = node('textarea');
+  reason.id = reasonId;
+  reason.name = 'reason';
+  reason.rows = 2;
+  reason.maxLength = 1000;
+  reason.required = true;
+  reason.value = draft.reason;
+  reason.dataset.reviewControl = 'reason';
+  reason.dataset.reviewInput = 'true';
+  reason.setAttribute('aria-describedby', `${reasonId}-hint`);
+  const hint = node('p', 'field-hint', 'Required. Saved with the decision; confirmed facts and sharing stay unchanged.');
+  hint.id = `${reasonId}-hint`;
+  const actions = node('div', 'rejection-actions');
+  const confirm = node('button', 'button reject', 'Confirm rejection');
+  confirm.type = 'submit';
+  confirm.dataset.mutation = 'true';
+  confirm.dataset.reviewControl = 'reject-confirm';
+  const cancel = node('button', 'text-button', 'Cancel');
+  cancel.type = 'button';
+  cancel.dataset.reviewControl = 'reject-cancel';
+  cancel.addEventListener('click', () => { details.open = false; summary.focus(); });
+  actions.append(confirm, cancel);
+  form.append(label, reason, hint, actions);
+  details.append(summary, form);
+  details.addEventListener('toggle', () => { draft.open = details.open; });
+  reason.addEventListener('input', () => { draft.reason = reason.value; reason.setCustomValidity(''); });
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    reason.setCustomValidity(reason.value.trim() ? '' : 'Enter a reason for rejecting this proposal.');
+    if (!form.reportValidity()) return;
+    mutate('/api/reject', {
+      assistantId: review.assistantId, reviewItemId: review.reviewItemId,
+      expectedVersion: review.expectedVersion, reason: reason.value.trim(), confirmed: true,
+    }, 'Proposal rejected. Confirmed facts and sharing are unchanged.', 'reviews-title');
   });
-  $('reviews').replaceChildren(...items);
+  return details;
+}
+function renderDecisions(decisions) {
+  $('decision-count').textContent = `${decisions.length} recent`;
+  if (!decisions.length) {
+    $('decisions').replaceChildren(node('p', 'decision-empty', 'Approved, rejected and outdated proposals will be recorded here.'));
+    return;
+  }
+  const labels = { accepted: 'Approved', dismissed: 'Rejected', superseded: 'Closed as outdated' };
+  const list = node('ol', 'decision-list');
+  for (const decision of decisions) {
+    const row = node('li', 'decision');
+    const top = node('div', 'decision-top');
+    const label = labels[decision.decision] ?? 'Decision recorded';
+    top.append(node('strong', '', `${decision.label} · ${label}`));
+    const time = node('time', '', formatTime(decision.resolvedAt, true));
+    if (Number.isFinite(Date.parse(decision.resolvedAt))) time.dateTime = new Date(decision.resolvedAt).toISOString();
+    top.append(time);
+    row.append(top, node('p', 'decision-value', `Assistant ${decision.assistantId.toUpperCase()} proposed: ${display(decision.suggestedValue)}`));
+    if (decision.note) row.append(node('p', 'decision-note', `${decision.decision === 'dismissed' ? 'Rejection reason' : 'Decision note'}: ${decision.note}`));
+    row.append(node('p', 'decision-effect', decision.decision === 'accepted'
+      ? 'Approval recorded. Sharing is a separate decision.' : 'No confirmed fact or sharing permission changed.'));
+    list.append(row);
+  }
+  $('decisions').replaceChildren(list);
 }
 function renderAssistants(assistants) {
   const cards = assistants.map((assistant) => {
@@ -204,6 +335,7 @@ function render(next) {
   $('person-name').textContent = next.person.name;
   renderIfChanged('claims', next.claims, renderClaims);
   renderIfChanged('reviews', next.reviews, renderReviews);
+  renderIfChanged('decisions', next.decisions ?? [], renderDecisions);
   // A new claim version changes sharing buttons even when grant metadata does not.
   renderIfChanged('access', { assistants: next.assistants, claims: next.claims }, ({ assistants }) => renderAssistants(assistants));
   renderIfChanged('audit', next.audit, renderAudit);

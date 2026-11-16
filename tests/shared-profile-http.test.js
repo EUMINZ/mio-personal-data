@@ -34,7 +34,7 @@ test('operator page protects every API read and write, prevents foreign origins/
   assert.equal(page.headers.get('cache-control'), 'no-store');
   assert.match(page.headers.get('content-security-policy'), /frame-ancestors 'none'/);
   assert.doesNotMatch(await page.text(), new RegExp(f.token));
-  for (const route of ['/api/state', '/api/propose']) {
+  for (const route of ['/api/state', '/api/propose', '/api/reject', '/api/close-stale']) {
     const result = await fetch(f.origin + route, { method: route.endsWith('state') ? 'GET' : 'POST',
       ...(route.endsWith('state') ? {} : { body: JSON.stringify(proposal), headers: { 'Content-Type': 'application/json' } }) });
     assert.equal(result.status, 401);
@@ -48,6 +48,91 @@ test('operator page protects every API read and write, prevents foreign origins/
   assert.equal(hostStatus, 403);
   assert.equal((await fetch(f.origin + '/api/state', { headers: { 'X-Mio-Token': f.token, 'Sec-Fetch-Site': 'cross-site' } })).status, 403);
   assert.equal((await fetch(f.origin + '/api/state', { headers: { 'X-Mio-Token': 'wrong' } })).status, 401);
+});
+
+test('HTTP rejection requires a reason and keeps facts and grants while recording a resolved decision', async (t) => {
+  const f = await fixture(t);
+  await f.request('/api/propose', proposal);
+  const before = (await f.request()).data;
+  const [review] = before.reviews;
+  const action = { assistantId: 'a', reviewItemId: review.reviewItemId,
+    expectedVersion: review.expectedVersion, reason: 'This email is incorrect.', confirmed: true };
+  for (const change of [{ reason: '' }, { reason: '   ' }, { reason: 'x'.repeat(1001) },
+    { reason: 12 }, { confirmed: false }, { expectedValue: V.nextEmail }]) {
+    assert.equal((await f.request('/api/reject', { ...action, ...change })).status, 400);
+  }
+  for (const change of [{ assistantId: 'b' }, { expectedVersion: 'changed' }]) {
+    assert.equal((await f.request('/api/reject', { ...action, ...change })).status, 409);
+  }
+  assert.equal((await f.request('/api/reject', action)).status, 200);
+  const after = (await f.request()).data;
+  assert.deepEqual(after.claims, before.claims);
+  assert.deepEqual(after.assistants, before.assistants);
+  assert.equal(after.reviews.length, 0);
+  assert.equal(after.decisions.length, 1);
+  assert.equal(after.decisions[0].decision, 'dismissed');
+  assert.equal(after.decisions[0].status, 'dismissed');
+  assert.equal(after.decisions[0].note, action.reason);
+  assert.equal(after.decisions[0].suggestedValue, V.nextEmail);
+  assert.ok(after.decisions[0].resolvedAt);
+  assert.ok(after.audit.some((event) => event.type === 'mcp.operator.rejected'));
+  assert.equal((await f.request('/api/reject', action)).status, 409);
+  assert.equal((await f.request('/api/approve', { assistantId: 'a', reviewItemId: review.reviewItemId,
+    expectedVersion: review.expectedVersion, expectedValue: V.nextEmail, confirmed: true })).status, 409);
+  // Displaying decisions is read-only; no synthetic client audit is introduced.
+  assert.deepEqual((await f.request()).data.audit, after.audit);
+});
+
+test('HTTP closes only outdated proposals, preserving the approved value and version-specific sharing', async (t) => {
+  const f = await fixture(t);
+  await f.request('/api/propose', proposal);
+  await f.request('/api/propose', { ...proposal, value: 'alex.alternative@example.invalid' });
+  let snapshot = (await f.request()).data;
+  const kept = snapshot.reviews.find((item) => item.suggestedValue === V.nextEmail);
+  const outdated = snapshot.reviews.find((item) => item.reviewItemId !== kept.reviewItemId);
+  const close = { assistantId: 'a', reviewItemId: outdated.reviewItemId, expectedVersion: outdated.expectedVersion, confirmed: true };
+  assert.equal((await f.request('/api/close-stale', close)).status, 409);
+  assert.equal((await f.request('/api/approve', { assistantId: 'a', reviewItemId: kept.reviewItemId,
+    expectedVersion: kept.expectedVersion, expectedValue: kept.suggestedValue, confirmed: true })).status, 200);
+  snapshot = (await f.request()).data;
+  assert.equal(snapshot.reviews[0].stale, true);
+  for (const change of [{ assistantId: 'b' }, { expectedVersion: 'changed' }]) {
+    assert.equal((await f.request('/api/close-stale', { ...close, ...change })).status, 409);
+  }
+  assert.equal((await f.request('/api/close-stale', { ...close, confirmed: false })).status, 400);
+  assert.equal((await f.request('/api/close-stale', close)).status, 200);
+  const after = (await f.request()).data;
+  assert.equal(after.reviews.length, 0);
+  assert.deepEqual(after.claims, snapshot.claims);
+  assert.deepEqual(after.assistants, snapshot.assistants);
+  assert.equal(field(after, 'a', F.email).state, 'unshared');
+  assert.equal(after.decisions.find((item) => item.reviewItemId === outdated.reviewItemId).status, 'superseded');
+  assert.equal(after.decisions.find((item) => item.reviewItemId === kept.reviewItemId).decision, 'accepted');
+  assert.equal((await f.request('/api/close-stale', close)).status, 409);
+});
+
+test('resolution audit failures leave pending reviews intact and expose no diagnostics', async (t) => {
+  const f = await fixture(t);
+  await f.request('/api/propose', proposal);
+  await f.request('/api/propose', { ...proposal, value: 'alex.alternative@example.invalid' });
+  let snapshot = (await f.request()).data;
+  const kept = snapshot.reviews.find((item) => item.suggestedValue === V.nextEmail);
+  const outdated = snapshot.reviews.find((item) => item.reviewItemId !== kept.reviewItemId);
+  await f.request('/api/approve', { assistantId: 'a', reviewItemId: kept.reviewItemId,
+    expectedVersion: kept.expectedVersion, expectedValue: kept.suggestedValue, confirmed: true });
+  snapshot = (await f.request()).data;
+  const local = openSharedProfile(f.directory);
+  try {
+    local.states.a.db.exec("CREATE TRIGGER fail_resolution_audit BEFORE INSERT ON audit_events WHEN NEW.event_type IN ('mcp.operator.rejected', 'mcp.operator.closed-stale') BEGIN SELECT RAISE(ABORT, 'PRIVATE_RESOLUTION_DIAGNOSTIC'); END;");
+    for (const route of ['/api/reject', '/api/close-stale']) {
+      const action = { assistantId: 'a', reviewItemId: outdated.reviewItemId, expectedVersion: outdated.expectedVersion,
+        confirmed: true, ...(route.endsWith('reject') ? { reason: 'Incorrect value' } : {}) };
+      const result = await f.request(route, action);
+      assert.equal(result.status, 500);
+      assert.doesNotMatch(JSON.stringify(result.data), /PRIVATE_RESOLUTION|SQL|sqlite/);
+      assert.deepEqual((await f.request()).data, snapshot);
+    }
+  } finally { local.close(); }
 });
 
 test('operator snapshots do not emit assistant audit events or include hidden facts', async (t) => {
