@@ -2,82 +2,139 @@
 
 **A user-controlled personal data layer for AI.**
 
-[简体中文](README.zh-CN.md) · [Connect your AI](docs/INTEGRATIONS.md) · [Research (中文)](docs/research/mio-personal-data-layer.zh-CN.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md)
+[简体中文](README.zh-CN.md) · [Connect your AI](docs/INTEGRATIONS.md) · [Architecture](docs/ARCHITECTURE.md) · [Validation](docs/VALIDATION.md) · [Security](SECURITY.md)
 
-Mio gives applications a local, structured place to keep facts about a person, the evidence behind them, proposed updates, and records of permission and review. The goal is to let people carry their information between AI assistants and decide what each task may use.
+Mio gives people a local, structured place to keep facts about themselves, the evidence behind those facts, and proposed updates from AI assistants. Applications can request selected information for a task, while a separate operator workflow handles review and sharing.
 
-Version `0.3.0-alpha` is an **identity-first Alpha**. It provides a SQLite core, JSON contracts, a local MCP adapter for AI clients, and a demonstration with two mock assistants. A general preference and relationship model, remote authentication, and production security controls are still roadmap work.
+The goal is to let people carry their information between AI assistants and decide what each task may use.
 
-## Connect to Codex, Claude Code, or another MCP client
+**Status: `0.3.0-alpha` — an identity-first Alpha.** This repository contains a SQLite core, JSON contracts, a local MCP adapter, and executable examples with fictional data. Broader preference and relationship models, remote authentication, and production security controls remain roadmap work.
 
-Install Node.js 24, clone this repository at `v0.3.0-alpha`, then run `npm ci --ignore-scripts`. The official-SDK MCP adapter defaults to two tools: `mio_context` discovers keys with `{}` or batches requested `fields`; `mio_propose_update` records pending changes. User approval and sharing stay in a separate local operator CLI.
+## Quick start
 
-Batched context returns allowed values, a uniform `unavailable` key list, and `checkedAt`. An invalid overall grant or database/audit failure fails the whole call. Reads are not cached; the timestamp records a permission/read check, not a guarantee that a fact is true or up to date. `--legacy-tools` preserves the previous three-tool interface. The Claude plugin uses the new default.
-
-Start with fictional data using `node adapters/mcp/server.js --demo`; this command speaks MCP over stdio and waits for an MCP client. For the actual Codex/Claude registration commands, a pinned GitHub package option, and personal-profile setup, follow the [installation guide](docs/INTEGRATIONS.md).
-
-GitHub distributes the code. Your database remains local, while the authorized values returned by tools enter your chosen AI client's context and may reach its model provider. Each in-memory demo is independent. Local file/shell access can bypass MCP, so this is not a sandbox against an assistant with the same OS account.
-
-## Try it
-
-Use Node.js 24. The core and demo have no third-party runtime dependencies and need no model downloads or API keys.
+Use **Node.js 24**, npm, and Git. From a terminal:
 
 ```sh
+git clone https://github.com/EUMINZ/mio-personal-data.git
+cd mio-personal-data
+git checkout --detach v0.3.0-alpha
+npm ci --ignore-scripts
 npm run demo
 ```
 
-To install development validators and run the checks:
+The [two-assistant demo](examples/two-assistants.js) uses fictional information. Two local mock assistants receive different field selections, and a proposed update enters a review workflow. It needs no model downloads or API keys and makes no model API calls.
+
+The core and demo have no third-party runtime dependencies. The MCP adapter uses the official MCP SDK; the installation above also includes development validators.
+
+To run JavaScript syntax checks, all tests, and the demo:
 
 ```sh
-npm ci
-npm test
 npm run check
 ```
 
-Run these commands from the repository root. `check` runs JavaScript syntax checks, the tests, and the demo. Development validation uses Ajv and ajv-formats.
+Run these commands from the repository root. See the [validation record](docs/VALIDATION.md) for the tested environment and known limits.
 
-The [two-assistant demo](examples/two-assistants.js) uses fictional information. Two local mock assistants receive different field selections through an example reader, and a proposed update enters the review workflow. It demonstrates how a host could limit disclosure; it does not connect to real models or provide caller authentication. Recording an accepted review decision does not itself change a canonical claim.
+## Connect your AI
 
-## What is here
+Mio exposes a local **stdio MCP server** for Codex, Claude Code, and other compatible clients. Follow the [installation guide](docs/INTEGRATIONS.md) for client registration, a pinned GitHub package option, and personal-profile setup.
 
-| Component | Current role |
+The default interface has two tools:
+
+| Tool | Purpose |
 | --- | --- |
-| [mio-core](mio-core/README.md) | Local SQLite storage, repository API, importers, search, and CLI |
-| [contracts](contracts/README.md) | Versioned JSON formats for context and review exchange |
-| [examples](examples/) | Fictional, executable integration examples |
-| [adapters/mcp](adapters/mcp/) | Local stdio tools and separate operator administration |
-| [benchmarks](benchmarks/README.md) | Reproducible comparison against a capable scoped JSON host |
+| `mio_context` | Discover readable keys with `{}`, or request a batch of selected `fields`. |
+| `mio_propose_update` | Record a pending proposal for operator review. |
 
-The [engineering study](docs/research/mio-personal-data-layer.zh-CN.md) found identical outcomes for Mio and a competent JSON host on the tested policies. Both reduced unnecessary application payload compared with full-profile delivery. This is **not evidence of better model accuracy, token cost, or unique performance superiority**. A historical `0.2.0-alpha` [real Codex smoke test](experiments/results/codex-mcp-smoke.json) verifies tool integration, not comparative AI quality.
+The demo server entrypoint is:
 
-The new [accuracy/cost experiment](experiments/accuracy-cost/README.md) completed 40 real Codex sessions with the same model, tasks and host policy. Legacy completed 12/20 tasks correctly; compact completed 20/20 by avoiding omissions of readable fields. Total input tokens fell 7.34%, but uncached input rose 3.50%: lower actual per-request charges are not established. Version `0.3.0-alpha` passes 110 automated tests. The [study](docs/research/accuracy-cost-optimization.zh-CN.md) includes all results and limits; this small synthetic sample does not establish general model accuracy.
+```sh
+node adapters/mcp/server.js --demo
+```
 
-The core includes:
+This command speaks MCP over stdio and waits for a client; use `npm run demo` for the standalone demonstration. Each demo server process starts its own independent fictional, in-memory database.
 
-- **Claims and evidence:** structured identity, contact, and employment facts, with source links, status, and timestamps.
-- **Review:** proposed changes, pending queues, decisions, and decision receipts.
-- **Grants and audit:** records of requesters, purposes, permitted claims, expiry, revocation, and events.
-- **Wiki and notes:** contextual entries and constrained explanatory notes alongside structured facts.
-- **Views and search:** compiled summaries, timelines, Markdown dossiers, and exact, keyword, or alias-based semantic search.
+Context reads return allowed values, a uniform `unavailable` key list, and `checkedAt`. Reads are not cached. An invalid overall grant or a database/audit error fails the whole call. The timestamp records a permission/read check, not proof that a fact is true or current. The [integration guide](docs/INTEGRATIONS.md) explains the field policy and the optional `--legacy-tools` interface.
 
-The public package is focused on the core and its contracts. It does not include a web app, mobile app, browser extension, or country-specific workflow.
+**Approval and sharing are separate operator actions, outside MCP.** The operator CLI applies an approved change transactionally; sharing the updated value requires a subsequent explicit action.
+
+GitHub distributes the code. The database stays on your machine, but authorized tool results enter your chosen AI client's context and may reach its model provider. MCP checks do not isolate the database from an assistant with shell or file access under the same OS account.
+
+## What Mio provides
+
+| Capability | Current scope |
+| --- | --- |
+| Claims and evidence | Structured identity, contact, and employment facts, with source links, status, and timestamps. |
+| Review | Proposed changes, pending queues, decisions, and decision receipts. |
+| Grants and audit | Records of requesters, purposes, permitted claims, expiry, revocation, and events. |
+| Wiki and notes | Contextual entries and constrained explanatory notes alongside structured facts. |
+| Views and search | Compiled summaries, timelines, Markdown dossiers, and exact, keyword, or alias-based semantic search. |
+
+The workflow separates evidence, suggestions, confirmed facts, and permission to share:
+
+```text
+Evidence → Proposed update → Operator review → Confirmed fact
+                                                   ↓
+                                           Explicit sharing
+                                                   ↓
+                                        Scoped context for AI
+```
+
+A core review decision is a workflow record: recording acceptance alone does not change a canonical claim. A trusted host must apply that change separately; the MCP operator CLI provides an implementation of this step.
+
+## Repository layout
+
+| Component | Role |
+| --- | --- |
+| [mio-core](mio-core/README.md) | Local SQLite storage, repository API, importers, search, and CLI. |
+| [contracts](contracts/README.md) | Versioned JSON formats for context and review exchange. |
+| [adapters/mcp](adapters/mcp/) | Local stdio tools and separate operator administration. |
+| [examples](examples/) | Fictional, executable integration examples. |
+| [benchmarks](benchmarks/README.md) | Reproducible comparison against a capable scoped JSON host. |
+| [experiments](experiments/accuracy-cost/README.md) | Client integration and accuracy/cost evaluation. |
+
+The public project focuses on the core, contracts, adapters, and examples. It does not include a web app, mobile app, browser extension, or country-specific workflow.
+
+Some API and contract names retain `Gemma` for compatibility. No Gemma model is required. Runtime validation is implemented in JavaScript; JSON Schema describes the exchange formats. See [contracts](contracts/README.md) for details.
 
 ## Trust boundary
 
-The repository API and CLI are **trusted-host tools**. They can access the underlying data directly. A host application must authenticate callers, enforce permissions, and obtain user confirmation before exposing these operations to an assistant.
+Mio is an Alpha for local development and integration research. It has not undergone an independent security audit.
 
-- SQLite files and generated exports are plaintext by default.
-- Actor identifiers and grant records are data; they do not authenticate a user or assistant.
-- Core context builders, search, and full exports are not permission-scoped APIs; the MCP adapter applies its own grant checks. Neither the adapter nor the demo reader isolates the database from the same OS account.
-- Review decisions record workflow state. Applying an approved change to a canonical claim remains a separate host operation.
-- Audit records live in the same database and are not tamper-proof.
+- **Storage is plaintext by default.** SQLite databases and generated exports are not encrypted by Mio.
+- **The core API and CLI trust the host.** Context builders, search, and full exports are not permission-scoped APIs. Host applications must authenticate callers, enforce permissions, and control user approval.
+- **Grant records are not authentication.** Actor identifiers and recorded permissions do not establish who is making a call.
+- **MCP checks apply to tool calls.** The adapter enforces its configured grant, but an assistant with access to the same database, files, or operator CLI can bypass that boundary.
+- **Audit records are mutable.** They live in the same database and are not a tamper-proof ledger.
+- **Shared values cannot be recalled.** Revoking a grant does not remove copies already retained by a client or model provider.
 
-Read [SECURITY.md](SECURITY.md) before integrating personal information.
+Use fictional information while experimenting. Read [SECURITY.md](SECURITY.md) before integrating personal information.
+
+## Validation and research
+
+The evidence below describes specific checks and experiments, not a general claim of production readiness or better AI performance.
+
+| Evidence | Finding and limit |
+| --- | --- |
+| [Automated validation](docs/VALIDATION.md) | The `0.3.0-alpha` record reports 110 passing tests, including MCP behavior. GitHub Actions runs the checks on Node.js 24. |
+| [Architecture study (Chinese)](docs/research/mio-personal-data-layer.zh-CN.md) | Mio and a competent scoped JSON host produced identical outcomes on the tested policies. Both reduced unnecessary application payload compared with full-profile delivery; this does not establish unique performance superiority. |
+| [Codex integration smoke test](experiments/results/codex-mcp-smoke.json) | A historical `0.2.0-alpha` session verified real tool integration, not comparative model quality. |
+| [Accuracy/cost experiment](experiments/accuracy-cost/README.md) | In 40 real Codex sessions with the same model, tasks, and host policy, legacy completed 12/20 tasks correctly and compact completed 20/20 by avoiding omissions of readable fields. This small synthetic sample does not establish general model accuracy. |
+
+In the accuracy/cost experiment, total input tokens fell **7.34%**, while uncached input rose **3.50%**. Lower actual per-request charges are not established. The [full study (Chinese)](docs/research/accuracy-cost-optimization.zh-CN.md) includes results and limitations.
 
 ## Direction
 
-The next steps are to evaluate real task outcomes, define a broader personal data model, and add authenticated remote integrations. The local MCP operator flow now applies reviewed changes transactionally and requires a separate sharing action. Encryption, secure recovery, and migration policies still need design and validation.
+Next steps include:
 
-Some API and contract names retain `Gemma` for compatibility. No Gemma model is required. Runtime validation is implemented in JavaScript; JSON Schema describes the exchange formats. Neither provides authentication. See [contracts](contracts/README.md) for validation details.
+- Evaluating outcomes across more real tasks and clients.
+- Defining portable preference and relationship models.
+- Adding authenticated remote integrations.
+- Designing and validating encrypted storage, secure recovery, and migration policies.
 
-Contributions that improve these boundaries, reproducible examples, or interoperability are welcome. Licensed under [Apache-2.0](LICENSE).
+## Contributing
+
+Contributions that improve trust boundaries, reproducible examples, or interoperability are welcome. Start with [CONTRIBUTING.md](CONTRIBUTING.md), use fictional fixtures, and describe the checks you ran.
+
+## License
+
+Licensed under the [Apache License 2.0](LICENSE). See [NOTICE](NOTICE) for attribution.
