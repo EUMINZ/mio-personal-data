@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "mio.shared-profile-feedback.v1",
+  "exampleOnly": true,
+  "participantCode": null,
+  "commit": null,
+  "recordedAt": null,
+  "evidenceMode": null,
+  "environment": {
+    "osFamily": null,
+    "nodeVersion": null,
+    "clients": []
+  },
+  "onboarding": {
+    "startedAt": null,
+    "firstCorrectReadAt": null,
+    "durationSeconds": null,
+    "completedWithoutMaintainerHelp": null,
+    "maintainerInterventions": null,
+    "abandoned": null,
+    "errors": []
+  },
+  "scenario": {
+    "completedSteps": [],
+    "failedSteps": [],
+    "toolReadCount": null,
+    "readableFieldsRequested": null,
+    "readableFieldOmissions": null,
+    "unavailableFieldsRequested": null,
+    "unavailableFieldsHandledCorrectly": null,
+    "staleValuesReturnedByTools": null,
+    "staleValuesUsedInAnswers": null,
+    "unauthorizedValuesReturnedByTools": null,
+    "previouslyDisclosedValuesRepeatedAfterRevocation": null,
+    "approvalCount": null,
+    "shareCount": null,
+    "revokeCount": null,
+    "operatorRetries": null,
+    "clientPermissionPrompts": null,
+    "durationSeconds": null
+  },
+  "feedback": {
+    "usefulness1To5": null,
+    "willingToReuse": null,
+    "intendedUse": null,
+    "mostConfusingStep": null,
+    "suggestedImprovement": null
+  },
+  "redactedObservations": [],
+  "permissionToPublishRedactedFeedback": false
+}

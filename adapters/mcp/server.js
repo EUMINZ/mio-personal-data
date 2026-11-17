@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 import { pathToFileURL } from 'node:url';
-import { realpathSync } from 'node:fs';
+import { existsSync, realpathSync } from 'node:fs';
 import { McpServer } from '@modelcontextprotocol/server';
 import { serveStdio, StdioServerTransport } from '@modelcontextprotocol/server/stdio';
 import { z } from 'zod/v4';
@@ -44,6 +44,15 @@ export function createMioServer(host, { toolset = 'compact' } = {}) {
       rationale: z.string().min(1).max(1000) }),
     annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   }, async (args) => result(() => host.propose(args)));
+  server.registerTool('mio_propose_fact', {
+    description: 'Propose a previously unknown personal fact for separate human review. Requires explicit collection permission for that field. Include the reported source; it is not independently verified. Does not confirm, share, or overwrite a fact. Keep task-only answers out of the identity profile.',
+    inputSchema: z.strictObject({ field: z.string().min(1).max(120), value: z.string().trim().min(1).max(2048),
+      rationale: z.string().trim().min(1).max(1000), source: z.strictObject({
+        kind: z.enum(['user-stated', 'document-extracted']), reference: z.string().trim().min(1).max(300),
+        locator: z.string().trim().min(1).max(300).optional(),
+      }) }),
+    annotations: { readOnlyHint: false, destructiveHint: false, openWorldHint: false },
+  }, async (args) => result(() => host.proposeFact(args)));
   return server;
 }
 
@@ -68,7 +77,7 @@ function main(args) {
   process.once('exit', close);
   for (const signal of ['SIGINT', 'SIGTERM']) process.once(signal, async () => { await handle.close(); close(); process.exit(0); });
 }
-if (process.argv[1] && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href) {
+if (process.argv[1] && existsSync(process.argv[1]) && import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href) {
   try { main(process.argv.slice(2)); }
   catch { console.error('Mio MCP startup failed. Use --demo or a valid private --config /absolute/config.json.'); process.exitCode = 1; }
 }

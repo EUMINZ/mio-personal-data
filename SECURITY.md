@@ -28,6 +28,64 @@ Returned values are untrusted data, not instructions. A local database does not 
 
 Pinned GitHub package installation downloads executable code and its dependencies. Use a pinned checkout plus `npm ci` to reproduce the full lockfile; the npm package route pins source and direct versions but does not ship that lockfile. Inspect and pin a release, keep the local runtime updated, and do not commit profile JSON, config files or databases. Production multi-tenant authentication, encrypted storage and concurrent-writer guarantees are not established by this Alpha.
 
+## Unreleased identity collection and form drafts
+
+`mio_propose_fact` adds a pending proposal only when the active bound grant
+explicitly permits `propose-new-fact` and lists the field in both `collectFields`
+and `allowedFields`. Existing confirmed facts, including expired or unshared
+versions, cannot be replaced through collection. Identical pending proposals
+within the same binding are deduplicated; the tool does not expose another
+requester's proposals. Existing configurations receive no new permission.
+
+Source kind, reference and optional locator are reported by the requester. No
+document is fetched or authenticated. Approval records the operator's decision
+and an evidence link marked unverified, in the same transaction as the claim,
+review decision and audit event. Sharing the approved version is a separate
+operation for each requester. Source labels are untrusted text.
+
+The example's draft action requires `prepare-form-draft`, read permission and
+the matching scene scope, all checked with claim selection in one transaction.
+Recipients and identity mappings are fixed by the two fictional templates. Task
+answers cannot override identity fields and are not promoted to personal facts.
+Drafts store selected values, claim IDs and limited source references in the
+local database, with audit-failure rollback. They never submit, sign, upload, or
+contact the named fictional recipient. Previous drafts remain disclosed local
+copies after a fact changes or a grant is revoked; the operator can still view
+them. Future draft generation checks the current grant and shared versions.
+
+Legacy v1 demo directories keep their original grants and have no new scenes.
+Create a separate v2 fictional profile to try collection; opening an old profile
+does not silently expand access or add a draft table.
+
+## Local shared-profile review example
+
+The unreleased `examples/shared-profile/` review page is a trusted local operator
+interface for fictional trials. It binds to `127.0.0.1` on a random port. Its
+launch URL carries a random capability token in the fragment; the page removes
+the fragment and keeps the token in memory. API reads and writes require that
+token. Exact Host and Origin checks, cross-site request rejection, a restrictive
+content security policy and no-store responses reduce browser-origin exposure.
+These checks do not authenticate a human or isolate hostile local processes.
+
+Keep the launch URL private. Reloading requires reopening the original launch
+URL; there are no login cookies or persistent browser token storage. Each server
+start creates a new token. Do not expose the server through a proxy or public
+tunnel. Anyone with the token and local access can approve, share, or revoke;
+any process with the same OS file access may also bypass the page entirely.
+
+The page shows an operator-side view and permission previews, not actual AI
+answers. It reuses the MCP administration operations and records writes
+transactionally. Its state reads do not create synthetic assistant-read audits.
+Rejection and outdated-proposal closure require the same operator capability,
+binding and review-version checks as approval. They retain the proposal, decision
+and audit without changing confirmed facts or grants; these operations are not
+exposed as model tools. Rejection reasons are stored as untrusted text and are
+visible only through the trusted operator interface.
+Two fixture configurations share a database but have distinct requester/grant
+bindings. Grants expire after 24 hours and are not renewed by restarting.
+SQLite's bounded 3-second busy timeout handles brief contention only; no general
+concurrency or availability guarantee is made.
+
 ## Reporting a concern
 
 For a report that can be reproduced entirely with fictional data, open an issue with affected code, expected behavior, and a minimal reproduction. Do not post personal records, database files, credentials, or real document images.

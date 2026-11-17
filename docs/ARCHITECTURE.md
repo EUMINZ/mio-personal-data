@@ -1,6 +1,6 @@
 # Architecture
 
-Mio is a local personal data layer for AI applications. The Alpha starts with identity, contact, document, and employment information. Its storage and workflow primitives are implemented; a general personal data model and authenticated assistant protocol are still being developed.
+Mio is a user-controlled identity layer for agents. It maintains reusable personal facts, sources, review decisions, and the permissions under which an agent may use a fact. The Alpha covers identity, contact, document, and employment fields. The unreleased trial adds new-fact collection and reuse across two fictional form drafts. Authenticated remote identity and delegated external actions remain future work.
 
 ## Components
 
@@ -17,7 +17,7 @@ Mio Core: contracts, importers, repository, compiled views
 Local SQLite: claims, evidence, review, grants, wiki, notes, audit
 ```
 
-The trusted host boundary is an integration responsibility. This repository includes a two-mock-assistant example and a local stdio MCP adapter. The adapter binds a person, requester and grant in an operator-controlled config, checks scope on every call and keeps approval outside the model's tool catalog. Version `0.3.0-alpha` exposes `mio_context` and `mio_propose_update` by default. It is not a remote authentication service or an OS sandbox.
+The trusted host boundary is an integration responsibility. This repository includes a two-mock-assistant example and a local stdio MCP adapter. The adapter binds a person, requester and grant in an operator-controlled config, checks scope on every call and keeps approval outside the model's tool catalog. Version `0.3.0-alpha` exposes `mio_context` and `mio_propose_update` by default. The unreleased trial branch also exposes `mio_propose_fact` for explicitly permitted collection of missing facts. It is not a remote authentication service or an OS sandbox.
 
 The repository uses Node.js 24's `node:sqlite`. Ordered SQL migrations create the schema. The database is the structured source of truth; Markdown dossiers and JSON snapshots are derived views.
 
@@ -45,6 +45,63 @@ The core's `accepted` / `applied` vocabulary refers to review workflow state. It
 
 Maintenance actions with historical `Gemma` names are limited to wiki updates, marking wiki entries stale, and creating review items. That importer does not directly rewrite canonical claims. The low-level repository still permits direct writes and must remain inside the trusted host.
 
+## New personal facts and task boundaries
+
+The MCP adapter distinguishes a correction from collection:
+
+- `mio_propose_update` requires an existing readable fact and `propose-update`.
+- `mio_propose_fact` requires `propose-new-fact`, a predefined identity key in
+  both `scope.collectFields` and `scope.allowedFields`, and no confirmed,
+  unsuperseded fact for that key. An existing unshared or expired fact is not
+  treated as an empty slot to overwrite.
+
+A new-fact proposal carries a string value, rationale, and requester-supplied
+source: `user-stated` or `document-extracted`, a reference, and optional locator.
+It creates no canonical fact or evidence record until approval. An identical
+pending submission within the same requester/grant returns its existing review;
+changed submissions remain separate proposals.
+
+Local approval checks the review version and that the missing-fact premise still
+holds. In one transaction it creates the confirmed claim, a reported-source
+evidence record and link, a review decision, and audit event. The evidence stays
+`unverified`: operator confirmation of the value is separate from source
+authenticity. The reference is descriptive; approval does not fetch a URL or read
+a file. A competing proposal becomes outdated when another establishes the fact.
+Rejection and outdated closure retain the review history without applying values.
+
+Approval does not attach the new claim to any requester. Explicit sharing must
+attach that exact version to each permitted grant. This applies equally to the
+requester that collected it and to another requester reusing it later.
+
+The shared-profile trial keeps two data categories separate:
+
+| Data | Lifetime and handling |
+| --- | --- |
+| Personal identity facts | Confirmed employer, job title, name, and contact fields can be explicitly shared and reused across tasks. |
+| Task answers | Travel destination/purpose and onboarding start date/department belong to their draft; they do not become identity claims. |
+
+## Cross-task form drafts
+
+The trusted local host maps two fixed fictional templates to identity keys:
+Travel application for A and Employee onboarding for B. Generation requires an
+active `prepare-form-draft` permission and the matching scenario in the bound
+grant. It checks current read permission and exact claim attachments for each
+identity field, retaining unavailable fields as missing rather than guessing.
+Task-only inputs are validated separately.
+
+Draft snapshots are persisted locally with the template/recipient, generation
+time, answers, exact claim IDs, source information, and missing fields. Reusing
+an employer in both drafts points to one identity claim, not two copied facts.
+The operator page shows the latest 10 drafts; older snapshots remain stored.
+Historical drafts never change automatically when an identity fact is corrected
+or a grant is revoked. The local operator can inspect those retained snapshots;
+revocation prevents future agent access, not prior disclosure.
+
+These templates are an executable integration example, not a universal form
+parser or a government-site adapter. There is no submission, signing, payment,
+or document-upload executor. Future integrations must distinguish permission to
+read data, prepare a draft, and perform a particular external action.
+
 ## Reads and disclosure
 
 The core compiles summaries, evidence digests, context snapshots, pending review queues, timelines, and Markdown views. Search supports exact matches, keywords, and semantic aliases; it does not require an embedding model.
@@ -59,7 +116,7 @@ The MCP adapter's `mio_context` is separate from the core's unscoped context bui
 
 Selection uses confirmed, unsuperseded claims and parsed update timestamps. Invalid or future timestamps and ties fail closed; an expired or unshared latest claim does not cause fallback to an older value. Each call rereads the database and grant without a read cache. `checkedAt` is the server's check time, not evidence of external verification or a guarantee that a stored fact is still true.
 
-`--legacy-tools` restores `mio_list_fields`, `mio_read`, and `mio_propose_update`. Both interfaces use the same selection policy; legacy reads fail as a whole if any requested field is unavailable. Compact reads let a caller retain the available subset. Proposals remain pending until operator review; sharing a confirmed replacement is a separate action. The unchanged Claude plugin launcher follows the default compact toolset.
+`--legacy-tools` uses `mio_list_fields` and `mio_read` instead of `mio_context`, alongside the proposal tools. The trial branch has four legacy tools including `mio_propose_fact`; the released `v0.3.0-alpha` has three. Both interfaces use the same selection policy; legacy reads fail as a whole if any requested field is unavailable. Compact reads let a caller retain the available subset. Proposals remain pending until operator review; sharing a confirmed replacement is a separate action. The unchanged Claude plugin launcher follows the default compact toolset.
 
 The [accuracy/cost experiment](../experiments/accuracy-cost/README.md) compares these interfaces with identical fictional tasks and host policy. Its [study](research/accuracy-cost-optimization.zh-CN.md) tracks the model-level evidence; a smaller tool catalog alone does not demonstrate better answers or lower cost.
 

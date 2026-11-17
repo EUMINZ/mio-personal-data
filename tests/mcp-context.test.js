@@ -61,7 +61,7 @@ test('compact stdio advertises two strict tools and returns a deduplicated batch
   const state = await fixture(t); const { client, repository, config } = state;
   assert.equal(client.getServerVersion().version, '0.3.0-alpha');
   const tools = (await client.listTools()).tools;
-  assert.deepEqual(tools.map((tool) => tool.name).sort(), ['mio_context', 'mio_propose_update']);
+  assert.deepEqual(tools.map((tool) => tool.name).sort(), ['mio_context', 'mio_propose_fact', 'mio_propose_update']);
   assert.ok(tools.every((tool) => tool.inputSchema.additionalProperties === false));
   const before = repository.listAuditEventsForPerson(config.personId).length;
   const started = Date.now();
@@ -217,6 +217,6 @@ test('environment-configured launch defaults to compact and a trailing legacy fl
   const compact = await fixture(t, { envConfig: true });
   assertContext(await call(compact.client, [FIRST]), { [FIRST]: 'Alex' });
   const legacy = await fixture(t, { legacyLast: true });
-  assert.deepEqual((await legacy.client.listTools()).tools.map((tool) => tool.name).sort(), ['mio_list_fields', 'mio_propose_update', 'mio_read']);
+  assert.deepEqual((await legacy.client.listTools()).tools.map((tool) => tool.name).sort(), ['mio_list_fields', 'mio_propose_fact', 'mio_propose_update', 'mio_read']);
   assert.deepEqual(data(await legacy.client.callTool({ name: 'mio_read', arguments: { fields: [FIRST] } })), { fields: { [FIRST]: 'Alex' } });
 });

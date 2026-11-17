@@ -12,6 +12,9 @@ export function nowIso() {
 
 export function openCoreDatabase({ filePath = ':memory:', migrate = true, migrationsDir = DEFAULT_MIGRATIONS_DIR } = {}) {
   const db = new DatabaseSync(filePath);
+  // Independent MCP processes and the operator share this file. Wait briefly
+  // for another writer rather than turning ordinary contention into a denial.
+  db.exec('PRAGMA busy_timeout = 3000;');
   db.exec('PRAGMA foreign_keys = ON;');
   db.exec('PRAGMA journal_mode = WAL;');
   if (migrate) {

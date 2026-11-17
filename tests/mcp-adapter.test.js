@@ -36,10 +36,10 @@ const data = (result) => { assert.notEqual(result.isError, true); return result.
 const read = (client, fields = [EMAIL]) => call(client, 'mio_read', { fields });
 const proposal = (client, value = NEW) => call(client, 'mio_propose_update', { field: EMAIL, value, rationale: 'Fictional user correction for review.' });
 
-test('real stdio initializes, advertises only three strict tools and minimizes responses', async (t) => {
+test('real stdio initializes, advertises four strict tools and minimizes responses', async (t) => {
   const client = await connect(t, ['--demo']);
   const tools = (await client.listTools()).tools;
-  assert.deepEqual(tools.map((entry) => entry.name).sort(), ['mio_list_fields', 'mio_propose_update', 'mio_read']);
+  assert.deepEqual(tools.map((entry) => entry.name).sort(), ['mio_list_fields', 'mio_propose_fact', 'mio_propose_update', 'mio_read']);
   assert.ok(tools.every((entry) => entry.inputSchema.additionalProperties === false));
   assert.deepEqual(data(await call(client, 'mio_list_fields')), { fields: [EMAIL, FIRST] });
   assert.deepEqual(data(await read(client, [FIRST])), { fields: { [FIRST]: 'Alex' } });

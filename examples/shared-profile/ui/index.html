@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="referrer" content="no-referrer">
+    <title>Mio — One identity, across tasks</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script type="module" src="/app.js"></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to profile review</a>
+    <div class="shell">
+      <header class="masthead">
+        <a class="wordmark" href="#main" aria-label="Mio shared profile">mio<span aria-hidden="true">.</span></a>
+        <div class="masthead-meta"><span class="eyebrow">Fictional local demo</span><span>Identity / review / reuse</span></div>
+        <div class="connection"><span id="connection-dot" class="connection-dot" aria-hidden="true"></span><span id="connection-label">Connecting</span></div>
+      </header>
+
+      <main id="main">
+        <section class="introduction" aria-labelledby="page-title">
+          <div>
+            <p class="eyebrow accent">One identity. More than one task.</p>
+            <h1 id="page-title">Your facts.<br>Your next chapter.</h1>
+            <p class="intro-copy">Collect personal information once, review its source, then choose where it can be reused. Try a travel application and employee onboarding with the same fictional profile.</p>
+          </div>
+          <ol class="steps" aria-label="Demo workflow">
+            <li><span>01</span><div><strong>Collect & review</strong><p>New information becomes a proposal.</p></div></li>
+            <li><span>02</span><div><strong>Choose access</strong><p>Share a confirmed version per assistant.</p></div></li>
+            <li><span>03</span><div><strong>Reuse</strong><p>Prepare another draft with those facts.</p></div></li>
+          </ol>
+        </section>
+
+        <div id="message" class="message" role="status" aria-live="polite" tabindex="-1" hidden></div>
+        <div id="loading" class="loading" role="status">Opening the local profile…</div>
+
+        <section id="scenario-section" class="scenario-section" aria-labelledby="scenarios-title" hidden>
+          <div class="section-heading"><div><p class="eyebrow">Across two scenes</p><h2 id="scenarios-title" tabindex="-1">Put your identity to work</h2></div><span class="small-tag">Drafts only</span></div>
+          <p class="section-description">Start with travel, collect missing employment information, and review it below. Share the approved facts with each assistant to reuse them in onboarding. These are fictional demonstration forms.</p>
+          <p id="legacy-scene-notice" class="legacy-scene-notice" hidden>This saved profile belongs to the earlier shared-profile trial. Start the demo with a new directory to try cross-scene collection; existing permissions are preserved.</p>
+          <div id="scenario-tabs" class="scenario-tabs" role="tablist" aria-label="Application scenario"></div>
+          <div id="scenarios"></div>
+        </section>
+
+        <div id="workspace" class="workspace" hidden>
+          <div class="main-column">
+            <section class="ledger-section" aria-labelledby="facts-title">
+              <div class="section-heading"><div><p class="eyebrow">Confirmed record</p><h2 id="facts-title">The current facts</h2></div><span id="person-name" class="person-name"></span></div>
+              <dl id="claims" class="facts"></dl>
+              <details class="technical-details"><summary>What does “confirmed” mean?</summary><p>These values are fictional. Confirmation records an operator decision; it does not independently verify a fact. Shared versions are checked separately for each assistant.</p></details>
+            </section>
+
+            <section class="ledger-section review-section" aria-labelledby="reviews-title">
+              <div class="section-heading"><div><p class="eyebrow">Your decision</p><h2 id="reviews-title" tabindex="-1">Review changes</h2></div><span id="review-count" class="count">0 pending</span></div>
+              <div id="reviews"></div>
+              <details class="decision-history">
+                <summary><span>Resolved proposals</span><span id="decision-count" class="count">0 recent</span></summary>
+                <p class="history-description">The latest 20 decisions remain here after proposals leave the pending queue.</p>
+                <div id="decisions"></div>
+              </details>
+            </section>
+
+            <details class="ledger-section simulator advanced-demo">
+              <summary>Also try an existing-fact correction</summary>
+              <div class="section-heading"><div><p class="eyebrow">Try the workflow</p><h2 id="simulate-title">Simulate assistant A</h2></div><span class="small-tag">Demo control</span></div>
+              <p class="section-description">Create a proposal through the same scoped host policy. A connected AI client can also submit one; this page refreshes automatically.</p>
+              <form id="proposal-form">
+                <fieldset id="proposal-fields">
+                  <legend class="visually-hidden">Propose an email update</legend>
+                  <label for="new-email">Suggested email</label>
+                  <input id="new-email" name="value" type="email" value="alex.new@example.invalid" maxlength="2048" required autocomplete="off" spellcheck="false" aria-describedby="email-hint">
+                  <p id="email-hint" class="field-hint">Use fictional information only.</p>
+                  <label for="rationale">Why change it?</label>
+                  <textarea id="rationale" name="rationale" rows="2" maxlength="1000" required>Fictional demo: Alex has a new email address.</textarea>
+                  <div class="form-footer"><p id="proposal-availability">Submitting a proposal leaves the confirmed record unchanged.</p><button type="submit" class="button secondary" id="propose-button">Propose email update <span aria-hidden="true">↗</span></button></div>
+                </fieldset>
+              </form>
+            </details>
+          </div>
+
+          <aside class="access-column" aria-labelledby="access-title">
+            <div class="section-heading"><div><p class="eyebrow">Shared access</p><h2 id="access-title" tabindex="-1">Who can read what</h2></div></div>
+            <p class="section-description">Approval updates the profile. Sharing gives an assistant access to the new version.</p>
+            <div id="assistants"></div>
+            <p class="boundary-note">This is a local operator demo. Assistants with access to the same operating-system account can bypass tool rules through files or shell. Revocation blocks future tool reads; it cannot recall values already returned.</p>
+          </aside>
+        </div>
+
+        <section id="activity-section" class="activity-section" aria-labelledby="activity-title" hidden>
+          <div class="section-heading"><div><p class="eyebrow">Local record</p><h2 id="activity-title">Recent activity</h2></div><button id="refresh-button" type="button" class="text-button">Refresh now <span aria-hidden="true">↻</span></button></div>
+          <ol id="audit" class="audit"></ol>
+        </section>
+      </main>
+      <footer><span>Mio / A personal identity layer for agents.</span><span id="updated-at">Awaiting local state</span></footer>
+    </div>
+    <noscript><p class="noscript">Enable JavaScript to use the local review page.</p></noscript>
+  </body>
+</html>

@@ -1,5 +1,10 @@
 # One person, two mock assistants
 
+For a persistent database shared by two MCP clients and a local operator review
+page, use the separate [shared-profile example](shared-profile/README.md) and
+[external trial guide](../docs/SHARED_PROFILE_TRIAL.md). The example described
+below remains a deterministic, in-memory simulation.
+
 From the repository root, run `npm run demo` with Node.js 24 or newer. No packages,
 API keys, accounts, network requests, or real personal information are needed.
 The demo uses an in-memory SQLite database and discards it on exit.

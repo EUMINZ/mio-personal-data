@@ -3,7 +3,7 @@
   "version": "0.3.0-alpha",
   "private": true,
   "type": "module",
-  "description": "A user-controlled personal data layer for AI.",
+  "description": "A user-controlled identity layer for agents.",
   "license": "Apache-2.0",
   "engines": {
     "node": ">=24"
@@ -11,6 +11,8 @@
   "scripts": {
     "test": "node --test mio-core/tests/*.test.js tests/*.test.js",
     "demo": "node examples/two-assistants.js",
+    "demo:shared": "node examples/shared-profile/server.js",
+    "demo:shared:commands": "node examples/shared-profile/client-commands.js",
     "check": "node scripts/check.mjs",
     "benchmark": "node benchmarks/run.mjs",
     "mcp:demo": "node adapters/mcp/server.js --demo"
