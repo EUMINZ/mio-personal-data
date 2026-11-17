@@ -2,41 +2,41 @@
 
 ## Question and success criteria
 
-Can an independent developer connect two assistants to one changing profile,
-understand which values each assistant may use, and approve and share a change
-without correcting stale or unauthorized answers?
+Can one person collect a missing identity fact during a travel application,
+review its source, and reuse the same confirmed fact in employee onboarding
+without copying pending, unshared, or task-specific answers into the profile?
 
-This trial uses the fictional shared-profile example. Start with three external
-developers who did not build Mio and already use Codex, Claude Code, or MCP in
-their work. **Recruitment is planned; no invitations have been sent and no
-external trial results are claimed by this guide.** Record installation
-failures and abandoned attempts as well as completed runs.
+The trial uses two **fictional demonstration templates**, not forms from a
+particular government or employer. It prepares drafts locally. It does not
+submit applications, upload documents, authenticate real-world identity, or
+verify a source document's authenticity.
 
-The implementation is ready for this trial only when the following behaviors
-are verified:
+The primary workflow must show:
 
-1. A reads first name and email; B reads first name and home address from the
-   same persistent database, using different requester/grant bindings.
-2. A's email proposal is pending and leaves the confirmed value unchanged.
-3. Operator approval creates a confirmed replacement without sharing it. A
-   cannot read the new value and receives no fallback to the old email.
-4. A separate sharing action makes the new version readable to A. B's email
-   access remains unavailable and its name/address reads remain usable.
-5. Revoking A prevents its subsequent reads while B continues to work.
-6. Restarting a client retains the state; it does not reset the database,
-   replace the client's grant, or extend the grant's expiry.
-7. Rejecting a proposal records a reason and removes it from pending review
-   without changing confirmed facts or grants.
-8. An outdated proposal can be closed without applying its suggestion; the
-   decision remains inspectable after it leaves the pending queue.
+1. Travel application A and Employee onboarding B use one persistent profile
+   with distinct requester/grant bindings.
+2. A can propose a missing employer under a collection grant, with a source and
+   rationale. The proposal does not create a confirmed identity value.
+3. Operator approval creates the fact and its source record atomically, while
+   both assistants still lack access to that newly confirmed version.
+4. Sharing the fact with A makes it available in the travel draft. B still
+   cannot use it until the operator separately shares it with B.
+5. The onboarding draft then reuses the **same claim ID and source**. It does not
+   create a second employer fact or ask the user to re-enter it.
+6. Travel and onboarding task answers stay outside the identity profile.
+7. Rejected proposals never become confirmed facts; a competing proposal can
+   be closed as outdated after another proposal establishes that fact.
+8. Existing email correction, independent revocation, and restart behavior
+   continue to work. Restarting does not extend a grant or expand its scope.
 
-The [November 16, 2026 maintainer record](trials/shared-profile-live-validation-2026-11-16.json)
-contains actual Codex A tool traces for the initial approval/sharing/revocation
-workflow; it predates rejection and outdated-proposal closure. Claude Code B
-could not authenticate and made no tool calls; its permission checks were
-exercised with the official SDK instead. These are separate evidence levels.
-The two-model trial and independent external trial remain unverified. See
-[validation](VALIDATION.md) for checks of later changes.
+**Recruitment remains on hold. No invitations have been sent and no external
+trial results are claimed.** Use [validation](VALIDATION.md) for revision-specific
+checks. The [November 16, 2026 maintainer record](trials/shared-profile-live-validation-2026-11-16.json)
+covers the earlier email approval/sharing/revocation workflow; it is not evidence
+for new-fact collection or cross-task drafts. Claude Code B did not authenticate
+in that record and made no tool calls; its permission checks used the official
+SDK instead. A complete two-model trial and independent external trial remain
+unverified.
 
 ## Prepare a local demo
 
@@ -72,14 +72,17 @@ client commands that use them:
 
 | Binding | File in the printed profile directory | Permitted fields |
 | --- | --- | --- |
-| A | `assistant-a.json` | `person.name.first`, `person.contact.email`; may propose updates |
-| B | `assistant-b.json` | `person.name.first`, `person.contact.home_address`; reads only |
+| A · Travel application | `assistant-a.json` | Starts with first name/email; may collect employer/job title, correct readable facts, and prepare the travel draft |
+| B · Employee onboarding | `assistant-b.json` | Starts with first name/home address; may collect employer/job title and prepare the onboarding draft; no correction permission |
 
 Both configurations refer to the same database. **Do not use `--demo` or give
 both clients the same configuration**: those would test independent in-memory
 profiles or a shared permission, rather than the intended scenario. Grants
 expire 24 hours after initialization. Resuming a directory does not renew them;
-use a new directory for a fresh trial after expiry or revocation.
+use a new directory for a fresh trial after expiry or revocation. Also use a
+**fresh directory for this identity-layer walkthrough**: a directory created by
+an earlier revision does not gain new collection scopes or scenario fields by
+being reopened.
 
 To check the code without making model calls, run `npm run check` from another
 terminal in the checkout. Record its result separately from any real-client
@@ -89,11 +92,11 @@ trial result.
 
 ### Local walkthrough
 
-Open the review page and use its simulated A proposal control. Walk through
-approval, sharing and revocation using the page's permission previews. The
-page can also demonstrate rejection and closing outdated proposals, described
-below. This needs no client login or model account. Label it `simulation` in
-feedback: the panels do not prove an actual assistant received those values.
+Open the review page and use its collection, review, sharing, and draft controls.
+They exercise local host operations without a client login or model account.
+Label it `simulation` in feedback: the panels and generated drafts do not prove
+that a real AI client connected or received those values. Rejection, outdated
+closure, email updates, and revocation remain available for separate checks.
 
 ### Real clients without saved registrations
 
@@ -132,9 +135,68 @@ The session options were originally checked against CLI help for Codex
 `--help` if its options differ and record the versions actually used. That
 syntax check does not constitute a completed two-client model trial.
 
-## Run the scenario
+## Primary scenario: collect once, reuse across tasks
 
-Keep the operator page open. For a real-client trial, have A submit the proposal;
+Use a fresh demo profile. Keep the operator page open and start in **Travel
+application**. Use only fictional information. Employer and job title begin
+missing. Fill the required travel-only fields first: destination `Example City`
+and purpose `Fictional conference`. For onboarding, use start date `2027-01-15`
+and department `Example Operations`. These are example task answers, not
+identity facts.
+The page's collection control and a connected client's `mio_propose_fact` call
+are alternative ways to create the same kind of pending review; do not perform
+both for one step.
+
+| Step | Action | Expected observation |
+| --- | --- | --- |
+| 1 | Generate the travel draft before collecting an employer. | The employer is unavailable; the draft identifies missing identity fields instead of guessing. |
+| 2 | Collect employer `Example Research Ltd`, with rationale `Reuse the fictional employer in travel and onboarding` and a user-stated source reference `Fictional travel intake, employer question`. | A new-fact proposal enters review. The profile and agent-readable fields remain unchanged. |
+| 3 | Inspect the proposed value and source, then approve the new fact. | The identity profile contains a confirmed employer with its source. Neither A nor B can read the new version yet. |
+| 4 | Share the latest employer with A only, then generate a new travel draft. | Its employer field uses the confirmed value and identifies the fact/source. No pending proposal is used. |
+| 5 | Switch to Employee onboarding and generate its draft before sharing with B. | Employer remains unavailable to B, even though the operator and A can see it. |
+| 6 | Share the latest employer with B, then generate a new onboarding draft. | Both drafts reference the same employer claim ID and source. No second employer fact is created. |
+| 7 | Enter different task details for travel and onboarding and regenerate the drafts. | Task answers appear only in their draft. They do not create identity claims, evidence, or review proposals. |
+
+Collect job title, for example `Research coordinator`, through the same
+collection/review/sharing process if you want complete drafts. A partially filled draft is still a draft: inspect its missing
+fields before treating it as complete. Generating another draft checks an active `prepare-form-draft` permission
+and the scenario bound to that grant, then rechecks each identity field. Drafts
+are stored locally in SQLite; the page shows the latest 10 while older drafts
+remain in the database. An earlier draft is
+a historical snapshot and is not silently rewritten when a fact changes or a
+grant is revoked. Its recipient is a fictional template setting, not proof of
+delivery to that organization.
+
+The equivalent new-fact MCP input for step 2 is:
+
+```json
+{
+  "field": "person.employment.employer",
+  "value": "Example Research Ltd",
+  "rationale": "Reuse the fictional employer in travel and onboarding",
+  "source": {
+    "kind": "user-stated",
+    "reference": "Fictional travel intake, employer question"
+  }
+}
+```
+
+Call `mio_propose_fact` with this object. For a document-derived fictional
+example, use `kind: "document-extracted"` and an optional `locator` such as
+`Page 1, employer field`. This is a source description supplied by the requester;
+it does not upload or independently verify a document. Approval means the local
+operator accepted the personal fact, not that a government or employer verified it.
+
+For real-client evidence, make fresh `mio_context` calls for
+`person.employment.employer` at steps 1, 2, 3, 4, 5, and 6. Record those outputs
+separately from the local draft results. Current MCP tools expose scoped identity
+reads and proposals; the page's template-draft operation is not itself a tool
+that submits forms to a website.
+
+## Secondary scenario: correct, share, and revoke
+
+Use another fresh profile for this email lifecycle. For a real-client trial,
+have A submit the proposal;
 do not also click the page's simulated proposal control. Duplicate proposals
 would make the walkthrough harder to interpret.
 
@@ -201,6 +263,11 @@ that it is actually outdated when the action is submitted; an ordinary pending
 proposal cannot be closed through that action. A changed or already handled
 review requires refreshing the page, rather than reapplying an old decision.
 
+For new-fact proposals, submit two different fictional employers while no
+employer is confirmed, approve one, then close the other as outdated. Rejecting
+a new-fact proposal leaves the employer missing. Approving the same review again
+must fail instead of creating a duplicate claim.
+
 The recent handled-decision list is an operator view, not an AI tool response.
 It retains the outcome and reason without claiming that a model has read them.
 
@@ -230,6 +297,10 @@ help, and whether the participant stopped. Measure:
 - **Unauthorized tool returns:** any field value returned outside the current
   grant. A model repeating a previously disclosed value is a separate retained-
   context observation, not a new server disclosure.
+- **Cross-task reuse:** the same confirmed employer claim ID and source appear
+  in both authorized drafts; no task-only answers enter the identity profile.
+- **Collection boundary:** pending or rejected facts never fill identity fields,
+  and approval alone never grants either assistant access.
 - **Operator effort:** approval/share/revoke clicks, retries, corrections, and
   elapsed time. Separate client permission prompts from Mio operator actions.
 - **Adoption:** usefulness, a concrete intended use, and willingness to reuse.

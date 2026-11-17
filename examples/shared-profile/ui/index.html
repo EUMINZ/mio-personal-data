@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="referrer" content="no-referrer">
-    <title>Mio — Shared profile review</title>
+    <title>Mio — One identity, across tasks</title>
     <link rel="stylesheet" href="/styles.css">
     <script type="module" src="/app.js"></script>
   </head>
@@ -13,26 +13,34 @@
     <div class="shell">
       <header class="masthead">
         <a class="wordmark" href="#main" aria-label="Mio shared profile">mio<span aria-hidden="true">.</span></a>
-        <div class="masthead-meta"><span class="eyebrow">Fictional local demo</span><span>Shared profile / operator view</span></div>
+        <div class="masthead-meta"><span class="eyebrow">Fictional local demo</span><span>Identity / review / reuse</span></div>
         <div class="connection"><span id="connection-dot" class="connection-dot" aria-hidden="true"></span><span id="connection-label">Connecting</span></div>
       </header>
 
       <main id="main">
         <section class="introduction" aria-labelledby="page-title">
           <div>
-            <p class="eyebrow accent">One profile. Two assistants.</p>
-            <h1 id="page-title">You decide what<br>changes hands.</h1>
-            <p class="intro-copy">Review a proposed change, confirm the new fact, then choose who can read it. Each step stays separate.</p>
+            <p class="eyebrow accent">One identity. More than one task.</p>
+            <h1 id="page-title">Your facts.<br>Your next chapter.</h1>
+            <p class="intro-copy">Collect personal information once, review its source, then choose where it can be reused. Try a travel application and employee onboarding with the same fictional profile.</p>
           </div>
           <ol class="steps" aria-label="Demo workflow">
-            <li><span>01</span><div><strong>Propose</strong><p>An assistant suggests a change.</p></div></li>
-            <li><span>02</span><div><strong>Review</strong><p>You approve or reject the change.</p></div></li>
-            <li><span>03</span><div><strong>Share</strong><p>You grant access to that version.</p></div></li>
+            <li><span>01</span><div><strong>Collect & review</strong><p>New information becomes a proposal.</p></div></li>
+            <li><span>02</span><div><strong>Choose access</strong><p>Share a confirmed version per assistant.</p></div></li>
+            <li><span>03</span><div><strong>Reuse</strong><p>Prepare another draft with those facts.</p></div></li>
           </ol>
         </section>
 
         <div id="message" class="message" role="status" aria-live="polite" tabindex="-1" hidden></div>
         <div id="loading" class="loading" role="status">Opening the local profile…</div>
+
+        <section id="scenario-section" class="scenario-section" aria-labelledby="scenarios-title" hidden>
+          <div class="section-heading"><div><p class="eyebrow">Across two scenes</p><h2 id="scenarios-title" tabindex="-1">Put your identity to work</h2></div><span class="small-tag">Drafts only</span></div>
+          <p class="section-description">Start with travel, collect missing employment information, and review it below. Share the approved facts with each assistant to reuse them in onboarding. These are fictional demonstration forms.</p>
+          <p id="legacy-scene-notice" class="legacy-scene-notice" hidden>This saved profile belongs to the earlier shared-profile trial. Start the demo with a new directory to try cross-scene collection; existing permissions are preserved.</p>
+          <div id="scenario-tabs" class="scenario-tabs" role="tablist" aria-label="Application scenario"></div>
+          <div id="scenarios"></div>
+        </section>
 
         <div id="workspace" class="workspace" hidden>
           <div class="main-column">
@@ -52,7 +60,8 @@
               </details>
             </section>
 
-            <section class="ledger-section simulator" aria-labelledby="simulate-title">
+            <details class="ledger-section simulator advanced-demo">
+              <summary>Also try an existing-fact correction</summary>
               <div class="section-heading"><div><p class="eyebrow">Try the workflow</p><h2 id="simulate-title">Simulate assistant A</h2></div><span class="small-tag">Demo control</span></div>
               <p class="section-description">Create a proposal through the same scoped host policy. A connected AI client can also submit one; this page refreshes automatically.</p>
               <form id="proposal-form">
@@ -66,7 +75,7 @@
                   <div class="form-footer"><p id="proposal-availability">Submitting a proposal leaves the confirmed record unchanged.</p><button type="submit" class="button secondary" id="propose-button">Propose email update <span aria-hidden="true">↗</span></button></div>
                 </fieldset>
               </form>
-            </section>
+            </details>
           </div>
 
           <aside class="access-column" aria-labelledby="access-title">
@@ -82,7 +91,7 @@
           <ol id="audit" class="audit"></ol>
         </section>
       </main>
-      <footer><span>Mio / Personal facts, with permission.</span><span id="updated-at">Awaiting local state</span></footer>
+      <footer><span>Mio / A personal identity layer for agents.</span><span id="updated-at">Awaiting local state</span></footer>
     </div>
     <noscript><p class="noscript">Enable JavaScript to use the local review page.</p></noscript>
   </body>

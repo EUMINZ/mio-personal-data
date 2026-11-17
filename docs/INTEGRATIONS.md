@@ -1,6 +1,6 @@
 # Use Mio from Codex, Claude Code, and other MCP clients
 
-Mio provides a local **stdio MCP server**. GitHub distributes the code; the
+Mio provides a user-controlled identity layer through a local **stdio MCP server**. GitHub distributes the code; the
 process runs on your machine. The demo contains fictional data, makes no model
 API calls, and needs no API key. The AI client you connect can still send tool
 results to its model provider under that client's settings.
@@ -12,8 +12,62 @@ results to its model provider under that client's settings.
 **For the shared-profile trial and local review page, start with the
 [trial guide](SHARED_PROFILE_TRIAL.md).** It provides the exact trial-branch
 checkout, a fictional persistent profile, and generated session commands for
-two distinct clients. The released `v0.3.0-alpha` routes below do not contain
-that example; two `--demo` processes also do not share a database.
+two distinct clients. The current unreleased trial collects missing identity
+facts for review and reuses shared facts across Travel application and Employee
+onboarding drafts. The released `v0.3.0-alpha` routes below do not contain these
+features; two `--demo` processes also do not share a database.
+
+## Unreleased trial: collect a missing fact
+
+Use the trial-branch checkout in the [trial guide](SHARED_PROFILE_TRIAL.md) and a
+**fresh demo directory**. Old demos and existing configs keep their original
+grants. They are not automatically expanded to allow collection or new tasks.
+
+The trial's default tool catalog contains `mio_context`, `mio_propose_update`,
+and `mio_propose_fact`. Legacy mode has four tools: `mio_list_fields`, `mio_read`,
+and both proposal tools. Released `v0.3.0-alpha` catalogs remain unchanged.
+
+`mio_propose_fact` collects a supported personal field that has no confirmed,
+unsuperseded fact. For example:
+
+```json
+{
+  "field": "person.employment.employer",
+  "value": "Example Research Ltd",
+  "rationale": "Reuse the fictional employer in travel and onboarding",
+  "source": {
+    "kind": "user-stated",
+    "reference": "Fictional travel intake, employer question"
+  }
+}
+```
+
+The source kind is `user-stated` or `document-extracted`. `reference` is required;
+`locator` is optional. Each is limited to 300 characters. References describe a
+source; Mio does not fetch URLs or read files from this input. There is no claim
+of independent source verification.
+
+The configured grant must be active, allow `propose-new-fact`, and include the
+key in both `scope.collectFields` and `scope.allowedFields`. Collection cannot
+replace an existing confirmed fact, including an expired or unshared one. Use
+the existing correction workflow when a readable fact needs updating. Missing
+permission returns the same generic access error rather than revealing another
+requester's data or proposal.
+
+A successful proposal remains pending. The separate local operator approves it
+using the page or the existing `reviews` and `approve` CLI commands. Approval
+atomically creates a confirmed fact and reported-source evidence, retaining the
+source as unverified. It does **not** share the new version. Share that exact
+claim separately with each intended requester before subsequent reads can use it.
+Rejection and closing a competing, outdated proposal remain operator actions.
+An identical pending submission from the same requester/grant returns the
+existing review; different submissions remain separate proposals.
+
+The local trial page also prepares two fictional form drafts. That host
+operation requires `prepare-form-draft` and the matching scenario grant, checks
+scoped identity values, and keeps task-only answers out of the identity profile.
+It is not an MCP form-submission tool or an official-site integration. Drafts
+retain claim IDs and source details so reuse can be inspected across scenarios.
 
 ## Requirements and verification status
 
@@ -206,7 +260,7 @@ Connecting two clients using the same config grants both the same capability.
 It does not create distinct client identities. Different trust scopes require
 separate requester/grant bindings provisioned by a trusted host.
 
-The default MCP interface has two tools:
+The released `v0.3.0-alpha` default MCP interface has two tools:
 
 | Tool | Input | Effect |
 | --- | --- | --- |
@@ -234,8 +288,9 @@ was verified in the real world. Neither this timestamp nor a confirmed claim
 guarantees current external truth.
 
 For existing clients that rely on the old names, append `--legacy-tools` to
-`server.js --demo` or `server.js --config ...`. This exposes `mio_list_fields`,
-`mio_read`, and `mio_propose_update`; legacy `mio_read` rejects the entire request
+`server.js --demo` or `server.js --config ...`. In the released version this exposes `mio_list_fields`,
+`mio_read`, and `mio_propose_update`; the trial branch also has `mio_propose_fact`.
+Legacy `mio_read` rejects the entire request
 when any requested field is unavailable. The compact interface changes batch
 failure handling and tool discovery, not the underlying grant policy. See the
 [experiment protocol](../experiments/accuracy-cost/README.md) and
@@ -275,6 +330,28 @@ field keys and string values. It is not an automatic importer for arbitrary
 preferences, memories, or relationships. The source JSON and database both
 contain plaintext. Remove or secure the source copy according to your own data
 handling needs; the command does not delete it for you.
+
+### Permit future collection in a trial-branch profile
+
+On the unreleased branch, the profile JSON can additionally specify
+`collectFields`, for example:
+
+```json
+"collectFields": ["person.employment.employer", "person.employment.job_title"]
+```
+
+This is a property to add to the complete profile JSON, not a standalone input
+file. Its entries must be unique, predefined fields absent from the initial
+claims. The default is an empty array. `allowedFields` still lists only existing
+claims to share initially. The initializer adds `collectFields` to the grant's
+allowed field names and enables `propose-new-fact`; no missing values are created
+or shared at initialization. `allowProposals` controls corrections to existing
+readable facts independently of this explicit collection list.
+
+As with initial imports, inspect the configuration before `init-profile --confirm`.
+This provision grants collection of selected missing fields; it does not give
+permission to prepare arbitrary forms, submit applications, or expand field
+scope without a new operator decision.
 
 ## Trust boundary
 

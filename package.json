@@ -3,7 +3,7 @@
   "version": "0.3.0-alpha",
   "private": true,
   "type": "module",
-  "description": "A user-controlled personal data layer for AI.",
+  "description": "A user-controlled identity layer for agents.",
   "license": "Apache-2.0",
   "engines": {
     "node": ">=24"

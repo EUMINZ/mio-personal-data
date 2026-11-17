@@ -1,5 +1,33 @@
 # Validation
 
+## Unreleased: identity collection and cross-scenario reuse
+
+Checked on 2026-11-17 with Node.js 24.12.0 on macOS arm64. `npm run check`
+passed **152 tests**, with zero failures or skips, plus syntax checks and the
+fictional simulation. The 16 additional cases cover new-fact collection and
+source validation, exact pending-proposal deduplication, grants and stale
+competing proposals, approval/evidence/audit rollback, and real MCP SDK stdio
+collection, restart, explicit sharing and revocation.
+
+HTTP integration tests run travel intake through review and separate A/B shares
+into travel and onboarding drafts. They assert that reused employment facts have
+the **same claim IDs and reported sources**, task-only answers are absent from
+identity claims, old draft snapshots remain unchanged after correction/revocation,
+and persisted drafts survive reopening. Scope, expiry, source and identity
+overrides, invalid calendar dates, audit rollback and unchanged legacy v1
+directories are covered. Operator polling creates no assistant-read events.
+
+Browser checks confirmed required source validation, input/focus persistence
+across polling, collection and separate approval/sharing, and the same employer
+claim ID in both scene previews. Saved drafts and task answers survived a server
+restart. The 390-pixel layout had no horizontal overflow.
+[Identity reuse screenshot](assets/identity-reuse.jpg).
+
+These are fictional demonstration templates and SDK/scripted client checks.
+No real official website integration, submission, document authentication,
+new real-model trial, external-user result or competitor advantage is claimed.
+The earlier release and trial evidence below retains its original scope.
+
 ## Unreleased: trial entry and review resolution
 
 Checked on 2026-11-16 with Node.js 24.12.0 on macOS arm64. `npm run check`

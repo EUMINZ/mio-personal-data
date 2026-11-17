@@ -8,6 +8,7 @@ import { openConfiguredHost } from '../../adapters/mcp/config.js';
 export const SHARED_PROFILE_FIELDS = Object.freeze({
   firstName: 'person.name.first', email: 'person.contact.email',
   address: 'person.contact.home_address', passport: 'passport.number',
+  employer: 'person.employment.employer', jobTitle: 'person.employment.job_title',
 });
 export const SHARED_PROFILE_VALUES = Object.freeze({
   firstName: 'Alex', email: 'alex.old@example.invalid',
@@ -15,11 +16,19 @@ export const SHARED_PROFILE_VALUES = Object.freeze({
   passport: 'FICTIONAL_PRIVATE_DO_NOT_DISCLOSE',
 });
 const F = SHARED_PROFILE_FIELDS;
-const DEFINITIONS = Object.freeze({
+const LEGACY_DEFINITIONS = Object.freeze({
   a: { label: 'Assistant A', fields: [F.firstName, F.email], actions: ['read-granted-fields', 'propose-update'] },
   b: { label: 'Assistant B', fields: [F.firstName, F.address], actions: ['read-granted-fields'] },
 });
-const SCHEMA = 'mio.shared-profile-demo.v1';
+const COLLECTION_FIELDS = [F.employer, F.jobTitle];
+const DEFINITIONS = Object.freeze({
+  a: { label: 'Assistant A', fields: [F.firstName, F.email, ...COLLECTION_FIELDS],
+    actions: ['read-granted-fields', 'propose-update', 'propose-new-fact', 'prepare-form-draft'], scenarioId: 'travel' },
+  b: { label: 'Assistant B', fields: [F.firstName, F.address, ...COLLECTION_FIELDS],
+    actions: ['read-granted-fields', 'propose-new-fact', 'prepare-form-draft'], scenarioId: 'onboarding' },
+});
+const SCHEMA = 'mio.shared-profile-demo.v2';
+const LEGACY_SCHEMA = 'mio.shared-profile-demo.v1';
 
 // This is a fictional local fixture, not an authentication mechanism. Each MCP
 // process receives one config; the operator can access both and the underlying DB.
@@ -59,13 +68,20 @@ export function initializeSharedProfile(inputDirectory) {
     const repository = createCoreRepository(db);
     repository.registerDefaultClaimTypes();
     const manifest = repository.importWithinTransaction(() => {
+      // Example-owned snapshots, separate from canonical identity facts. Existing
+      // snapshots are never rewritten when a fact or sharing permission changes.
+      db.exec(`CREATE TABLE demo_form_drafts (
+        id TEXT PRIMARY KEY, person_id TEXT NOT NULL REFERENCES persons(id),
+        requester_id TEXT NOT NULL REFERENCES requesters(id), scenario_id TEXT NOT NULL,
+        payload_json TEXT NOT NULL, created_at TEXT NOT NULL
+      )`);
       const createdAt = new Date().toISOString();
       const person = repository.createPerson({ displayName: 'Alex Rowan (fictional)', createdAt });
       const evidence = repository.createEvidence({ personId: person.id, kind: 'synthetic-profile',
         storageUri: 'urn:mio:fictional:shared-profile', mimeType: 'application/json',
         sourceSystem: 'shared-profile-demo', sourceName: 'Fictional profile fixture',
         metadata: { fictional: true }, createdAt });
-      const claims = Object.fromEntries(Object.entries(F).map(([name, field]) => {
+      const claims = Object.fromEntries(Object.entries(F).filter(([name]) => Object.hasOwn(SHARED_PROFILE_VALUES, name)).map(([name, field]) => {
         const claim = repository.createClaim({ personId: person.id, claimTypeKey: field,
           value: SHARED_PROFILE_VALUES[name], status: 'confirmed', issuer: 'fictional-local-operator',
           observedAt: createdAt, createdAt });
@@ -78,11 +94,12 @@ export function initializeSharedProfile(inputDirectory) {
         const requester = repository.createRequester({ name: definition.label,
           origin: 'local-stdio', publicKeyOrIdentifier: `fictional-shared-profile-${id}`, createdAt });
         const grant = repository.createGrant({ personId: person.id, requesterId: requester.id,
-          purpose: `${definition.label}: fictional shared-profile walkthrough`, status: 'active',
-          scope: { allowedFields: definition.fields }, actions: definition.actions,
+          purpose: `${definition.label}: fictional ${definition.scenarioId} draft and source references`, status: 'active',
+          scope: { allowedFields: definition.fields, collectFields: COLLECTION_FIELDS,
+            scenarioIds: [definition.scenarioId] }, actions: definition.actions,
           grantedAt: createdAt, expiresAt: new Date(Date.parse(createdAt) + 24 * 3_600_000).toISOString(), createdAt });
         for (const field of definition.fields) {
-          repository.attachGrantClaim({ grantId: grant.id, claimId: claims[field].id, accessMode: 'read' });
+          if (claims[field]) repository.attachGrantClaim({ grantId: grant.id, claimId: claims[field].id, accessMode: 'read' });
         }
         const configPath = path.join(directory, `assistant-${id}.json`);
         writePrivateJson(configPath, { schemaVersion: 1, databasePath,
@@ -112,7 +129,7 @@ export function openSharedProfile(inputDirectory) {
   privateEntry(manifestPath, 'file');
   const manifest = JSON.parse(fs.readFileSync(manifestPath, 'utf8'));
   const databasePath = path.join(directory, 'mio.sqlite');
-  if (!manifest || manifest.schemaVersion !== SCHEMA || manifest.fictional !== true ||
+  if (!manifest || ![SCHEMA, LEGACY_SCHEMA].includes(manifest.schemaVersion) || manifest.fictional !== true ||
       manifest.databasePath !== databasePath || typeof manifest.personId !== 'string' || !manifest.personId ||
       !manifest.assistants || !isDeepStrictEqual(Object.keys(manifest.assistants).sort(), ['a', 'b'])) {
     throw new Error('Invalid shared-profile demo manifest');
@@ -127,8 +144,9 @@ export function openSharedProfile(inputDirectory) {
     if (present) privateEntry(sidecar, 'file');
   }
   const states = {};
+  const definitions = manifest.schemaVersion === LEGACY_SCHEMA ? LEGACY_DEFINITIONS : DEFINITIONS;
   try {
-    for (const [id, definition] of Object.entries(DEFINITIONS)) {
+    for (const [id, definition] of Object.entries(definitions)) {
       const assistant = manifest.assistants[id];
       const configPath = path.join(directory, `assistant-${id}.json`);
       if (!assistant || assistant.configPath !== configPath || assistant.label !== definition.label ||
@@ -143,7 +161,9 @@ export function openSharedProfile(inputDirectory) {
       states[id] = state;
       const grant = state.repository.listGrantsForPerson(manifest.personId).find((item) => item.id === state.config.grantId);
       if (!grant || grant.requesterId !== state.config.requesterId ||
-          !isDeepStrictEqual(grant.scope?.allowedFields, definition.fields) || !isDeepStrictEqual(grant.actions, definition.actions)) {
+          !isDeepStrictEqual(grant.scope?.allowedFields, definition.fields) || !isDeepStrictEqual(grant.actions, definition.actions) ||
+          (manifest.schemaVersion === SCHEMA && (!isDeepStrictEqual(grant.scope.collectFields, COLLECTION_FIELDS)
+            || !isDeepStrictEqual(grant.scope.scenarioIds, [definition.scenarioId])))) {
         throw new Error('Assistant grant does not match the declared binding and fields');
       }
     }

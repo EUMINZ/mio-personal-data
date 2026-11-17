@@ -9,14 +9,21 @@ import { approveReview, listReviews, shareClaim, revoke, rejectReview, closeStal
 import { createScopedHost, AccessDenied, selectLatestConfirmedClaim } from '../../adapters/mcp/host.js';
 import { initializeSharedProfile, openSharedProfile, SHARED_PROFILE_FIELDS as F } from './fixture.js';
 import { formatClientCommands } from './client-commands.js';
+import { scenarioSnapshot, listFormDrafts, prepareFormDraft, claimSource } from './scenarios.js';
 
 const uiDirectory = fileURLToPath(new URL('./ui/', import.meta.url));
-const LABELS = { [F.firstName]: 'First name', [F.email]: 'Email', [F.address]: 'Home address' };
+const LABELS = { [F.firstName]: 'First name', [F.email]: 'Email', [F.address]: 'Home address',
+  [F.employer]: 'Employer', [F.jobTitle]: 'Job title' };
 const assistantId = z.enum(['a', 'b']);
 const confirmed = z.literal(true);
 const id = z.string().min(1).max(200);
 const ACTIONS = {
   '/api/propose': z.strictObject({ assistantId, field: id, value: z.string().min(1).max(2048), rationale: z.string().min(1).max(1000) }),
+  '/api/collect': z.strictObject({ assistantId, field: id, value: z.string().trim().min(1).max(2048),
+    rationale: z.string().trim().min(1).max(1000), source: z.strictObject({ kind: z.enum(['user-stated', 'document-extracted']),
+      reference: z.string().trim().min(1).max(300), locator: z.string().trim().min(1).max(300).optional() }) }),
+  '/api/draft': z.strictObject({ assistantId, scenarioId: z.enum(['travel', 'onboarding']),
+    taskValues: z.record(z.string().max(100), z.string().max(300)) }),
   '/api/approve': z.strictObject({ assistantId, reviewItemId: id, expectedVersion: id, expectedValue: z.string().min(1).max(2048), confirmed }),
   '/api/reject': z.strictObject({ assistantId, reviewItemId: id, expectedVersion: id, reason: z.string().trim().min(1).max(1000), confirmed }),
   '/api/close-stale': z.strictObject({ assistantId, reviewItemId: id, expectedVersion: id, confirmed }),
@@ -27,6 +34,8 @@ const ASSETS = { '/': ['index.html', 'text/html'], '/app.js': ['app.js', 'text/j
 const AUDIT_LABELS = {
   'demo.shared-profile.initialized': 'Created the fictional shared profile',
   'mcp.update.proposed': 'Suggested a change for review',
+  'mcp.fact.proposed': 'Collected a new identity fact for review',
+  'demo.form.drafted': 'Prepared a local form draft; nothing was submitted',
   'mcp.operator.approved': 'Approved a new version; sharing stays separate',
   'mcp.operator.rejected': 'Rejected a proposal; facts and sharing stay unchanged',
   'mcp.operator.closed-stale': 'Closed an outdated proposal; facts and sharing stay unchanged',
@@ -84,7 +93,8 @@ export function operatorSnapshot(demo) {
       if (!binding) return [];
       return [{ reviewItemId: item.id, assistantId: binding[0], field: item.metadata.claimTypeKey,
         label: LABELS[item.metadata.claimTypeKey], status: item.status, decision: decision.decision,
-        note: decision.note, resolvedAt: item.resolvedAt, suggestedValue: item.suggestedValue }];
+        note: decision.note, resolvedAt: item.resolvedAt, suggestedValue: item.suggestedValue,
+        proposalKind: item.metadata.proposalKind ?? 'update' }];
     }).slice(0, 20);
     const requesterLabels = Object.fromEntries(Object.entries(demo.states).map(([id, state]) => [state.config.requesterId, demo.manifest.assistants[id].label]));
     const audit = repository.listAuditEventsForPerson(person.id).slice(0, 30).map((event) => ({
@@ -95,7 +105,9 @@ export function operatorSnapshot(demo) {
       claims: Object.entries(current).filter(([, claim]) => claim).map(([field, claim]) => ({
         field, label: LABELS[field], value: claim.value, claimId: claim.id, updatedAt: claim.updatedAt,
         source: claim.issuer === 'local-operator' ? 'Approved by the local operator' : 'Fictional profile fixture',
-      })), assistants, reviews, decisions, audit };
+        provenance: claimSource(repository, claim),
+      })), assistants, reviews, decisions, audit,
+      scenarios: scenarioSnapshot(demo, now), drafts: listFormDrafts(demo) };
     db.exec('COMMIT');
     return result;
   } catch (error) { db.exec('ROLLBACK'); throw error; }
@@ -161,6 +173,8 @@ export async function startReviewServer({ directory, port = 0 } = {}) {
       const state = demo.states[id];
       let result;
       if (route === '/api/propose') result = createScopedHost(state.repository, state.config).propose(input);
+      else if (route === '/api/collect') result = createScopedHost(state.repository, state.config).proposeFact(input);
+      else if (route === '/api/draft') result = prepareFormDraft(demo, { assistantId: id, ...input });
       else if (route === '/api/approve') result = approveReview(state, input);
       else if (route === '/api/reject') result = rejectReview(state, input);
       else if (route === '/api/close-stale') result = closeStaleReview(state, input);
@@ -169,7 +183,7 @@ export async function startReviewServer({ directory, port = 0 } = {}) {
       json(response, 200, result);
     } catch (error) {
       if (error.status) return json(response, error.status, { error: error.message });
-      if (error instanceof AccessDenied) return json(response, 403, { error: 'The assistant cannot propose this change under its current grant.' });
+      if (error instanceof AccessDenied) return json(response, 403, { error: 'The assistant cannot perform this action under its current grant.' });
       const conflict = /does not match|Confirmed data changed|Current claim and active allowed grant required|Configured grant not found|not (?:stale|outdated)/i.test(error.message);
       json(response, conflict ? 409 : 500, { error: conflict ? 'The review, confirmed value, or grant changed. Refresh and review it again.' : 'Operation failed. No success was recorded; refresh before retrying.' });
     }
@@ -200,7 +214,7 @@ async function main(args) {
   if (!path.isAbsolute(directory)) throw new Error('Use an absolute demo directory');
   if (!fs.existsSync(directory)) initializeSharedProfile(directory);
   const running = await startReviewServer({ directory });
-  console.log(`Mio shared-profile trial — fictional data\nReview: ${running.url}\nKeep this URL local; it authorizes operator actions for this session.\nAssistant A config: ${path.join(directory, 'assistant-a.json')}\nAssistant B config: ${path.join(directory, 'assistant-b.json')}\nStop with Ctrl+C. Data remains in ${directory}.`);
+  console.log(`Mio identity trial — fictional travel and onboarding drafts\nReview: ${running.url}\nKeep this URL local; it authorizes operator actions for this session.\nAssistant A config: ${path.join(directory, 'assistant-a.json')}\nAssistant B config: ${path.join(directory, 'assistant-b.json')}\nStop with Ctrl+C. Data remains in ${directory}.`);
   console.log(`\nOptional real-client sessions (macOS/Linux POSIX shell):\nThese commands use your existing client login and may consume model usage.\nThey apply to this invocation and do not save MCP registrations.\n\nAssistant A — run in another terminal:\n${running.clientCommands.a}\n\nAssistant B — run in a third terminal:\n${running.clientCommands.b}\n\nThe page is an operator view, not proof that either client connected.\n`);
   const stop = () => { running.close().catch(() => { process.exitCode = 1; }); };
   process.once('SIGINT', stop); process.once('SIGTERM', stop);

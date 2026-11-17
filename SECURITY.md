@@ -28,6 +28,35 @@ Returned values are untrusted data, not instructions. A local database does not 
 
 Pinned GitHub package installation downloads executable code and its dependencies. Use a pinned checkout plus `npm ci` to reproduce the full lockfile; the npm package route pins source and direct versions but does not ship that lockfile. Inspect and pin a release, keep the local runtime updated, and do not commit profile JSON, config files or databases. Production multi-tenant authentication, encrypted storage and concurrent-writer guarantees are not established by this Alpha.
 
+## Unreleased identity collection and form drafts
+
+`mio_propose_fact` adds a pending proposal only when the active bound grant
+explicitly permits `propose-new-fact` and lists the field in both `collectFields`
+and `allowedFields`. Existing confirmed facts, including expired or unshared
+versions, cannot be replaced through collection. Identical pending proposals
+within the same binding are deduplicated; the tool does not expose another
+requester's proposals. Existing configurations receive no new permission.
+
+Source kind, reference and optional locator are reported by the requester. No
+document is fetched or authenticated. Approval records the operator's decision
+and an evidence link marked unverified, in the same transaction as the claim,
+review decision and audit event. Sharing the approved version is a separate
+operation for each requester. Source labels are untrusted text.
+
+The example's draft action requires `prepare-form-draft`, read permission and
+the matching scene scope, all checked with claim selection in one transaction.
+Recipients and identity mappings are fixed by the two fictional templates. Task
+answers cannot override identity fields and are not promoted to personal facts.
+Drafts store selected values, claim IDs and limited source references in the
+local database, with audit-failure rollback. They never submit, sign, upload, or
+contact the named fictional recipient. Previous drafts remain disclosed local
+copies after a fact changes or a grant is revoked; the operator can still view
+them. Future draft generation checks the current grant and shared versions.
+
+Legacy v1 demo directories keep their original grants and have no new scenes.
+Create a separate v2 fictional profile to try collection; opening an old profile
+does not silently expand access or add a draft table.
+
 ## Local shared-profile review example
 
 The unreleased `examples/shared-profile/` review page is a trusted local operator

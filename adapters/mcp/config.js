@@ -59,11 +59,19 @@ export const profileSchema = z.strictObject({
   claims: z.record(z.string().refine((field) => supportedFields.has(field), 'Unsupported claim field'), z.string().min(1).max(2048))
     .refine((claims) => Object.keys(claims).length > 0 && Object.keys(claims).length <= 50, 'Expected 1 to 50 claims'),
   allowedFields: z.array(z.string()).min(1).max(50),
+  collectFields: z.array(z.string()).max(50).default([]),
   expiresInHours: z.number().int().min(1).max(720), allowProposals: z.boolean(),
 }).superRefine((profile, ctx) => {
   if (new Set(profile.allowedFields).size !== profile.allowedFields.length ||
       profile.allowedFields.some((field) => !Object.hasOwn(profile.claims, field))) {
     ctx.addIssue({ code: 'custom', message: 'allowedFields must be a unique explicit subset of claims', path: ['allowedFields'] });
+  }
+  if (new Set(profile.collectFields).size !== profile.collectFields.length ||
+      profile.collectFields.some((field) => !supportedFields.has(field) || Object.hasOwn(profile.claims, field))) {
+    ctx.addIssue({ code: 'custom', message: 'collectFields must uniquely name supported fields that are not already in claims', path: ['collectFields'] });
+  }
+  if (new Set([...profile.allowedFields, ...profile.collectFields]).size > 50) {
+    ctx.addIssue({ code: 'custom', message: 'Combined read and collection scope must contain at most 50 fields', path: ['collectFields'] });
   }
 });
 export function seedProfileDatabase(db, input) {
@@ -80,14 +88,15 @@ export function seedProfileDatabase(db, input) {
         issuer: 'local-operator', observedAt: timestamp, createdAt: timestamp })]));
     const grant = repository.createGrant({ personId: person.id, requesterId: requester.id,
       purpose: 'Explicit locally configured assistant access', status: 'active',
-      scope: { allowedFields: profile.allowedFields },
-      actions: ['read-granted-fields', ...(profile.allowProposals ? ['propose-update'] : [])],
+      scope: { allowedFields: [...profile.allowedFields, ...profile.collectFields], collectFields: profile.collectFields },
+      actions: ['read-granted-fields', ...(profile.allowProposals ? ['propose-update'] : []),
+        ...(profile.collectFields.length ? ['propose-new-fact'] : [])],
       grantedAt: timestamp, expiresAt: new Date(Date.parse(timestamp) + profile.expiresInHours * 3_600_000).toISOString(),
       createdAt: timestamp });
     for (const field of profile.allowedFields) repository.attachGrantClaim({ grantId: grant.id, claimId: claims[field].id, accessMode: 'read' });
     repository.createAuditEvent({ personId: person.id, actorType: 'user', actorId: 'local-operator',
       eventType: 'mcp.operator.initialized', eventPayload: { grantId: grant.id, fields: profile.allowedFields,
-        allowProposals: profile.allowProposals }, createdAt: timestamp });
+        collectFields: profile.collectFields, allowProposals: profile.allowProposals }, createdAt: timestamp });
     return { repository, config: { schemaVersion: 1, personId: person.id, requesterId: requester.id, grantId: grant.id } };
   });
 }

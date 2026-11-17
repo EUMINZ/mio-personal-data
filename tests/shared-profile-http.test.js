@@ -34,7 +34,7 @@ test('operator page protects every API read and write, prevents foreign origins/
   assert.equal(page.headers.get('cache-control'), 'no-store');
   assert.match(page.headers.get('content-security-policy'), /frame-ancestors 'none'/);
   assert.doesNotMatch(await page.text(), new RegExp(f.token));
-  for (const route of ['/api/state', '/api/propose', '/api/reject', '/api/close-stale']) {
+  for (const route of ['/api/state', '/api/propose', '/api/collect', '/api/draft', '/api/reject', '/api/close-stale']) {
     const result = await fetch(f.origin + route, { method: route.endsWith('state') ? 'GET' : 'POST',
       ...(route.endsWith('state') ? {} : { body: JSON.stringify(proposal), headers: { 'Content-Type': 'application/json' } }) });
     assert.equal(result.status, 401);

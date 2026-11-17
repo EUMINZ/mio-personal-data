@@ -99,7 +99,7 @@ test('two live MCP processes observe proposal, approval, explicit sharing and in
   const a = await f.connect('a'); const b = await f.connect('b');
   for (const connection of [a, b]) {
     assert.deepEqual((await connection.client.listTools()).tools.map((tool) => tool.name).sort(),
-      ['mio_context', 'mio_propose_update']);
+      ['mio_context', 'mio_propose_fact', 'mio_propose_update']);
   }
   context(await read(a.client, [F.firstName, F.email, F.address, F.passport]),
     { [F.firstName]: V.firstName, [F.email]: V.email }, [F.address, F.passport]);

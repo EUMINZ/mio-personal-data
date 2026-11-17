@@ -14,6 +14,12 @@ const rendered = new Map();
 // Keep in-progress operator notes in this page only, across background polls.
 const reviewDrafts = new Map();
 const reviewCards = new Map();
+// Unsaved form inputs remain in this document only; generated snapshots are
+// persisted by the server. Polling never replaces the displayed snapshot or
+// changes information the operator is still typing.
+const scenarioCards = new Map();
+const scenarioDrafts = new Map();
+let selectedScenario = null;
 
 function node(tag, className, text) {
   const element = document.createElement(tag);
@@ -64,13 +70,20 @@ function updateControls() {
       ? 'Share the current email with A before it can propose another update.'
       : 'Submitting a proposal leaves the confirmed record unchanged.';
   for (const button of document.querySelectorAll('[data-mutation]')) {
-    button.disabled = busy || !connected || button.dataset.stale === 'true';
+    button.disabled = busy || !connected || button.dataset.stale === 'true' || button.dataset.blocked === 'true';
   }
   for (const input of document.querySelectorAll('[data-review-input]')) {
     input.disabled = busy || !connected;
   }
+  for (const input of document.querySelectorAll('[data-scene-input]')) {
+    input.disabled = busy || !connected;
+  }
+  for (const fieldset of document.querySelectorAll('[data-collection-fields]')) {
+    fieldset.disabled = busy || !connected || fieldset.dataset.blocked === 'true';
+  }
   $('refresh-button').disabled = busy;
   $('workspace').setAttribute('aria-busy', String(busy));
+  $('scenario-section').setAttribute('aria-busy', String(busy));
 }
 async function request(path, options = {}) {
   const controller = new AbortController();
@@ -98,7 +111,7 @@ function renderClaims(claims) {
     const row = node('div', 'fact');
     row.append(node('dt', '', claim.label));
     const value = node('dd', '', display(claim.value));
-    value.append(node('span', 'source', claim.source || 'Confirmed local record'));
+    value.append(node('span', 'source', sourceLabel(claim.source)));
     row.append(value);
     return row;
   });
@@ -110,6 +123,252 @@ function actionButton(label, className, handler) {
   button.dataset.mutation = 'true';
   button.addEventListener('click', handler);
   return button;
+}
+function sourceLabel(source) {
+  if (typeof source === 'string') return source;
+  if (!source || typeof source !== 'object') return 'Confirmed profile record';
+  const kind = source.kind === 'document-extracted' ? 'Document extraction reported' : source.kind === 'user-stated' ? 'User statement reported' : 'Source recorded';
+  return `${kind}${source.reference ? `: ${source.reference}` : ''}${source.locator ? ` · ${source.locator}` : ''}`;
+}
+function selectScenario(id, focus = false) {
+  selectedScenario = id;
+  for (const [key, card] of scenarioCards) {
+    const active = key === id;
+    card.element.hidden = !active;
+    card.tab.setAttribute('aria-selected', String(active));
+    card.tab.tabIndex = active ? 0 : -1;
+    if (active && focus) card.tab.focus();
+  }
+}
+function sceneInput(labelText, id, value = '', { type = 'text', maxLength = 2048, required = true } = {}) {
+  const wrapper = node('div', 'scene-input');
+  const label = node('label', '', labelText);
+  label.htmlFor = id;
+  const input = node('input');
+  input.id = id;
+  input.type = type;
+  input.value = value;
+  input.maxLength = maxLength;
+  input.required = required;
+  input.autocomplete = 'off';
+  input.dataset.sceneInput = 'true';
+  wrapper.append(label, input);
+  return { wrapper, input };
+}
+function buildCollection(scene, field) {
+  const details = node('details', 'collection-form');
+  const summary = node('summary', '', `Collect ${field.label.toLowerCase()}`);
+  const form = node('form');
+  const fieldset = node('fieldset');
+  fieldset.dataset.collectionFields = 'true';
+  const fieldId = `collect-${scene.id}-${field.inputKey}`;
+  const examples = { 'person.employment.employer': 'Example Studio', 'person.employment.job_title': 'Operations coordinator' };
+  const value = sceneInput('New personal information', `${fieldId}-value`, examples[field.claimTypeKey] ?? '', {});
+  const sourceTypeLabel = node('label', '', 'How was it collected?');
+  sourceTypeLabel.htmlFor = `${fieldId}-source-kind`;
+  const sourceType = node('select');
+  sourceType.id = `${fieldId}-source-kind`;
+  sourceType.dataset.sceneInput = 'true';
+  for (const [key, text] of [['user-stated', 'Stated by the person'], ['document-extracted', 'Extracted from a document']]) {
+    const option = node('option', '', text); option.value = key; sourceType.append(option);
+  }
+  const reference = sceneInput('Source reference', `${fieldId}-reference`, 'Fictional statement from Alex for this trial', { maxLength: 300 });
+  const locator = sceneInput('Page or location (optional)', `${fieldId}-locator`, '', { maxLength: 300, required: false });
+  const rationale = sceneInput('Why keep this information?', `${fieldId}-rationale`, 'Reusable employment information for future applications.', { maxLength: 1000 });
+  const hint = node('p', 'field-hint', 'Use fictional information. The source is a reported reference, not independent verification. Review and sharing are still required.');
+  const button = node('button', 'button secondary', 'Send for review');
+  button.type = 'submit'; button.dataset.mutation = 'true';
+  const notice = node('p', 'collection-notice');
+  fieldset.append(value.wrapper, sourceTypeLabel, sourceType, reference.wrapper, locator.wrapper, rationale.wrapper, hint, button);
+  form.append(fieldset, notice); details.append(summary, form);
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    for (const input of [value.input, reference.input, rationale.input]) {
+      input.setCustomValidity(input.value.trim() ? '' : 'Enter a value before sending this proposal.');
+    }
+    if (!form.reportValidity()) return;
+    const source = { kind: sourceType.value, reference: reference.input.value.trim() };
+    if (locator.input.value.trim()) source.locator = locator.input.value.trim();
+    mutate('/api/collect', { assistantId: scene.assistantId, field: field.claimTypeKey,
+      value: value.input.value.trim(), rationale: rationale.input.value.trim(), source,
+    }, 'New information is waiting for review. It will not appear in either draft until approved and shared.', 'reviews-title');
+  });
+  for (const input of [value.input, reference.input, rationale.input]) input.addEventListener('input', () => input.setCustomValidity(''));
+  return { element: details, fieldset, button, notice };
+}
+function buildScenario(scene) {
+  const tab = node('button', 'scenario-tab', scene.label);
+  tab.type = 'button'; tab.id = `tab-${scene.id}`; tab.setAttribute('role', 'tab');
+  tab.setAttribute('aria-controls', `scenario-${scene.id}`);
+  tab.addEventListener('click', () => selectScenario(scene.id));
+  tab.addEventListener('keydown', (event) => {
+    if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
+    event.preventDefault();
+    const keys = [...scenarioCards.keys()]; const current = keys.indexOf(scene.id);
+    const next = event.key === 'Home' ? 0 : event.key === 'End' ? keys.length - 1 : (current + (event.key === 'ArrowRight' ? 1 : -1) + keys.length) % keys.length;
+    selectScenario(keys[next], true);
+  });
+  const element = node('div', 'scenario-panel');
+  element.id = `scenario-${scene.id}`; element.setAttribute('role', 'tabpanel'); element.setAttribute('aria-labelledby', tab.id);
+  const heading = node('div', 'scenario-heading');
+  heading.append(node('h3', '', scene.label), node('p', '', `${scene.recipient} · Assistant ${scene.assistantId.toUpperCase()}`));
+  const description = node('p', 'scene-description', scene.description);
+  const grid = node('div', 'scenario-grid');
+  const editor = node('div', 'scenario-editor');
+  editor.append(node('h4', 'subheading', 'From your identity profile'));
+  const identity = node('div', 'scenario-identity');
+  const fieldRows = new Map();
+  for (const field of scene.fields) {
+    const row = node('div', 'scene-fact');
+    const label = node('div', 'scene-fact-label', field.label);
+    const body = node('div', 'scene-fact-body');
+    const value = node('p', 'scene-fact-value');
+    const status = node('p', 'scene-fact-status');
+    const sharing = node('div', 'scene-share');
+    body.append(value, status, sharing); row.append(label, body);
+    const collection = buildCollection(scene, field);
+    row.append(collection.element); identity.append(row);
+    fieldRows.set(field.inputKey, { row, value, status, sharing, collection, signature: null });
+  }
+  editor.append(identity);
+  const taskForm = node('form', 'task-form');
+  taskForm.append(node('h4', 'subheading', 'For this application only'), node('p', 'field-hint', 'These answers stay with the draft and do not become personal identity facts.'));
+  const taskInputs = new Map();
+  for (const field of scene.taskFields) {
+    const input = sceneInput(field.label, `task-${scene.id}-${field.key}`, field.value ?? '', { type: field.type ?? 'text', maxLength: Math.min(field.maxLength ?? 300, 300), required: field.required !== false });
+    input.input.placeholder = field.placeholder ?? '';
+    taskInputs.set(field.key, input.input); taskForm.append(input.wrapper);
+  }
+  const generate = node('button', 'button', 'Generate draft');
+  generate.type = 'submit'; generate.dataset.mutation = 'true';
+  const draftNotice = node('p', 'field-hint', 'Uses the current versions shared with this assistant. Missing identity fields remain blank.');
+  taskForm.append(generate, draftNotice);
+  const draft = node('section', 'draft-sheet');
+  draft.id = `draft-${scene.id}`; draft.tabIndex = -1; draft.setAttribute('aria-label', `${scene.label} generated draft`);
+  taskForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    for (const input of taskInputs.values()) input.setCustomValidity(input.required && !input.value.trim() ? 'Enter the task-specific answer.' : '');
+    if (!taskForm.reportValidity()) return;
+    const taskValues = Object.fromEntries([...taskInputs].map(([key, input]) => [key, input.value.trim()]));
+    mutate('/api/draft', { assistantId: scene.assistantId, scenarioId: scene.id, taskValues },
+      'Draft generated from the current authorized facts. Nothing was submitted.', draft.id, (result) => {
+        scenarioDrafts.set(scene.id, result); renderDraft(scene.id);
+      });
+  });
+  for (const input of taskInputs.values()) input.addEventListener('input', () => { input.setCustomValidity(''); updateDraftNotice(scene.id); });
+  editor.append(taskForm); grid.append(editor, draft); element.append(heading, description, grid);
+  return { tab, element, fieldRows, taskInputs, generate, draftNotice, draft };
+}
+function renderScenarios(scenarios) {
+  $('scenario-section').hidden = false;
+  $('legacy-scene-notice').hidden = scenarios.length !== 0;
+  $('scenario-tabs').hidden = scenarios.length === 0;
+  for (const scene of scenarios) {
+    let card = scenarioCards.get(scene.id);
+    if (!card) {
+      const saved = (state.drafts ?? []).find((draft) => draft.scenarioId === scene.id);
+      if (saved && !scenarioDrafts.has(scene.id)) scenarioDrafts.set(scene.id, saved);
+      card = buildScenario(scene); scenarioCards.set(scene.id, card);
+      if (saved) {
+        for (const field of saved.fields ?? []) {
+          const input = field.origin === 'task' ? card.taskInputs.get(field.inputKey) : null;
+          if (input) input.value = String(field.value ?? '');
+        }
+      }
+      $('scenario-tabs').append(card.tab); $('scenarios').append(card.element); renderDraft(scene.id);
+    }
+    const active = scene.active === true;
+    card.generate.dataset.blocked = String(!active);
+    card.draftNotice.textContent = active
+      ? 'Uses the current versions shared with this assistant. Missing identity fields remain blank.'
+      : 'This assistant’s grant is inactive. A new draft cannot be generated.';
+    for (const field of scene.fields) {
+      const row = card.fieldRows.get(field.inputKey);
+      if (!row) continue;
+      const pending = state.reviews.some((review) => review.assistantId === scene.assistantId && review.field === field.claimTypeKey && review.proposalKind === 'new-fact' && !review.stale);
+      const access = state.assistants.find((assistant) => assistant.id === scene.assistantId)?.fields.find((entry) => entry.field === field.claimTypeKey);
+      const claim = state.claims.find((entry) => entry.field === field.claimTypeKey);
+      row.value.textContent = field.state === 'shared' ? display(field.value) : 'Not available to this assistant';
+      row.status.textContent = field.state === 'shared' ? `Current version shared · ${sourceLabel(field.source)}`
+        : pending ? 'Awaiting your review. Proposed information is not used in drafts.'
+        : access?.state === 'unshared' ? 'Confirmed in your profile. Choose whether to share this version.'
+        : 'Missing or unavailable under the current grant.';
+      const shareSignature = JSON.stringify([active, access?.state, claim?.claimId]);
+      if (row.signature !== shareSignature) {
+        const hadShareFocus = row.sharing.contains(document.activeElement);
+        row.sharing.replaceChildren();
+        if (active && access?.state === 'unshared' && claim) {
+          row.sharing.append(actionButton(`Share ${field.label.toLowerCase()} with ${scene.label.toLowerCase()}`, 'button secondary', () => mutate('/api/share', {
+            assistantId: scene.assistantId, field: field.claimTypeKey, claimId: claim.claimId, confirmed: true,
+          }, `Confirmed ${field.label.toLowerCase()} shared with ${scene.label.toLowerCase()}. Generate a new draft to use it.`, 'scenarios-title')));
+        }
+        row.signature = shareSignature;
+        if (hadShareFocus) $('scenarios-title').focus({ preventScroll: true });
+      }
+      row.collection.element.hidden = !field.collectible && !pending;
+      row.collection.fieldset.dataset.blocked = String(!active || !field.collectible || pending);
+      row.collection.button.dataset.blocked = row.collection.fieldset.dataset.blocked;
+      row.collection.notice.textContent = pending ? 'Proposal saved. Review it in the queue below.' : '';
+    }
+    updateDraftNotice(scene.id);
+  }
+  if (!selectedScenario || !scenarioCards.has(selectedScenario)) selectedScenario = scenarios[0]?.id ?? null;
+  selectScenario(selectedScenario);
+}
+function renderDraft(sceneId) {
+  const card = scenarioCards.get(sceneId);
+  if (!card) return;
+  const draft = scenarioDrafts.get(sceneId);
+  if (!draft) {
+    card.draft.replaceChildren(node('p', 'eyebrow', 'Your draft will appear here'), node('h3', '', 'A preview, with its sources.'),
+      node('p', 'draft-empty', 'Generate a draft to see which confirmed facts this assistant can use. Add missing information through review, then generate again.'));
+    return;
+  }
+  const heading = node('div', 'draft-heading');
+  heading.append(node('span', 'eyebrow', 'Draft · not submitted'), node('span', 'draft-time', formatTime(draft.createdAt, true)));
+  const list = node('dl', 'draft-fields');
+  for (const field of draft.fields ?? []) {
+    const row = node('div', 'draft-field');
+    const value = node('dd', '', display(field.value));
+    value.append(node('span', 'draft-origin', field.origin === 'identity' ? `From approved profile · ${sourceLabel(field.source)}` : 'For this application only'));
+    if (field.origin === 'identity') {
+      const provenance = node('details', 'draft-provenance');
+      provenance.append(node('summary', '', 'Source and version'));
+      const version = field.claimId ?? field.source?.claimId;
+      if (version) provenance.append(node('p', '', `Fact version: ${version}`));
+      provenance.append(node('p', '', sourceLabel(field.source)));
+      if (field.source?.confirmedAt) provenance.append(node('p', '', `Confirmed: ${formatTime(field.source.confirmedAt, true)}`));
+      provenance.append(node('p', '', 'The reported source has not been independently verified.'));
+      value.append(provenance);
+    }
+    row.append(node('dt', '', field.label), value); list.append(row);
+  }
+  const missing = node('div', 'draft-missing');
+  if (draft.missing?.length) {
+    missing.append(node('strong', '', `${draft.missing.length} ${draft.missing.length === 1 ? 'field needs' : 'fields need'} information or sharing`));
+    const values = node('ul');
+    for (const field of draft.missing) values.append(node('li', '', field.label));
+    missing.append(values);
+  } else missing.append(node('p', '', 'All fields in this demonstration draft are filled.'));
+  const notice = node('p', 'draft-snapshot-notice'); notice.dataset.draftNotice = 'true';
+  card.draft.replaceChildren(heading, node('h3', '', draft.label), node('p', 'draft-recipient', `Intended recipient: ${draft.recipient}`), list, missing, notice,
+    node('p', 'draft-boundary', 'Fictional demonstration form. No website was filled, no document uploaded, and no application submitted.'));
+  updateDraftNotice(sceneId);
+}
+function updateDraftNotice(sceneId) {
+  const card = scenarioCards.get(sceneId); const draft = scenarioDrafts.get(sceneId);
+  if (!card || !draft) return;
+  const notice = card.draft.querySelector('[data-draft-notice]');
+  if (!notice) return;
+  const scene = state?.scenarios?.find((entry) => entry.id === sceneId);
+  const changed = (draft.fields ?? []).some((field) => {
+    if (field.origin === 'task') return card.taskInputs.get(field.inputKey)?.value.trim() !== String(field.value ?? '');
+    const latest = scene?.fields.find((entry) => entry.inputKey === field.inputKey);
+    return !latest || latest.state !== 'shared' || latest.value !== field.value || (latest.source?.claimId && field.claimId && latest.source.claimId !== field.claimId);
+  }) || (draft.missing ?? []).some((field) => scene?.fields.some((entry) => entry.inputKey === field.inputKey && entry.state === 'shared'));
+  notice.textContent = changed ? 'Facts, access, or task answers have changed. This saved preview stays unchanged; generate again to check the latest state.'
+    : 'Snapshot from the time you generated it. Later profile changes do not rewrite this preview.';
+  notice.classList.toggle('changed', changed);
 }
 function renderReviews(reviews) {
   const container = $('reviews');
@@ -129,7 +388,7 @@ function renderReviews(reviews) {
   $('review-count').classList.toggle('has-pending', reviews.length > 0);
   if (!reviews.length) {
     const empty = node('div', 'empty-state');
-    empty.append(node('strong', '', 'No changes waiting for review.'), node('p', '', 'Use the demo control below, or ask a connected assistant to propose a new email.'));
+    empty.append(node('strong', '', 'No changes waiting for review.'), node('p', '', 'Collect missing information in either application above, or try an existing-fact correction below.'));
     container.replaceChildren(empty);
     if (focusedReview) $('reviews-title').focus({ preventScroll: true });
     return;
@@ -163,12 +422,13 @@ function renderReviews(reviews) {
   }
 }
 function buildReviewCard(review) {
+    const newFact = review.proposalKind === 'new-fact';
     const card = node('article', 'review');
     card.dataset.reviewId = review.reviewItemId;
     const top = node('div', 'review-top');
-    top.append(node('h3', '', `${review.label} update`), node('span', 'review-origin', `Assistant ${review.assistantId.toUpperCase()} proposal`));
+    top.append(node('h3', '', newFact ? `New ${review.label.toLowerCase()}` : `${review.label} update`), node('span', 'review-origin', `Assistant ${review.assistantId.toUpperCase()} proposal`));
     const comparison = node('div', 'comparison');
-    for (const [index, label, value] of [[0, 'Value when proposed', review.currentValue], [1, 'Suggested', review.suggestedValue]]) {
+    for (const [index, label, value] of [[0, newFact ? 'Identity profile' : 'Value when proposed', newFact ? 'No confirmed fact yet' : review.currentValue], [1, 'Suggested', review.suggestedValue]]) {
       if (index) comparison.append(node('span', 'comparison-arrow', '→'));
       const part = node('div');
       part.append(node('span', 'comparison-label', label), node('p', `comparison-value${index ? ' proposed' : ''}`, display(value)));
@@ -176,12 +436,13 @@ function buildReviewCard(review) {
     }
     const rationale = node('div', 'rationale');
     rationale.append(node('span', 'comparison-label', 'Assistant’s reason · not independently verified'), node('p', '', review.rationale));
+    if (review.source) rationale.append(node('p', 'proposal-source', `${sourceLabel(review.source)}. Approving confirms your choice, not the authenticity of the source.`));
     const footer = node('div', 'review-footer');
     const actions = node('div', 'review-actions');
-    const approveButton = actionButton('Approve update', 'button', () => mutate('/api/approve', {
+    const approveButton = actionButton(newFact ? 'Approve new fact' : 'Approve update', 'button', () => mutate('/api/approve', {
       assistantId: review.assistantId, reviewItemId: review.reviewItemId,
       expectedVersion: review.expectedVersion, expectedValue: review.suggestedValue, confirmed: true,
-    }, 'Update approved. Share the new version with an assistant when you are ready.', 'reviews-title'));
+    }, newFact ? 'New fact added to your profile. Share it with each application before generating a draft.' : 'Update approved. Share the new version with an assistant when you are ready.', 'reviews-title'));
     approveButton.dataset.stale = String(review.stale === true);
     approveButton.dataset.reviewControl = 'approve';
     approveButton.disabled = review.stale === true;
@@ -195,8 +456,8 @@ function buildReviewCard(review) {
       actions.append(closeButton);
     }
     footer.append(node('p', review.stale ? 'stale-notice' : '', review.stale
-      ? 'This proposal no longer matches the current fact. Closing it leaves facts and sharing unchanged.'
-      : 'Approving updates the fact. Sharing is a separate choice.'), actions);
+      ? 'This proposal no longer matches the current profile. Closing it leaves facts and sharing unchanged.'
+      : newFact ? 'Approving adds this fact and its reported source. Sharing is a separate choice.' : 'Approving updates the fact. Sharing is a separate choice.'), actions);
     card.append(top, comparison, rationale, footer);
     if (!review.stale) card.append(buildRejectionForm(review));
     return card;
@@ -274,6 +535,7 @@ function renderDecisions(decisions) {
   $('decisions').replaceChildren(list);
 }
 function renderAssistants(assistants) {
+  const hadAccessFocus = $('assistants').contains(document.activeElement);
   const cards = assistants.map((assistant) => {
     const section = node('section', 'assistant');
     const header = node('div', 'assistant-header');
@@ -312,6 +574,7 @@ function renderAssistants(assistants) {
     return section;
   });
   $('assistants').replaceChildren(...cards);
+  if (hadAccessFocus) $('access-title').focus({ preventScroll: true });
 }
 function renderAudit(events) {
   if (!events.length) {
@@ -333,6 +596,7 @@ function render(next) {
     connectionNotice = false;
   }
   $('person-name').textContent = next.person.name;
+  renderScenarios(next.scenarios ?? []);
   renderIfChanged('claims', next.claims, renderClaims);
   renderIfChanged('reviews', next.reviews, renderReviews);
   renderIfChanged('decisions', next.decisions ?? [], renderDecisions);
@@ -359,7 +623,7 @@ function refresh(force = false) {
   }).finally(() => { refreshPromise = null; });
   return refreshPromise;
 }
-async function mutate(path, body, successMessage, focusId) {
+async function mutate(path, body, successMessage, focusId, onResult) {
   if (busy || !connected) return;
   busy = true;
   updateControls();
@@ -367,8 +631,9 @@ async function mutate(path, body, successMessage, focusId) {
   try {
     // Let any older poll finish before mutation, then read the committed state.
     if (refreshPromise) await refreshPromise;
-    await request(path, { method: 'POST', body: JSON.stringify(body) });
+    const result = await request(path, { method: 'POST', body: JSON.stringify(body) });
     succeeded = true;
+    if (onResult) onResult(result);
     await refresh(true);
     showMessage(successMessage);
     if (focusId) $(focusId).focus();

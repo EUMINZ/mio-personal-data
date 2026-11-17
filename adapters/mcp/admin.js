@@ -5,7 +5,7 @@ import { pathToFileURL } from 'node:url';
 import { isDeepStrictEqual } from 'node:util';
 import { openCoreDatabase, closeCoreDatabase } from '../../mio-core/src/db.js';
 import { openConfiguredHost, seedFictionalDatabase, seedProfileDatabase, profileSchema } from './config.js';
-import { AccessDenied, reviewVersion, selectLatestConfirmedClaim } from './host.js';
+import { AccessDenied, reviewVersion, selectLatestConfirmedClaim, normalizeFactSource } from './host.js';
 import { getClaimTypeKeyForField } from '../../mio-core/src/claim-types.js';
 
 // Local operator interface. These actions are intentionally absent from MCP.
@@ -38,6 +38,7 @@ export function listReviews(state) {
     .filter((item) => item.metadata?.adapter === 'mio-mcp-v1' && item.metadata.requesterId === state.config.requesterId && item.metadata.grantId === state.config.grantId)
     .map((item) => ({ reviewItemId: item.id, field: item.metadata.claimTypeKey,
       currentValue: item.currentValue, suggestedValue: item.suggestedValue, rationale: item.rationale,
+      proposalKind: item.metadata.proposalKind ?? 'update', source: item.metadata.source ?? null,
       expectedVersion: reviewVersion(item) }));
 }
 function pendingReview(state, reviewItemId, expectedVersion) {
@@ -46,8 +47,14 @@ function pendingReview(state, reviewItemId, expectedVersion) {
   if (!item || item.personId !== config.personId || item.status !== 'pending' || item.itemType !== 'proposal' ||
       item.target !== 'identity_claim' || item.metadata?.adapter !== 'mio-mcp-v1' ||
       item.metadata.requesterId !== config.requesterId || item.metadata.grantId !== config.grantId ||
+      ![undefined, 'update', 'new-fact'].includes(item.metadata.proposalKind) ||
       reviewVersion(item) !== expectedVersion || getClaimTypeKeyForField(item.fieldKey) !== item.metadata.claimTypeKey) {
     throw new Error('Pending review/version/value does not match');
+  }
+  if (item.metadata.proposalKind === 'new-fact') {
+    if (item.metadata.expectedClaimId !== null || item.currentValue !== null) throw new Error('Pending review/version/value does not match');
+    try { normalizeFactSource(item.metadata.source); }
+    catch { throw new Error('Pending review/version/value does not match'); }
   }
   return item;
 }
@@ -58,6 +65,7 @@ export function isReviewStale(state, item, now = Date.now()) {
   const field = item.metadata?.claimTypeKey;
   const candidates = state.repository.listClaimsForPerson(state.config.personId, { statuses: ['confirmed'] })
     .filter((claim) => claim.claimTypeKey === field && claim.supersededByClaimId === null);
+  if (item.metadata?.proposalKind === 'new-fact') return candidates.length !== 0;
   if (candidates.length !== 1) return true;
   try {
     const current = selectLatestConfirmedClaim(state.repository, state.config.personId, field, now);
@@ -80,8 +88,19 @@ export function approveReview(state, { reviewItemId, expectedVersion, expectedVa
     const timestamp = new Date().toISOString();
     const claim = repository.createClaim({ personId: config.personId, claimTypeKey: item.metadata.claimTypeKey,
       value: expectedValue, status: 'confirmed', issuer: 'local-operator', observedAt: timestamp, createdAt: timestamp });
-    db.prepare('UPDATE claims SET superseded_by_claim_id = ? WHERE id = ? AND person_id = ?')
-      .run(claim.id, item.metadata.expectedClaimId, config.personId);
+    if (item.metadata.proposalKind === 'new-fact') {
+      const source = normalizeFactSource(item.metadata.source);
+      const evidence = repository.createEvidence({ personId: config.personId, kind: 'reported-source',
+        storageUri: `mio-review:${item.id}`, mimeType: 'application/json', sourceSystem: 'mio-mcp',
+        sourceName: source.reference, capturedAt: item.createdAt,
+        metadata: { ...source, reviewItemId: item.id, reportedByRequesterId: item.metadata.requesterId,
+          verification: 'unverified', operatorConfirmedAt: timestamp }, createdAt: timestamp });
+      repository.linkClaimEvidence({ claimId: claim.id, evidenceId: evidence.id, relationType: 'derived_from',
+        note: 'Source reported by the requester; the local operator confirmed the value, not source authenticity.' });
+    } else {
+      db.prepare('UPDATE claims SET superseded_by_claim_id = ? WHERE id = ? AND person_id = ?')
+        .run(claim.id, item.metadata.expectedClaimId, config.personId);
+    }
     repository.createReviewDecision({ reviewItemId: item.id, bundleId: item.bundleId, personId: config.personId,
       decision: 'accepted', actorType: 'user', actorId: 'local-operator', appliedClaimId: claim.id, createdAt: timestamp });
     repository.resolveReviewItem({ reviewItemId: item.id, status: 'applied', resolvedAt: timestamp,
